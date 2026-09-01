@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Nông Trại Xanh</title>
 
   <style>
@@ -10,14 +11,21 @@
       box-sizing: border-box;
     }
 
-    html, body {
+    html,
+    body {
       margin: 0;
+      padding: 0;
       min-height: 100%;
     }
 
     body {
       min-height: 100vh;
-      background: url("/assets/background.png") center / cover no-repeat fixed;
+
+      background-image: url("/assets/background.png");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+
       font-family: Arial, sans-serif;
       text-align: center;
       color: white;
@@ -29,15 +37,19 @@
       background: rgba(0, 80, 180, 0.15);
     }
 
-    .hero {
-      width: 220px;
-      max-width: 70%;
-      margin-top: 50px;
-      filter: drop-shadow(0 8px 8px rgba(0,0,0,.3));
-    }
-
     h1 {
       text-shadow: 2px 2px 4px #003b80;
+    }
+
+    .hero {
+      display: block;
+      width: 220px;
+      max-width: 70%;
+      margin: 50px auto 30px;
+
+      filter: drop-shadow(
+        0 8px 8px rgba(0, 0, 0, 0.3)
+      );
     }
 
     .test {
@@ -51,13 +63,14 @@
 </head>
 
 <body>
+
   <main class="game">
 
     <h1>🌱 NÔNG TRẠI XANH</h1>
 
     <img
       class="hero"
-      background-image: url("/assets/background.png");
+      src="/assets/hero.png"
       alt="Nhân vật nông dân"
     >
 
@@ -66,5 +79,6 @@
     </p>
 
   </main>
+
 </body>
 </html>
