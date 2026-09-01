@@ -3,6 +3,10 @@
     {
       "source": "/",
       "destination": "/frontend/index.html"
+    },
+    {
+      "source": "/assets/:path*",
+      "destination": "/frontend/public/assets/:path*"
     }
   ]
 }
