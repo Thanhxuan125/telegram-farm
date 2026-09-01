@@ -12,37 +12,37 @@
 
     html, body {
       margin: 0;
-      width: 100%;
       min-height: 100%;
     }
 
     body {
-      background: url("/assets/background.png") center / cover fixed;
+      min-height: 100vh;
+      background: url("/assets/background.png") center / cover no-repeat fixed;
       font-family: Arial, sans-serif;
-      color: white;
       text-align: center;
+      color: white;
     }
 
     .game {
       min-height: 100vh;
       padding: 30px 15px;
-      background: rgba(0, 80, 180, 0.18);
+      background: rgba(0, 80, 180, 0.15);
     }
 
     .hero {
       width: 220px;
       max-width: 70%;
       margin-top: 50px;
+      filter: drop-shadow(0 8px 8px rgba(0,0,0,.3));
     }
 
     h1 {
-      font-size: 28px;
       text-shadow: 2px 2px 4px #003b80;
     }
 
     .test {
       display: inline-block;
-      padding: 14px 22px;
+      padding: 12px 20px;
       border-radius: 15px;
       background: #087ff5;
       font-weight: bold;
@@ -53,17 +53,17 @@
 <body>
   <main class="game">
 
+    <h1>🌱 NÔNG TRẠI XANH</h1>
+
     <img
       class="hero"
       src="/assets/hero.png"
       alt="Nhân vật nông dân"
     >
 
-    <h1>🌱 Nông Trại Xanh</h1>
-
-    <div class="test">
+    <p class="test">
       ✅ Background + nhân vật hoạt động
-    </div>
+    </p>
 
   </main>
 </body>
