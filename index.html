@@ -5,19 +5,14 @@
 
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
   >
 
   <title>Nông Trại Xanh</title>
 
   <style>
-    /* =========================
-       CÀI ĐẶT CHUNG
-    ========================= */
-
     * {
       box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
     }
 
     html,
@@ -29,23 +24,10 @@
     }
 
     body {
-      min-height: 100vh;
-      min-height: 100dvh;
-
+      background-color: #78cfff;
       font-family: Arial, sans-serif;
-
-      color: white;
-
       overflow-x: hidden;
-
-      /* BACKGROUND */
-      background-image: url("/assets/background.png");
-      background-position: center center;
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
     }
-
 
     /* =========================
        KHUNG GAME
@@ -53,87 +35,52 @@
 
     .game {
       position: relative;
-
       width: 100%;
       min-height: 100vh;
       min-height: 100dvh;
 
-      padding: 20px 12px;
-
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-
-      background: rgba(0, 80, 180, 0.08);
+      overflow: hidden;
     }
-
 
     /* =========================
-       TIÊU ĐỀ
+       BACKGROUND
+       HIỂN THỊ TOÀN BỘ ẢNH
     ========================= */
 
-    h1 {
-      margin: 10px 0 0;
+    .background {
+      display: block;
 
-      font-size: clamp(24px, 7vw, 38px);
+      width: 100%;
+      height: auto;
 
-      text-align: center;
+      max-width: 100%;
 
-      text-shadow:
-        2px 2px 4px rgba(0, 50, 100, 0.8);
+      object-fit: contain;
     }
-
 
     /* =========================
        NHÂN VẬT
     ========================= */
 
     .hero {
-      width: 150px;
+      position: absolute;
 
-      /* Không cho nhân vật vượt quá màn hình */
-      max-width: 40vw;
-
-      /* Không cho nhân vật quá cao */
-      max-height: 38vh;
-
+      width: 125px;
       height: auto;
+
+      max-width: 32vw;
+      max-height: 30vh;
 
       object-fit: contain;
 
-      display: block;
+      left: 50%;
+      top: 22%;
 
-      margin-top: 25px;
+      transform: translateX(-50%);
 
       filter:
-        drop-shadow(0 6px 6px rgba(0, 0, 0, 0.35));
+        drop-shadow(0 6px 5px rgba(0, 0, 0, 0.3));
     }
-
-
-    /* =========================
-       NÚT KIỂM TRA
-    ========================= */
-
-    .test {
-      display: inline-block;
-
-      margin-top: 20px;
-
-      padding: 10px 16px;
-
-      border-radius: 14px;
-
-      background: rgba(8, 127, 245, 0.95);
-
-      font-size: 14px;
-      font-weight: bold;
-
-      text-align: center;
-
-      box-shadow:
-        0 4px 10px rgba(0, 0, 0, 0.25);
-    }
-
 
     /* =========================
        ĐIỆN THOẠI NHỎ
@@ -141,75 +88,63 @@
 
     @media (max-width: 380px) {
 
-      .game {
-        padding: 15px 10px;
-      }
-
-      h1 {
-        font-size: 24px;
-      }
-
       .hero {
-        width: 120px;
-        max-width: 35vw;
-        max-height: 32vh;
-        margin-top: 20px;
-      }
-
-      .test {
-        font-size: 12px;
-        padding: 9px 13px;
+        width: 105px;
+        max-width: 30vw;
+        top: 20%;
       }
     }
 
-
     /* =========================
-       ĐIỆN THOẠI MÀN HÌNH DÀI
+       ĐIỆN THOẠI BÌNH THƯỜNG
     ========================= */
 
     @media (min-width: 381px) and (max-width: 600px) {
 
       .hero {
-        width: 140px;
-        max-width: 38vw;
-        max-height: 36vh;
+        width: 125px;
+        max-width: 32vw;
+        top: 22%;
       }
     }
 
-
     /* =========================
-       MÀN HÌNH LỚN
+       MÁY TÍNH / MÀN HÌNH LỚN
     ========================= */
 
     @media (min-width: 601px) {
 
+      .game {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
       .hero {
-        width: 180px;
-        max-width: 220px;
+        width: 160px;
+        top: 22%;
       }
     }
 
   </style>
 </head>
 
-
 <body>
 
   <main class="game">
 
-    <h1>🌱 NÔNG TRẠI XANH</h1>
+    <!-- BACKGROUND -->
+    <img
+      class="background"
+      src="/assets/background.png"
+      alt=""
+    >
 
     <!-- NHÂN VẬT -->
     <img
       class="hero"
       src="/assets/hero.png"
-      alt="Nhân vật nông dân"
+      alt="Nhân vật"
     >
-
-    <!-- DÒNG KIỂM TRA -->
-    <p class="test">
-      ✅ Background + nhân vật hoạt động
-    </p>
 
   </main>
 
