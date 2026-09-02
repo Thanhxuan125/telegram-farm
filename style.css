@@ -81,7 +81,7 @@ body {
 
 
 /* =========================
-   20 Ô ĐẤT - NHỎ GỌN HƠN
+   KHU VỰC 20 Ô ĐẤT
 ========================= */
 
 .farm-grid {
@@ -90,18 +90,20 @@ body {
   z-index: 2;
 
   left: 50%;
-  top: 51%;
+  top: 43%;
 
   transform: translateX(-50%);
 
-  /* Thu nhỏ toàn bộ cụm ô */
-  width: 68%;
-  max-width: 470px;
-
+  /* 5 cột */
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
 
-  gap: 6px;
+  /* Khoảng cách nhỏ */
+  gap: 5px;
+
+  /* Nhỏ và gọn */
+  width: 68%;
+  max-width: 330px;
 }
 
 
@@ -111,40 +113,17 @@ body {
 
 .plot {
   width: 100%;
+  aspect-ratio: 1 / 1;
 
-  /* Ô nhỏ và hơi chữ nhật */
-  aspect-ratio: 1.18 / 1;
+  border: none;
+  border-radius: 7px;
 
-  border: 2px solid rgba(83, 57, 25, 0.55);
-
-  border-radius: 10px;
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(137, 91, 40, 0.72),
-      rgba(91, 58, 25, 0.72)
-    );
-
-  box-shadow:
-    0 2px 0 rgba(94, 146, 45, 0.9),
-    inset 0 2px 4px rgba(255, 255, 255, 0.15),
-    inset 0 -4px 7px rgba(0, 0, 0, 0.15);
+  background: rgba(90, 55, 30, 0.75);
 
   color: white;
 
-  font-size: clamp(15px, 3.5vw, 21px);
-
-  font-weight: 800;
-
-  text-align: center;
-
-  text-shadow:
-    2px 2px 0 rgba(60, 40, 20, 0.75);
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
 
   cursor: pointer;
 
@@ -152,39 +131,13 @@ body {
 }
 
 
-/* =========================
-   KHI BẤM
-========================= */
-
+/* Hiệu ứng khi bấm */
 .plot:active {
-  transform: scale(0.94);
+  transform: scale(0.92);
 }
 
 
-/* =========================
-   Ô KHÓA
-========================= */
-
+/* Ô đang khóa */
 .plot.locked {
-  opacity: 0.55;
-}
-
-
-/* =========================
-   ĐIỆN THOẠI
-========================= */
-
-@media (max-width: 600px) {
-
-  .farm-grid {
-    width: 76%;
-    gap: 6px;
-    top: 51%;
-  }
-
-  .plot {
-    aspect-ratio: 1.18 / 1;
-    border-radius: 10px;
-    font-size: 16px;
-  }
+  opacity: 0.65;
 }
