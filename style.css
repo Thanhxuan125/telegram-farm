@@ -21,7 +21,7 @@ body {
 
 body {
   overflow: hidden;
-  background: #000;
+  background: #72c7ed;
 }
 
 
@@ -35,9 +35,9 @@ body {
   width: 100%;
   height: 100dvh;
 
-  min-height: 100dvh;
-
   overflow: hidden;
+
+  background: #72c7ed;
 }
 
 
@@ -52,22 +52,11 @@ body {
   left: 0;
 
   width: 100%;
-  height: 100%;
-
-  /*
-    cover = kéo ảnh phủ kín
-    toàn bộ màn hình điện thoại
-  */
-  object-fit: cover;
-
-  /*
-    Giữ phần giữa của background
-  */
-  object-position: center center;
-
-  z-index: 0;
+  height: auto;
 
   display: block;
+
+  z-index: 0;
 }
 
 
@@ -80,31 +69,13 @@ body {
 
   z-index: 1;
 
-  /*
-    Kích thước nhân vật
-  */
   width: 125px;
-
   height: auto;
 
-  /*
-    Không cho nhân vật quá lớn
-    trên màn hình nhỏ
-  */
   max-width: 30vw;
 
-  /*
-    Đặt nhân vật ở giữa
-  */
   left: 50%;
+  top: 39vw;
 
-  /*
-    Vị trí theo chiều dọc
-  */
-  top: 24%;
-
-  /*
-    Căn chính giữa nhân vật
-  */
   transform: translateX(-50%);
 }
