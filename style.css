@@ -81,7 +81,7 @@ body {
 
 
 /* =========================
-   20 Ô ĐẤT
+   20 Ô ĐẤT - NHỎ GỌN HƠN
 ========================= */
 
 .farm-grid {
@@ -94,19 +94,14 @@ body {
 
   transform: translateX(-50%);
 
-  width: 90%;
-  max-width: 560px;
+  /* Thu nhỏ toàn bộ cụm ô */
+  width: 76%;
+  max-width: 470px;
 
-  /*
-    QUAN TRỌNG:
-    4 cột × 5 hàng
-  */
   display: grid;
   grid-template-columns: repeat(4, 1fr);
 
-  gap: 7px;
-
-  padding: 0;
+  gap: 6px;
 }
 
 
@@ -117,44 +112,35 @@ body {
 .plot {
   width: 100%;
 
-  /*
-    Ô hơi rộng hơn cao
-  */
-  aspect-ratio: 1.2 / 1;
+  /* Ô nhỏ và hơi chữ nhật */
+  aspect-ratio: 1.18 / 1;
 
-  border: 2px solid rgba(83, 57, 25, 0.65);
+  border: 2px solid rgba(83, 57, 25, 0.55);
 
-  border-radius: 12px;
+  border-radius: 10px;
 
-  /*
-    Màu đất
-  */
   background:
     linear-gradient(
       145deg,
-      #a96f32,
-      #79501f
+      rgba(137, 91, 40, 0.72),
+      rgba(91, 58, 25, 0.72)
     );
 
-  /*
-    Viền cỏ + bóng
-  */
   box-shadow:
-    0 3px 0 #5e922d,
-    inset 0 2px 4px rgba(255, 255, 255, 0.2),
-    inset 0 -5px 8px rgba(0, 0, 0, 0.2);
+    0 2px 0 rgba(94, 146, 45, 0.9),
+    inset 0 2px 4px rgba(255, 255, 255, 0.15),
+    inset 0 -4px 7px rgba(0, 0, 0, 0.15);
 
   color: white;
 
-  font-size: clamp(16px, 4vw, 24px);
+  font-size: clamp(15px, 3.5vw, 21px);
 
   font-weight: 800;
 
   text-align: center;
 
   text-shadow:
-    2px 2px 0 rgba(60, 40, 20, 0.8),
-    0 2px 4px rgba(0, 0, 0, 0.4);
+    2px 2px 0 rgba(60, 40, 20, 0.75);
 
   display: flex;
   align-items: center;
@@ -162,14 +148,12 @@ body {
 
   cursor: pointer;
 
-  transition:
-    transform 0.15s ease,
-    filter 0.15s ease;
+  transition: transform 0.15s ease;
 }
 
 
 /* =========================
-   KHI BẤM Ô
+   KHI BẤM
 ========================= */
 
 .plot:active {
@@ -182,7 +166,7 @@ body {
 ========================= */
 
 .plot.locked {
-  opacity: 0.6;
+  opacity: 0.55;
 }
 
 
@@ -192,51 +176,15 @@ body {
 
 @media (max-width: 600px) {
 
-  .hero {
-    width: 145px;
-    top: 36%;
-  }
-
   .farm-grid {
-    width: 91%;
-    top: 51%;
-
+    width: 76%;
     gap: 6px;
+    top: 51%;
   }
 
   .plot {
     aspect-ratio: 1.18 / 1;
-
-    border-radius: 11px;
-
-    font-size: 17px;
-  }
-}
-
-
-/* =========================
-   ĐIỆN THOẠI NHỎ
-========================= */
-
-@media (max-width: 380px) {
-
-  .hero {
-    width: 125px;
-    top: 36%;
-  }
-
-  .farm-grid {
-    width: 92%;
-    top: 50%;
-
-    gap: 5px;
-  }
-
-  .plot {
-    aspect-ratio: 1.15 / 1;
-
-    border-radius: 9px;
-
-    font-size: 15px;
+    border-radius: 10px;
+    font-size: 16px;
   }
 }
