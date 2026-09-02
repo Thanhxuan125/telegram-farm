@@ -62,13 +62,13 @@ body {
 .hero {
   position: absolute;
 
-  z-index: 3;
+  z-index: 1;
 
   width: 150px;
   height: auto;
 
   left: 50%;
-  top: 36%;
+  top: 27%;
 
   transform: translateX(-50%);
 
@@ -99,11 +99,11 @@ body {
   grid-template-columns: repeat(5, 1fr);
 
   /* Khoảng cách nhỏ */
-  gap: 5px;
+  gap: 4px;
 
   /* Nhỏ và gọn */
-  width: 68%;
-  max-width: 330px;
+  width: 65%;
+  max-width: 300px;
 }
 
 
@@ -116,13 +116,13 @@ body {
   aspect-ratio: 1 / 1;
 
   border: none;
-  border-radius: 7px;
+  border-radius: 6px;
 
   background: rgba(90, 55, 30, 0.75);
 
   color: white;
 
-  font-size: 10px;
+  font-size: 9px;
   font-weight: bold;
 
   cursor: pointer;
