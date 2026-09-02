@@ -90,7 +90,7 @@ body {
   /*
     Vị trí bắt đầu của khu đất
   */
-  top: 43%;
+  top: 46%;
 
   transform: translateX(-50%);
 
@@ -109,7 +109,7 @@ body {
   /*
     Chiều rộng toàn bộ khu đất
   */
-  width: 92%;
+  width: 96%;
 
   max-width: 500px;
 }
