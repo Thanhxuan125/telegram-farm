@@ -63,16 +63,23 @@ body {
 .hero {
   position: absolute;
 
-  z-index: 1;
+  z-index: 3;
 
-  width: 120px;
+  width: 145px;
+  max-width: 24vw;
   height: auto;
 
   left: 50%;
-  top: 50%;
+  top: 37%;
 
   transform: translateX(-50%);
+
+  pointer-events: none;
+
+  filter: drop-shadow(0 5px 4px rgba(0, 0, 0, 0.25));
 }
+
+
 /* =========================
    KHU VỰC 20 Ô ĐẤT
 ========================= */
@@ -82,24 +89,19 @@ body {
 
   z-index: 2;
 
-  /*
-    Khu đất nằm giữa màn hình
-  */
   left: 50%;
-
-  /*
-    Vị trí bắt đầu của khu đất
-  */
-  top: 46%;
+  top: 52%;
 
   transform: translateX(-50%);
 
+  width: 88%;
+  max-width: 560px;
+
   /*
-    5 cột
+    4 cột × 5 hàng = 20 ô
   */
   display: grid;
-
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
 
   /*
     Khoảng cách giữa các ô
@@ -107,11 +109,9 @@ body {
   gap: 7px;
 
   /*
-    Chiều rộng toàn bộ khu đất
+    Không để grid quá cao
   */
-  width: 96%;
-
-  max-width: 500px;
+  padding: 0 2px;
 }
 
 
@@ -120,60 +120,133 @@ body {
 ========================= */
 
 .plot {
-
-  /*
-    Tỷ lệ ô đất
-  */
-  aspect-ratio: 1 / 1;
+  position: relative;
 
   width: 100%;
+  aspect-ratio: 1.25 / 1;
+
+  border: 3px solid rgba(92, 62, 25, 0.55);
+
+  border-radius: 13px;
 
   /*
-    Hình dạng
+    Đất màu nâu giống game
   */
-  border: none;
-
-  border-radius: 12px;
-
-  /*
-    Màu tạm thời để nhìn vị trí
-  */
-  background: rgba(90, 55, 30, 0.75);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(137, 91, 40, 0.92),
+      rgba(91, 58, 25, 0.92)
+    );
 
   /*
-    Số thứ tự
+    Viền xanh cỏ
   */
+  box-shadow:
+    0 3px 0 #6b9e2c,
+    inset 0 2px 5px rgba(255, 255, 255, 0.15),
+    inset 0 -5px 8px rgba(0, 0, 0, 0.18);
+
   color: white;
 
-  font-size: 14px;
+  font-size: clamp(16px, 4vw, 24px);
 
-  font-weight: bold;
+  font-weight: 800;
 
-  /*
-    Cho phép bấm
-  */
+  text-shadow:
+    2px 2px 0 rgba(70, 45, 20, 0.8),
+    0 2px 4px rgba(0, 0, 0, 0.4);
+
   cursor: pointer;
 
-  /*
-    Hiệu ứng
-  */
-  transition: transform 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition:
+    transform 0.15s ease,
+    filter 0.15s ease;
 }
 
 
 /* =========================
-   KHI BẤM Ô ĐẤT
+   HIỆU ỨNG KHI BẤM
 ========================= */
 
 .plot:active {
-  transform: scale(0.95);
+  transform: scale(0.94);
 }
 
 
 /* =========================
-   Ô ĐẤT ĐANG KHÓA
+   Ô ĐẤT KHÓA
 ========================= */
 
 .plot.locked {
-  opacity: 0.65;
+  opacity: 0.55;
+
+  filter: grayscale(0.25);
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+
+  .hero {
+    width: 145px;
+    max-width: 25vw;
+
+    top: 37%;
+  }
+
+  .farm-grid {
+    top: 52%;
+
+    width: 91%;
+
+    gap: 6px;
+  }
+
+  .plot {
+    aspect-ratio: 1.2 / 1;
+
+    border-radius: 11px;
+
+    border-width: 2px;
+
+    font-size: 17px;
+  }
+}
+
+
+/* =========================
+   MÀN HÌNH RẤT NHỎ
+========================= */
+
+@media (max-width: 380px) {
+
+  .hero {
+    width: 125px;
+
+    top: 37%;
+  }
+
+  .farm-grid {
+    top: 51%;
+
+    width: 92%;
+
+    gap: 5px;
+  }
+
+  .plot {
+    aspect-ratio: 1.15 / 1;
+
+    border-radius: 9px;
+
+    font-size: 15px;
+  }
 }
