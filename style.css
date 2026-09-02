@@ -73,3 +73,107 @@ body {
 
   transform: translateX(-50%);
 }
+/* =========================
+   KHU VỰC 20 Ô ĐẤT
+========================= */
+
+.farm-grid {
+  position: absolute;
+
+  z-index: 2;
+
+  /*
+    Khu đất nằm giữa màn hình
+  */
+  left: 50%;
+
+  /*
+    Vị trí bắt đầu của khu đất
+  */
+  top: 43%;
+
+  transform: translateX(-50%);
+
+  /*
+    5 cột
+  */
+  display: grid;
+
+  grid-template-columns: repeat(5, 1fr);
+
+  /*
+    Khoảng cách giữa các ô
+  */
+  gap: 7px;
+
+  /*
+    Chiều rộng toàn bộ khu đất
+  */
+  width: 92%;
+
+  max-width: 500px;
+}
+
+
+/* =========================
+   Ô ĐẤT
+========================= */
+
+.plot {
+
+  /*
+    Tỷ lệ ô đất
+  */
+  aspect-ratio: 1 / 1;
+
+  width: 100%;
+
+  /*
+    Hình dạng
+  */
+  border: none;
+
+  border-radius: 12px;
+
+  /*
+    Màu tạm thời để nhìn vị trí
+  */
+  background: rgba(90, 55, 30, 0.75);
+
+  /*
+    Số thứ tự
+  */
+  color: white;
+
+  font-size: 14px;
+
+  font-weight: bold;
+
+  /*
+    Cho phép bấm
+  */
+  cursor: pointer;
+
+  /*
+    Hiệu ứng
+  */
+  transition: transform 0.15s ease;
+}
+
+
+/* =========================
+   KHI BẤM Ô ĐẤT
+========================= */
+
+.plot:active {
+  transform: scale(0.95);
+}
+
+
+/* =========================
+   Ô ĐẤT ĐANG KHÓA
+========================= */
+
+.plot.locked {
+  opacity: 0.65;
+}
