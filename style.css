@@ -95,7 +95,7 @@ body {
   transform: translateX(-50%);
 
   /* Thu nhỏ toàn bộ cụm ô */
-  width: 76%;
+  width: 68%;
   max-width: 470px;
 
   display: grid;
