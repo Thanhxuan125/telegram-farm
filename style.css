@@ -21,12 +21,18 @@ body {
 
 body {
   overflow: hidden;
+
   background: #000;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
 }
 
 
 /* =========================
-   KHUNG GAME
+   GAME
 ========================= */
 
 .game {
@@ -51,11 +57,11 @@ body {
   width: 100%;
   height: 100%;
 
+  display: block;
+
   object-fit: cover;
 
   object-position: center center;
-
-  display: block;
 
   z-index: 0;
 }
@@ -65,26 +71,32 @@ body {
    NHÂN VẬT
 ========================= */
 
- .hero {
+.hero {
   position: absolute;
 
   z-index: 2;
 
-  width: 112px;
+  width: 110px;
+
   height: auto;
 
   left: 50%;
+
   top: 34%;
 
   transform: translateX(-50%);
 
   filter:
-    drop-shadow(0 3px 3px rgba(0, 0, 0, 0.25));
+    drop-shadow(
+      0 3px 4px rgba(0, 0, 0, 0.25)
+    );
+
+  pointer-events: none;
 }
 
 
 /* =========================
-   20 Ô ĐẤT - GỌN Ở GIỮA
+   20 Ô ĐẤT
 ========================= */
 
 .farm-grid {
@@ -92,28 +104,26 @@ body {
 
   z-index: 3;
 
-  /* Chính giữa màn hình */
   left: 50%;
 
-  /* Hạ xuống dưới nhân vật */
   top: 64%;
 
   transform: translateX(-50%);
 
-  display: grid;
-
-  /* 5 cột */
-  grid-template-columns: repeat(5, 1fr);
-
-  /* Khoảng cách nhỏ */
-  column-gap: 5px;
-  row-gap: 6px;
-
-  /* Thu nhỏ toàn bộ khu đất */
   width: 62%;
 
   max-width: 290px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(5, 1fr);
+
+  column-gap: 5px;
+
+  row-gap: 6px;
 }
+
 
 /* =========================
    Ô ĐẤT
@@ -123,42 +133,53 @@ body {
   position: relative;
 
   width: 100%;
+
   aspect-ratio: 1.15 / 1;
 
-  border: 2px solid #9b652f;
+  padding: 0;
+
+  border: 2px solid #99602e;
 
   border-radius: 9px;
 
   background:
     linear-gradient(
       180deg,
-      #b8793b 0%,
-      #925725 45%,
+      #b9783b 0%,
+      #925725 50%,
       #70401f 100%
     );
 
   box-shadow:
-    inset 0 2px 2px rgba(255,255,255,0.2),
-    inset 0 -3px 4px rgba(0,0,0,0.25),
-    0 2px 4px rgba(0,0,0,0.25);
+    inset 0 2px 2px
+      rgba(255, 255, 255, 0.18),
+
+    inset 0 -3px 4px
+      rgba(0, 0, 0, 0.25),
+
+    0 2px 4px
+      rgba(0, 0, 0, 0.25);
 
   display: flex;
 
   align-items: center;
+
   justify-content: center;
 
   cursor: pointer;
 
   overflow: hidden;
 
+  -webkit-tap-highlight-color:
+    transparent;
+
   transition:
-    transform 0.15s ease,
-    filter 0.15s ease;
+    transform 0.12s ease;
 }
 
 
 /* =========================
-   ĐẤT CÓ VÂN
+   CỎ TRÊN Ô ĐẤT
 ========================= */
 
 .plot::before {
@@ -166,38 +187,20 @@ body {
 
   position: absolute;
 
-  left: 8%;
-  right: 8%;
+  left: 7px;
 
-  top: 30%;
-
-  height: 2px;
-
-  background: rgba(70,35,15,0.3);
-
-  border-radius: 50%;
-}
-
-
-/* =========================
-   CỎ NHỎ Ở MÉP TRÊN
-========================= */
-
-.plot::after {
-  content: "";
-
-  position: absolute;
-
-  left: 8px;
-  right: 8px;
+  right: 7px;
 
   top: 0;
 
   height: 4px;
 
-  background: #6db63d;
+  border-radius:
+    0 0 50% 50%;
 
-  border-radius: 0 0 50% 50%;
+  background: #69ad3c;
+
+  pointer-events: none;
 }
 
 
@@ -209,12 +212,12 @@ body {
   background:
     linear-gradient(
       180deg,
-      #bd7c3c 0%,
-      #985a27 48%,
+      #c07e3e 0%,
+      #995a27 50%,
       #75421f 100%
     );
 
-  border-color: #d49a52;
+  border-color: #d29a54;
 }
 
 
@@ -238,7 +241,7 @@ body {
 
 
 /* =========================
-   SỐ Ô / KHÓA
+   SỐ Ô
 ========================= */
 
 .plot-number {
@@ -246,34 +249,54 @@ body {
 
   z-index: 2;
 
+  color: rgba(255,255,255,0.9);
+
   font-size: 9px;
 
   font-weight: bold;
 
-  color: rgba(255,255,255,0.9);
-
   text-shadow:
-    0 1px 2px rgba(0,0,0,0.5);
+    0 1px 2px rgba(0,0,0,0.6);
 }
 
 
 /* =========================
-   HIỆU ỨNG BẤM
+   KHÓA
+========================= */
+
+.lock {
+  position: relative;
+
+  z-index: 2;
+
+  font-size: 17px;
+
+  filter:
+    drop-shadow(
+      0 2px 2px rgba(0,0,0,0.45)
+    );
+}
+
+
+/* =========================
+   BẤM Ô
 ========================= */
 
 .plot:active {
-  transform: scale(0.93);
+  transform: scale(0.94);
 }
+
+
 /* =========================
-   BẢNG CHỌN HẠT GIỐNG
+   BẢNG HẠT GIỐNG
 ========================= */
 
 .seed-panel {
   position: fixed;
 
-  z-index: 20;
-
   inset: 0;
+
+  z-index: 20;
 
   display: none;
 
@@ -281,11 +304,12 @@ body {
 
   justify-content: center;
 
-  background: rgba(0, 0, 0, 0.45);
+  background:
+    rgba(0, 0, 0, 0.48);
 }
 
 
-/* Khi mở */
+/* Bảng đang mở */
 
 .seed-panel.show {
   display: flex;
@@ -293,7 +317,7 @@ body {
 
 
 /* =========================
-   HỘP HẠT GIỐNG
+   HỘP HẠT
 ========================= */
 
 .seed-box {
@@ -303,28 +327,32 @@ body {
 
   max-width: 420px;
 
-  margin-bottom: 12px;
+  max-height: 82dvh;
 
-  padding: 18px;
+  margin-bottom: 10px;
 
-  border-radius: 20px;
+  padding: 18px 14px 14px;
+
+  border-radius: 20px 20px 16px 16px;
 
   background:
     linear-gradient(
       180deg,
-      #fffdf4,
+      #fffef8,
       #eaf5df
     );
 
   box-shadow:
-    0 -5px 20px rgba(0,0,0,0.25);
+    0 -5px 22px
+      rgba(0,0,0,0.28);
 
-  animation: seedUp 0.2s ease;
+  animation:
+    seedUp 0.2s ease;
 }
 
 
 /* =========================
-   HIỆU ỨNG MỞ
+   ANIMATION
 ========================= */
 
 @keyframes seedUp {
@@ -348,11 +376,27 @@ body {
 
   text-align: center;
 
-  margin-bottom: 14px;
-
-  font-size: 20px;
+  margin: 0 35px 4px;
 
   color: #39732c;
+
+  font-size: 20px;
+}
+
+
+/* =========================
+   Ô ĐẤT ĐANG CHỌN
+========================= */
+
+.selected-plot {
+
+  text-align: center;
+
+  margin-bottom: 12px;
+
+  color: #777;
+
+  font-size: 12px;
 }
 
 
@@ -365,20 +409,26 @@ body {
   position: absolute;
 
   top: 8px;
+
   right: 10px;
 
   width: 32px;
+
   height: 32px;
+
+  padding: 0;
 
   border: none;
 
   border-radius: 50%;
 
-  background: #e8e8e8;
+  background: #e5e5e5;
+
+  color: #555;
 
   font-size: 24px;
 
-  color: #555;
+  line-height: 30px;
 
   cursor: pointer;
 }
@@ -392,35 +442,68 @@ body {
 
   display: grid;
 
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns:
+    repeat(2, 1fr);
 
-  gap: 10px;
+  gap: 9px;
+
+  max-height: 60dvh;
+
+  overflow-y: auto;
+
+  padding: 2px 3px 5px 2px;
+
+  -webkit-overflow-scrolling: touch;
 }
 
 
 /* =========================
-   MỘT LOẠI HẠT
+   THANH CUỘN
+========================= */
+
+.seed-list::-webkit-scrollbar {
+
+  width: 4px;
+
+}
+
+.seed-list::-webkit-scrollbar-thumb {
+
+  background: #9cc28c;
+
+  border-radius: 10px;
+
+}
+
+
+/* =========================
+   MỘT HẠT
 ========================= */
 
 .seed-item {
 
   min-height: 70px;
 
-  border: 2px solid #d5e5c5;
+  padding: 8px;
 
-  border-radius: 14px;
+  border: 2px solid #d4e4c6;
 
-  background: white;
+  border-radius: 13px;
+
+  background: #ffffff;
 
   display: flex;
 
   align-items: center;
 
-  gap: 9px;
+  gap: 8px;
 
-  padding: 8px;
+  text-align: left;
 
   cursor: pointer;
+
+  -webkit-tap-highlight-color:
+    transparent;
 
   transition:
     transform 0.12s ease,
@@ -428,13 +511,15 @@ body {
 }
 
 
-/* Hiệu ứng bấm */
+/* =========================
+   BẤM HẠT
+========================= */
 
 .seed-item:active {
 
-  transform: scale(0.95);
+  transform: scale(0.96);
 
-  background: #f0f9e9;
+  background: #eef9e8;
 }
 
 
@@ -444,25 +529,27 @@ body {
 
 .seed-icon {
 
-  font-size: 28px;
+  flex: 0 0 38px;
 
-  width: 40px;
+  width: 38px;
 
   text-align: center;
+
+  font-size: 27px;
 }
 
 
 /* =========================
-   THÔNG TIN HẠT
+   THÔNG TIN
 ========================= */
 
 .seed-info {
 
+  min-width: 0;
+
   display: flex;
 
   flex-direction: column;
-
-  align-items: flex-start;
 
   gap: 3px;
 }
@@ -470,59 +557,90 @@ body {
 
 .seed-info strong {
 
-  font-size: 14px;
+  color: #3c3c3c;
 
-  color: #3d3d3d;
+  font-size: 13px;
 }
 
 
 .seed-info small {
 
-  font-size: 12px;
+  color: #c78320;
 
-  color: #d18a20;
-}
-/* =========================
-   DANH SÁCH 10 HẠT
-========================= */
+  font-size: 10px;
 
-.seed-list {
-  max-height: 55vh;
-
-  overflow-y: auto;
-
-  padding-right: 3px;
-
-  display: grid;
-
-  grid-template-columns: repeat(2, 1fr);
-
-  gap: 10px;
-}
-
-
-/* Thanh cuộn gọn */
-
-.seed-list::-webkit-scrollbar {
-  width: 4px;
-}
-
-.seed-list::-webkit-scrollbar-thumb {
-  border-radius: 10px;
-  background: rgba(70, 120, 50, 0.45);
+  line-height: 1.3;
 }
 
 
 /* =========================
-   TRÊN ĐIỆN THOẠI NHỎ
+   ĐIỆN THOẠI NHỎ
 ========================= */
 
 @media (max-width: 380px) {
 
-  .seed-list {
-    grid-template-columns: 1fr;
+  .hero {
+    width: 98px;
+  }
 
-    max-height: 52vh;
+  .farm-grid {
+
+    width: 62%;
+
+    gap: 4px;
+
+    top: 64%;
+  }
+
+  .seed-box {
+
+    width: 96%;
+
+    padding: 16px 10px 12px;
+  }
+
+  .seed-list {
+
+    gap: 7px;
+  }
+
+  .seed-item {
+
+    min-height: 64px;
+
+    padding: 6px;
+  }
+
+  .seed-icon {
+
+    flex-basis: 32px;
+
+    width: 32px;
+
+    font-size: 23px;
+  }
+
+  .seed-info strong {
+
+    font-size: 12px;
+  }
+
+  .seed-info small {
+
+    font-size: 9px;
+  }
+}
+
+
+/* =========================
+   MÀN HÌNH RẤT CAO
+========================= */
+
+@media (min-height: 800px) {
+
+  .farm-grid {
+
+    top: 63%;
   }
 
 }
