@@ -102,12 +102,12 @@ body {
     Hơi lệch sang phải
     để tránh bảng Nông Trại Xanh
   */
-  left: 55%;
+  left: 54%;
 
   /*
     Đặt dưới nhân vật
   */
-  top: 52%;
+  top: 60%;
 
   transform: translateX(-50%);
 
