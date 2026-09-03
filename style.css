@@ -46,13 +46,13 @@ body {
 .background {
   position: absolute;
 
-  top: 0;
-  left: 0;
+  inset: 0;
 
   width: 100%;
   height: 100%;
 
   object-fit: cover;
+
   object-position: center center;
 
   display: block;
@@ -68,20 +68,24 @@ body {
 .hero {
   position: absolute;
 
-  z-index: 1;
+  z-index: 2;
 
-  /* Nhân vật nhỏ vừa phải */
-  width: 115px;
+  /* Kích thước nhân vật */
+  width: 110px;
 
   height: auto;
 
-  /* Chính giữa màn hình */
+  /* Chính giữa */
   left: 50%;
 
-  /* Hạ nhân vật xuống */
+  /* Vị trí nhân vật */
   top: 34%;
 
   transform: translateX(-50%);
+
+  /* Làm nhân vật nổi hơn */
+  filter:
+    drop-shadow(0 3px 3px rgba(0, 0, 0, 0.25));
 }
 
 
@@ -92,17 +96,18 @@ body {
 .farm-grid {
   position: absolute;
 
-  z-index: 2;
+  z-index: 3;
 
   /*
-    Chính giữa màn hình
+    Hơi lệch sang phải
+    để tránh bảng Nông Trại Xanh
   */
-  left: 50%;
+  left: 55%;
 
   /*
-    Bắt đầu khu đất
+    Đặt dưới nhân vật
   */
-  top: 60%;
+  top: 52%;
 
   transform: translateX(-50%);
 
@@ -114,16 +119,16 @@ body {
   grid-template-columns: repeat(5, 1fr);
 
   /*
-    Khoảng cách rất gọn
+    Khoảng cách nhỏ
   */
-  gap: 4px;
+  gap: 5px;
 
   /*
-    Khu đất nhỏ
+    Nhỏ gọn
   */
-  width: 65%;
+  width: 55%;
 
-  max-width: 300px;
+  max-width: 280px;
 }
 
 
@@ -132,21 +137,33 @@ body {
 ========================= */
 
 .plot {
+  position: relative;
+
   width: 100%;
 
-  /*
-    Ô vuông
-  */
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 1 / 0.82;
 
-  border: none;
+  border: 2px solid rgba(126, 78, 38, 0.95);
 
-  border-radius: 6px;
+  border-radius: 8px;
 
   /*
-    Màu tạm thời
+    Màu đất
   */
-  background: rgba(90, 55, 30, 0.75);
+  background:
+    linear-gradient(
+      145deg,
+      #a96b35,
+      #75431f
+    );
+
+  /*
+    Bóng nhẹ
+  */
+  box-shadow:
+    inset 0 2px 2px rgba(255,255,255,0.18),
+    inset 0 -3px 3px rgba(0,0,0,0.20),
+    0 2px 4px rgba(0,0,0,0.25);
 
   color: white;
 
@@ -156,10 +173,69 @@ body {
 
   cursor: pointer;
 
-  /*
-    Hiệu ứng bấm
-  */
-  transition: transform 0.15s ease;
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  transition:
+    transform 0.15s ease,
+    filter 0.15s ease;
+}
+
+
+/* =========================
+   CỎ NHỎ TRÊN MÉP ĐẤT
+========================= */
+
+.plot::before {
+  content: "";
+
+  position: absolute;
+
+  top: -3px;
+
+  left: 7px;
+  right: 7px;
+
+  height: 4px;
+
+  border-radius: 50%;
+
+  background: #69ad3c;
+}
+
+
+/* =========================
+   3 Ô ĐẦU - ĐÃ MỞ
+========================= */
+
+.plot.unlocked {
+  background:
+    linear-gradient(
+      145deg,
+      #b87538,
+      #814b25
+    );
+
+  border-color: #d39a54;
+}
+
+
+/* =========================
+   17 Ô KHÓA
+========================= */
+
+.plot.locked {
+  background:
+    linear-gradient(
+      145deg,
+      #6b4b35,
+      #453125
+    );
+
+  opacity: 0.72;
 }
 
 
@@ -173,9 +249,26 @@ body {
 
 
 /* =========================
-   Ô CHƯA MỞ
+   ĐIỆN THOẠI NHỎ
 ========================= */
 
-.plot.locked {
-  opacity: 0.55;
+@media (max-width: 380px) {
+
+  .hero {
+    width: 98px;
+  }
+
+  .farm-grid {
+    width: 58%;
+
+    gap: 4px;
+
+    left: 55%;
+
+    top: 52%;
+  }
+
+  .plot {
+    border-radius: 6px;
+  }
 }
