@@ -264,3 +264,221 @@ body {
 .plot:active {
   transform: scale(0.93);
 }
+/* =========================
+   BẢNG CHỌN HẠT GIỐNG
+========================= */
+
+.seed-panel {
+  position: fixed;
+
+  z-index: 20;
+
+  inset: 0;
+
+  display: none;
+
+  align-items: flex-end;
+
+  justify-content: center;
+
+  background: rgba(0, 0, 0, 0.45);
+}
+
+
+/* Khi mở */
+
+.seed-panel.show {
+  display: flex;
+}
+
+
+/* =========================
+   HỘP HẠT GIỐNG
+========================= */
+
+.seed-box {
+  position: relative;
+
+  width: 94%;
+
+  max-width: 420px;
+
+  margin-bottom: 12px;
+
+  padding: 18px;
+
+  border-radius: 20px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #fffdf4,
+      #eaf5df
+    );
+
+  box-shadow:
+    0 -5px 20px rgba(0,0,0,0.25);
+
+  animation: seedUp 0.2s ease;
+}
+
+
+/* =========================
+   HIỆU ỨNG MỞ
+========================= */
+
+@keyframes seedUp {
+
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+
+}
+
+
+/* =========================
+   TIÊU ĐỀ
+========================= */
+
+.seed-box h2 {
+
+  text-align: center;
+
+  margin-bottom: 14px;
+
+  font-size: 20px;
+
+  color: #39732c;
+}
+
+
+/* =========================
+   NÚT ĐÓNG
+========================= */
+
+.seed-close {
+
+  position: absolute;
+
+  top: 8px;
+  right: 10px;
+
+  width: 32px;
+  height: 32px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #e8e8e8;
+
+  font-size: 24px;
+
+  color: #555;
+
+  cursor: pointer;
+}
+
+
+/* =========================
+   DANH SÁCH HẠT
+========================= */
+
+.seed-list {
+
+  display: grid;
+
+  grid-template-columns: repeat(2, 1fr);
+
+  gap: 10px;
+}
+
+
+/* =========================
+   MỘT LOẠI HẠT
+========================= */
+
+.seed-item {
+
+  min-height: 70px;
+
+  border: 2px solid #d5e5c5;
+
+  border-radius: 14px;
+
+  background: white;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  padding: 8px;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.12s ease,
+    background 0.12s ease;
+}
+
+
+/* Hiệu ứng bấm */
+
+.seed-item:active {
+
+  transform: scale(0.95);
+
+  background: #f0f9e9;
+}
+
+
+/* =========================
+   ICON HẠT
+========================= */
+
+.seed-icon {
+
+  font-size: 28px;
+
+  width: 40px;
+
+  text-align: center;
+}
+
+
+/* =========================
+   THÔNG TIN HẠT
+========================= */
+
+.seed-info {
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-start;
+
+  gap: 3px;
+}
+
+
+.seed-info strong {
+
+  font-size: 14px;
+
+  color: #3d3d3d;
+}
+
+
+.seed-info small {
+
+  font-size: 12px;
+
+  color: #d18a20;
+}
