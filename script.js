@@ -1,115 +1,67 @@
 // =========================
-// DỮ LIỆU 10 LOẠI HẠT
-// =========================
-
-const seeds = [
-  {
-    id: "wheat",
-    name: "Lúa mì",
-    price: 10,
-    unlockLevel: 1,
-    growTime: 20
-  },
-
-  {
-    id: "corn",
-    name: "Ngô",
-    price: 20,
-    unlockLevel: 3,
-    growTime: 60
-  },
-
-  {
-    id: "radish",
-    name: "Củ cải",
-    price: 35,
-    unlockLevel: 7,
-    growTime: 90
-  },
-
-  {
-    id: "carrot",
-    name: "Cà rốt",
-    price: 50,
-    unlockLevel: 10,
-    growTime: 150
-  },
-
-  {
-    id: "beet",
-    name: "Củ dền",
-    price: 75,
-    unlockLevel: 13,
-    growTime: 280
-  },
-
-  {
-    id: "eggplant",
-    name: "Cà tím",
-    price: 100,
-    unlockLevel: 15,
-    growTime: 450
-  },
-
-  {
-    id: "chili",
-    name: "Ớt",
-    price: 180,
-    unlockLevel: 17,
-    growTime: 650
-  },
-
-  {
-    id: "green_onion",
-    name: "Hành lá",
-    price: 250,
-    unlockLevel: 20,
-    growTime: 870
-  },
-
-  {
-    id: "cabbage",
-    name: "Bắp cải",
-    price: 500,
-    unlockLevel: 23,
-    growTime: 950
-  },
-
-  {
-    id: "pumpkin",
-    name: "Bí đỏ",
-    price: 1000,
-    unlockLevel: 25,
-    growTime: 1200
-  }
-];
-
-
-// =========================
 // LẤY PHẦN TỬ
 // =========================
 
-const plots = document.querySelectorAll(".plot");
+const plots =
+  document.querySelectorAll(".plot");
 
-const seedPanel = document.getElementById("seedPanel");
+const seedPanel =
+  document.getElementById("seedPanel");
 
-const seedClose = document.getElementById("seedClose");
+const seedClose =
+  document.getElementById("seedClose");
+
+const selectedPlot =
+  document.getElementById("selectedPlot");
+
+const seedItems =
+  document.querySelectorAll(".seed-item");
 
 
 // =========================
-// BẤM Ô ĐẤT
+// Ô ĐẤT ĐANG CHỌN
+// =========================
+
+let currentPlot = null;
+
+
+// =========================
+// BẤM VÀO Ô ĐẤT
 // =========================
 
 plots.forEach((plot) => {
 
   plot.addEventListener("click", () => {
 
-    // Ô khóa không làm gì
-    if (plot.classList.contains("locked")) {
+    // Nếu ô bị khóa
+    if (
+      plot.classList.contains("locked")
+    ) {
+
       return;
     }
 
+
+    // Lưu ô đang chọn
+    currentPlot =
+      plot.dataset.plot;
+
+
+    // Hiển thị số ô
+    selectedPlot.textContent =
+      "Đang chọn ô đất số " +
+      currentPlot;
+
+
+    // Mở bảng hạt
     seedPanel.classList.add("show");
+
+
+    // Cập nhật trạng thái
+    seedPanel.setAttribute(
+      "aria-hidden",
+      "false"
+    );
 
   });
 
@@ -117,26 +69,80 @@ plots.forEach((plot) => {
 
 
 // =========================
-// ĐÓNG BẢNG HẠT
+// ĐÓNG BẢNG
 // =========================
 
-seedClose.addEventListener("click", () => {
+function closeSeedPanel() {
 
   seedPanel.classList.remove("show");
 
-});
+  seedPanel.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+  currentPlot = null;
+
+}
+
+
+// =========================
+// NÚT X
+// =========================
+
+seedClose.addEventListener(
+  "click",
+  closeSeedPanel
+);
 
 
 // =========================
 // BẤM RA NGOÀI
 // =========================
 
-seedPanel.addEventListener("click", (event) => {
+seedPanel.addEventListener(
+  "click",
+  (event) => {
 
-  if (event.target === seedPanel) {
+    if (
+      event.target === seedPanel
+    ) {
 
-    seedPanel.classList.remove("show");
+      closeSeedPanel();
+
+    }
 
   }
+);
+
+
+// =========================
+// CHỌN HẠT
+// =========================
+
+seedItems.forEach((item) => {
+
+  item.addEventListener(
+    "click",
+    () => {
+
+      const seed =
+        item.dataset.seed;
+
+
+      // Hiện thông báo tạm thời
+      alert(
+        "Bạn đã chọn hạt: " +
+        seed +
+        "\nÔ đất: " +
+        currentPlot
+      );
+
+
+      // Đóng bảng
+      closeSeedPanel();
+
+    }
+  );
 
 });
