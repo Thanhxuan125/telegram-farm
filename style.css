@@ -8,6 +8,11 @@
   box-sizing: border-box;
 }
 
+
+/* =========================
+   MÀN HÌNH
+========================= */
+
 html,
 body {
   width: 100%;
@@ -41,7 +46,8 @@ body {
 .background {
   position: absolute;
 
-  inset: 0;
+  top: 0;
+  left: 0;
 
   width: 100%;
   height: 100%;
@@ -64,24 +70,23 @@ body {
 
   z-index: 1;
 
-  width: 150px;
+  /* Nhân vật nhỏ vừa phải */
+  width: 115px;
+
   height: auto;
 
+  /* Chính giữa màn hình */
   left: 50%;
+
+  /* Hạ nhân vật xuống */
   top: 27%;
 
   transform: translateX(-50%);
-
-  pointer-events: none;
-
-  filter: drop-shadow(
-    0 5px 4px rgba(0, 0, 0, 0.25)
-  );
 }
 
 
 /* =========================
-   KHU VỰC 20 Ô ĐẤT
+   KHU 20 Ô ĐẤT
 ========================= */
 
 .farm-grid {
@@ -89,20 +94,35 @@ body {
 
   z-index: 2;
 
+  /*
+    Chính giữa màn hình
+  */
   left: 50%;
+
+  /*
+    Bắt đầu khu đất
+  */
   top: 43%;
 
   transform: translateX(-50%);
 
-  /* 5 cột */
+  /*
+    5 cột
+  */
   display: grid;
+
   grid-template-columns: repeat(5, 1fr);
 
-  /* Khoảng cách nhỏ */
+  /*
+    Khoảng cách rất gọn
+  */
   gap: 4px;
 
-  /* Nhỏ và gọn */
+  /*
+    Khu đất nhỏ
+  */
   width: 65%;
+
   max-width: 300px;
 }
 
@@ -113,31 +133,49 @@ body {
 
 .plot {
   width: 100%;
+
+  /*
+    Ô vuông
+  */
   aspect-ratio: 1 / 1;
 
   border: none;
+
   border-radius: 6px;
 
+  /*
+    Màu tạm thời
+  */
   background: rgba(90, 55, 30, 0.75);
 
   color: white;
 
   font-size: 9px;
+
   font-weight: bold;
 
   cursor: pointer;
 
+  /*
+    Hiệu ứng bấm
+  */
   transition: transform 0.15s ease;
 }
 
 
-/* Hiệu ứng khi bấm */
+/* =========================
+   HIỆU ỨNG BẤM
+========================= */
+
 .plot:active {
   transform: scale(0.92);
 }
 
 
-/* Ô đang khóa */
+/* =========================
+   Ô CHƯA MỞ
+========================= */
+
 .plot.locked {
-  opacity: 0.65;
+  opacity: 0.55;
 }
