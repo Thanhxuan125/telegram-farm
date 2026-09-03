@@ -130,12 +130,61 @@ seedItems.forEach((item) => {
         item.dataset.seed;
 
 
-      // Hiện thông báo tạm thời
-      alert(
-        "Bạn đã chọn hạt: " +
-        seed +
-        "\nÔ đất: " +
-        currentPlot
+      // Không có ô đất thì dừng
+      if (!currentPlot) {
+        return;
+      }
+
+
+      // Tìm đúng ô đất
+      const plot =
+        document.querySelector(
+          `.plot[data-plot="${currentPlot}"]`
+        );
+
+
+      // Không tìm thấy ô đất thì dừng
+      if (!plot) {
+        return;
+      }
+
+
+      // Xóa nội dung cũ
+      plot.innerHTML = "";
+
+
+      // Tạo hình hạt
+      const seedElement =
+        document.createElement("span");
+
+      seedElement.className =
+        "planted-seed";
+
+
+      // Chọn hình theo loại hạt
+      const seedIcons = {
+
+        wheat: "🌾",
+        corn: "🌽",
+        radish: "🌱",
+        carrot: "🥕",
+        beet: "🫜",
+        eggplant: "🍆",
+        chili: "🌶️",
+        green_onion: "🌿",
+        cabbage: "🥬",
+        pumpkin: "🎃"
+
+      };
+
+
+      seedElement.textContent =
+        seedIcons[seed] || "🌱";
+
+
+      // Đưa hạt vào ô đất
+      plot.appendChild(
+        seedElement
       );
 
 
