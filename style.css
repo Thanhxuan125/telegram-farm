@@ -482,3 +482,47 @@ body {
 
   color: #d18a20;
 }
+/* =========================
+   DANH SÁCH 10 HẠT
+========================= */
+
+.seed-list {
+  max-height: 55vh;
+
+  overflow-y: auto;
+
+  padding-right: 3px;
+
+  display: grid;
+
+  grid-template-columns: repeat(2, 1fr);
+
+  gap: 10px;
+}
+
+
+/* Thanh cuộn gọn */
+
+.seed-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.seed-list::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: rgba(70, 120, 50, 0.45);
+}
+
+
+/* =========================
+   TRÊN ĐIỆN THOẠI NHỎ
+========================= */
+
+@media (max-width: 380px) {
+
+  .seed-list {
+    grid-template-columns: 1fr;
+
+    max-height: 52vh;
+  }
+
+}
