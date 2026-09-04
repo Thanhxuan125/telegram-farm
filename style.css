@@ -1663,3 +1663,736 @@ body {
   }
 
 }
+/* =========================================================
+   NÔNG TRẠI XANH
+   MOBILE 720x~1440
+   BẢN CĂN CHỈNH LAYOUT
+========================================================= */
+
+
+/* =========================================================
+   1. KHUNG THÔNG TIN PHÍA TRÊN
+   Nhỏ lại để không che logo
+========================================================= */
+
+.top-hud {
+    width: 84%;
+    max-width: 620px;
+
+    height: 92px;
+    min-height: 92px;
+
+    margin: 12px auto 0;
+
+    padding: 6px 8px;
+
+    border-radius: 22px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #24b8ee 0%,
+            #128ddd 48%,
+            #0870c9 100%
+        );
+
+    border: 3px solid #d8f7ff;
+
+    box-shadow:
+        0 5px 0 #0759a8,
+        0 8px 15px rgba(0,0,0,.25),
+        inset 0 2px 0 rgba(255,255,255,.45);
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0,1fr)
+        72px
+        72px;
+
+    gap: 5px;
+
+    z-index: 30;
+}
+
+
+/* =========================================================
+   2. LEVEL
+========================================================= */
+
+.level-area {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    min-width: 0;
+}
+
+
+.level-circle {
+    width: 48px;
+    height: 48px;
+
+    flex: 0 0 48px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background:
+        linear-gradient(
+            180deg,
+            #69db61,
+            #27a93f
+        );
+
+    border: 3px solid #eaffee;
+
+    box-shadow:
+        0 3px 0 #147b31,
+        0 3px 7px rgba(0,0,0,.3);
+}
+
+
+.level-circle span {
+    font-size: 20px;
+
+    font-weight: 900;
+
+    color: white;
+
+    text-shadow:
+        0 2px 2px rgba(0,0,0,.35);
+}
+
+
+.level-title {
+    font-size: 16px;
+
+    font-weight: 900;
+
+    color: white;
+
+    margin-bottom: 3px;
+
+    text-shadow:
+        0 2px 2px rgba(0,0,0,.35);
+}
+
+
+.exp-bar {
+    width: 100%;
+    max-width: 105px;
+
+    height: 8px;
+
+    overflow: hidden;
+
+    border-radius: 10px;
+
+    background: #d8e4df;
+
+    border: 1px solid #0867ad;
+}
+
+
+.exp-fill,
+#expFill {
+    height: 100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            #65e66b,
+            #a9f56d
+        );
+
+    border-radius: 10px;
+}
+
+
+.exp-text {
+    font-size: 8px;
+
+    color: white;
+
+    margin-top: 2px;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   3. COIN + PHÂN
+========================================================= */
+
+.resource-box {
+    width: 72px;
+    min-width: 72px;
+
+    height: 48px;
+
+    padding: 3px;
+
+    border-radius: 14px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 3px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #168fe0,
+            #0870c8
+        );
+
+    border: 1px solid #aeeaff;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.35),
+        0 2px 4px rgba(0,0,0,.2);
+
+    color: white;
+}
+
+
+.resource-icon {
+    font-size: 17px;
+}
+
+
+.resource-number {
+    font-size: 13px;
+
+    font-weight: 900;
+
+    color: white;
+}
+
+
+/* =========================================================
+   4. KHU NHÂN VẬT
+   Giữ logo rõ + nhân vật thấp hơn một chút
+========================================================= */
+
+.hero-area {
+    height: 270px;
+
+    margin-top: 2px;
+
+    position: relative;
+
+    z-index: 5;
+
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: center;
+}
+
+
+.hero {
+    width: 118px;
+
+    max-width: 28vw;
+
+    height: auto;
+
+    position: relative;
+
+    bottom: 2px;
+
+    z-index: 8;
+}
+
+
+/* =========================================================
+   5. 20 Ô ĐẤT
+   NHỎ HƠN + ĐẨY XUỐNG DƯỚI HÀNG RÀO
+========================================================= */
+
+.farm-area {
+    width: 68%;
+
+    max-width: 430px;
+
+    margin-left: auto;
+    margin-right: auto;
+
+    /*
+       Đẩy toàn bộ 20 ô xuống.
+       Hàng rào + căn nhà sẽ nằm phía trên.
+    */
+    margin-top: 52px;
+
+    position: relative;
+
+    z-index: 10;
+}
+
+
+.farm-grid {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(5, 1fr);
+
+    gap: 5px;
+}
+
+
+/* =========================================================
+   6. Ô ĐẤT MÀU NÂU ĐẬM
+========================================================= */
+
+.plot {
+    position: relative;
+
+    aspect-ratio: 1 / .88;
+
+    min-width: 0;
+
+    border-radius: 11px;
+
+    border: 3px solid #0798e8;
+
+    background:
+        linear-gradient(
+            145deg,
+            #633a1d 0%,
+            #482714 55%,
+            #321b10 100%
+        );
+
+    box-shadow:
+        0 3px 0 #064d91,
+        0 5px 7px rgba(0,0,0,.28),
+        inset 0 2px 0 rgba(255,255,255,.10),
+        inset 0 -3px 0 rgba(0,0,0,.25);
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+}
+
+
+/* Viền bên trong ô */
+
+.plot::after {
+    content: "";
+
+    position: absolute;
+
+    inset: 6px;
+
+    border-radius: 7px;
+
+    border: 1px solid rgba(222,164,91,.45);
+
+    pointer-events: none;
+
+    z-index: 1;
+}
+
+
+/* Số ô */
+
+.plot-number {
+    position: relative;
+
+    z-index: 5;
+
+    font-size: 17px;
+
+    font-weight: 900;
+
+    color: #fff4df;
+
+    text-shadow:
+        0 2px 2px #281308,
+        0 0 3px rgba(0,0,0,.4);
+}
+
+
+/* Khóa */
+
+.lock {
+    position: absolute;
+
+    top: 3px;
+    right: 4px;
+
+    z-index: 10;
+
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   7. MENU DƯỚI 20 Ô
+========================================================= */
+
+.bottom-menu {
+    width: 68%;
+
+    max-width: 430px;
+
+    height: 64px;
+
+    margin:
+        11px auto 25px;
+
+    padding: 3px;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #20b4ed 0%,
+            #0d91dc 48%,
+            #0875cf 100%
+        );
+
+    border: 3px solid #b9efff;
+
+    box-shadow:
+        0 4px 0 #075aa5,
+        0 7px 12px rgba(0,0,0,.28),
+        inset 0 2px 0 rgba(255,255,255,.3);
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(5,1fr);
+
+    overflow: hidden;
+
+    position: relative;
+
+    z-index: 25;
+}
+
+
+/* =========================================================
+   8. TỪNG NÚT MENU
+========================================================= */
+
+.menu-item {
+    min-width: 0;
+
+    min-height: 56px;
+
+    padding:
+        2px 1px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 0;
+
+    color: white;
+
+    font-size: 7px;
+
+    font-weight: 900;
+
+    text-align: center;
+
+    text-shadow:
+        0 1px 2px rgba(0,0,0,.45);
+
+    border-right:
+        1px solid rgba(255,255,255,.18);
+}
+
+
+.menu-item:last-child {
+    border-right: none;
+}
+
+
+.menu-icon {
+    font-size: 21px;
+
+    line-height: 23px;
+}
+
+
+/* =========================================================
+   9. CÂY TRỒNG TRÊN Ô ĐẤT
+========================================================= */
+
+.plant {
+    position: relative;
+
+    z-index: 6;
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 1px;
+}
+
+
+.plant-icon {
+    font-size: 19px;
+
+    line-height: 1;
+
+    filter:
+        drop-shadow(
+            0 2px 2px
+            rgba(0,0,0,.4)
+        );
+}
+
+
+.plant-name {
+    max-width: 95%;
+
+    color: white;
+
+    font-size: 5px;
+
+    font-weight: 900;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    text-shadow:
+        0 1px 2px rgba(0,0,0,.8);
+}
+
+
+.plant-timer {
+    padding: 1px 3px;
+
+    border-radius: 5px;
+
+    background:
+        rgba(0,0,0,.62);
+
+    color: white;
+
+    font-size: 5px;
+
+    font-weight: 900;
+}
+
+
+.plant-progress {
+    width: 72%;
+
+    height: 2px;
+
+    overflow: hidden;
+
+    border-radius: 5px;
+
+    background:
+        rgba(0,0,0,.45);
+}
+
+
+.plant-progress-fill {
+    height: 100%;
+
+    width: 0%;
+
+    border-radius: 5px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #57cf5b,
+            #b4ef68
+        );
+}
+
+
+/* =========================================================
+   10. NÚT PHÂN BÓN
+========================================================= */
+
+.fertilizer-button {
+    position: absolute;
+
+    z-index: 20;
+
+    left: 50%;
+
+    bottom: 3px;
+
+    transform:
+        translateX(-50%);
+
+    width: 84%;
+
+    min-height: 14px;
+
+    padding: 1px 2px;
+
+    border: 1px solid white;
+
+    border-radius: 5px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #65db69,
+            #28963a
+        );
+
+    color: white;
+
+    font-size: 5px;
+
+    font-weight: 900;
+}
+
+
+/* =========================================================
+   11. Ô ĐÃ CHÍN
+========================================================= */
+
+.plot.ready {
+    animation:
+        readyPulse 1.2s infinite;
+}
+
+
+@keyframes readyPulse {
+
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.025);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+
+}
+
+
+/* =========================================================
+   12. ĐIỆN THOẠI NHỎ
+========================================================= */
+
+@media (max-width: 380px) {
+
+    .top-hud {
+        width: 88%;
+
+        height: 88px;
+
+        min-height: 88px;
+
+        grid-template-columns:
+            minmax(0,1fr)
+            68px
+            68px;
+    }
+
+
+    .resource-box {
+        width: 68px;
+
+        min-width: 68px;
+
+        height: 44px;
+    }
+
+
+    .level-circle {
+        width: 44px;
+        height: 44px;
+
+        flex-basis: 44px;
+    }
+
+
+    .hero-area {
+        height: 255px;
+    }
+
+
+    .farm-area {
+        width: 72%;
+
+        margin-top: 48px;
+    }
+
+
+    .bottom-menu {
+        width: 72%;
+
+        height: 61px;
+    }
+
+
+    .menu-item {
+        min-height: 53px;
+
+        font-size: 6px;
+    }
+
+
+    .menu-icon {
+        font-size: 19px;
+    }
+
+}
+
+
+/* =========================================================
+   13. ĐIỆN THOẠI 720PX
+========================================================= */
+
+@media (min-width: 600px) {
+
+    .farm-area {
+        width: 68%;
+    }
+
+    .bottom-menu {
+        width: 68%;
+    }
+
+}
