@@ -1679,8 +1679,8 @@ body {
     width: 94%;
     max-width: none;
 
-    height: 64px;
-    min-height: 64px;
+    height: 58px;
+    min-height: 58px;
 
     margin: 10px auto 0;
 
@@ -2049,11 +2049,11 @@ body {
 ========================================================= */
 
 .bottom-menu {
-    width: 68%;
+    width: 94%;
 
     max-width: 430px;
 
-    height: 64px;
+    height: 60px;
 
     margin:
         11px auto 25px;
