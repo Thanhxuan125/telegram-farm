@@ -2,44 +2,56 @@
 <html lang="vi">
 
 <head>
+
   <meta charset="UTF-8">
 
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    content="
+      width=device-width,
+      initial-scale=1.0,
+      maximum-scale=1.0,
+      user-scalable=no
+    "
   >
 
   <title>Nông Trại Xanh</title>
 
-  <link rel="stylesheet" href="style.css">
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
 </head>
+
 
 <body>
 
-  <!-- =========================
-       GAME
-  ========================== -->
-
   <main class="game">
 
+
     <!-- =========================
-         KHUNG THÔNG TIN TRÊN
+         HUD TRÊN
     ========================== -->
 
     <section class="top-hud">
 
+
       <!-- LEVEL -->
 
-      <div class="level-box">
+      <div class="level-area">
 
         <div class="level-circle">
-          <span id="levelValue">1</span>
+          <span id="levelNumber">1</span>
         </div>
 
         <div class="level-info">
 
-          <div class="level-title">
-            Lv.<span id="levelNumber">1</span>
+          <div
+            id="levelValue"
+            class="level-title"
+          >
+            Lv.1
           </div>
 
           <div class="exp-bar">
@@ -67,16 +79,13 @@
 
       <div class="resource-box">
 
-        <div class="resource-icon coin-icon">
+        <span class="resource-icon">
           🪙
-        </div>
+        </span>
 
-        <div
-          id="coinValue"
-          class="resource-number"
-        >
+        <span id="coinValue">
           1000
-        </div>
+        </span>
 
       </div>
 
@@ -85,230 +94,245 @@
 
       <div class="resource-box">
 
-        <div class="resource-icon">
+        <span class="resource-icon">
           🧪
-        </div>
+        </span>
 
-        <div
-          id="fertilizerValue"
-          class="resource-number"
-        >
+        <span id="fertilizerValue">
           3
-        </div>
+        </span>
 
       </div>
 
     </section>
 
 
-    <!-- =========================
-         TIÊU ĐỀ
-    ========================== -->
-
-    <div class="game-title">
-
-      <div class="title-leaf left">
-        🌿
-      </div>
-
-      <div class="title-text">
-        <div>Nông Trại</div>
-        <strong>Xanh</strong>
-      </div>
-
-      <div class="title-leaf right">
-        🌿
-      </div>
-
-    </div>
-
 
     <!-- =========================
-         NHÂN VẬT
+         KHU NHÂN VẬT
     ========================== -->
 
-    <div class="hero-area">
+    <section class="hero-area">
 
       <img
-        src="/assets/hero.png"
+        src="assets/hero.png"
         class="hero"
         alt="Nhân vật"
       >
 
-    </div>
+    </section>
+
 
 
     <!-- =========================
-         KHU ĐẤT
+         20 Ô ĐẤT
     ========================== -->
 
     <section class="farm-area">
 
       <div class="farm-grid">
 
+
         <button
-          class="plot"
+          class="plot unlocked"
           data-plot="1"
+          type="button"
         >
           <span class="plot-number">1</span>
         </button>
 
+
         <button
-          class="plot"
+          class="plot unlocked"
           data-plot="2"
+          type="button"
         >
           <span class="plot-number">2</span>
         </button>
 
+
         <button
-          class="plot"
+          class="plot unlocked"
           data-plot="3"
+          type="button"
         >
           <span class="plot-number">3</span>
         </button>
 
+
         <button
           class="plot locked"
           data-plot="4"
+          type="button"
         >
-          <span class="lock">🔒</span>
           <span class="plot-number">4</span>
+          <span class="lock">🔒</span>
         </button>
+
 
         <button
           class="plot locked"
           data-plot="5"
+          type="button"
         >
-          <span class="lock">🔒</span>
           <span class="plot-number">5</span>
+          <span class="lock">🔒</span>
         </button>
 
 
         <button
           class="plot locked"
           data-plot="6"
+          type="button"
         >
-          <span class="lock">🔒</span>
           <span class="plot-number">6</span>
+          <span class="lock">🔒</span>
         </button>
+
 
         <button
           class="plot locked"
           data-plot="7"
+          type="button"
         >
-          <span class="lock">🔒</span>
           <span class="plot-number">7</span>
+          <span class="lock">🔒</span>
         </button>
+
 
         <button
           class="plot locked"
           data-plot="8"
+          type="button"
         >
-          <span class="lock">🔒</span>
           <span class="plot-number">8</span>
+          <span class="lock">🔒</span>
         </button>
+
 
         <button
           class="plot locked"
           data-plot="9"
+          type="button"
         >
-          <span class="lock">🔒</span>
           <span class="plot-number">9</span>
+          <span class="lock">🔒</span>
         </button>
+
 
         <button
           class="plot locked"
           data-plot="10"
+          type="button"
         >
-          <span class="lock">🔒</span>
           <span class="plot-number">10</span>
+          <span class="lock">🔒</span>
         </button>
 
 
         <button
           class="plot locked"
           data-plot="11"
+          type="button"
         >
-          <span class="lock">🔒</span>
           <span class="plot-number">11</span>
+          <span class="lock">🔒</span>
         </button>
+
 
         <button
           class="plot locked"
           data-plot="12"
+          type="button"
         >
-          <span class="lock">🔒</span>
           <span class="plot-number">12</span>
+          <span class="lock">🔒</span>
         </button>
+
 
         <button
           class="plot locked"
           data-plot="13"
+          type="button"
         >
-          <span class="lock">🔒</span>
           <span class="plot-number">13</span>
+          <span class="lock">🔒</span>
         </button>
+
 
         <button
           class="plot locked"
           data-plot="14"
+          type="button"
         >
-          <span class="lock">🔒</span>
           <span class="plot-number">14</span>
+          <span class="lock">🔒</span>
         </button>
+
 
         <button
           class="plot locked"
           data-plot="15"
+          type="button"
         >
-          <span class="lock">🔒</span>
           <span class="plot-number">15</span>
+          <span class="lock">🔒</span>
         </button>
 
 
         <button
           class="plot locked"
           data-plot="16"
+          type="button"
         >
-          <span class="lock">🔒</span>
           <span class="plot-number">16</span>
+          <span class="lock">🔒</span>
         </button>
+
 
         <button
           class="plot locked"
           data-plot="17"
+          type="button"
         >
-          <span class="lock">🔒</span>
           <span class="plot-number">17</span>
+          <span class="lock">🔒</span>
         </button>
+
 
         <button
           class="plot locked"
           data-plot="18"
+          type="button"
         >
-          <span class="lock">🔒</span>
           <span class="plot-number">18</span>
+          <span class="lock">🔒</span>
         </button>
+
 
         <button
           class="plot locked"
           data-plot="19"
+          type="button"
         >
-          <span class="lock">🔒</span>
           <span class="plot-number">19</span>
+          <span class="lock">🔒</span>
         </button>
+
 
         <button
           class="plot locked"
           data-plot="20"
+          type="button"
         >
-          <span class="lock">🔒</span>
           <span class="plot-number">20</span>
+          <span class="lock">🔒</span>
         </button>
 
       </div>
 
     </section>
+
 
 
     <!-- =========================
@@ -317,7 +341,11 @@
 
     <nav class="bottom-menu">
 
-      <button class="menu-item">
+
+      <button
+        class="menu-item"
+        type="button"
+      >
 
         <span class="menu-icon">
           👥
@@ -332,7 +360,8 @@
 
       <button
         class="menu-item"
-        id="seedMenuButton"
+        id="seedMenu"
+        type="button"
       >
 
         <span class="menu-icon">
@@ -346,7 +375,10 @@
       </button>
 
 
-      <button class="menu-item">
+      <button
+        class="menu-item"
+        type="button"
+      >
 
         <span class="menu-icon">
           🏪
@@ -359,7 +391,10 @@
       </button>
 
 
-      <button class="menu-item">
+      <button
+        class="menu-item"
+        type="button"
+      >
 
         <span class="menu-icon">
           🎯
@@ -372,7 +407,10 @@
       </button>
 
 
-      <button class="menu-item">
+      <button
+        class="menu-item"
+        type="button"
+      >
 
         <span class="menu-icon">
           👛
@@ -384,153 +422,160 @@
 
       </button>
 
+
     </nav>
 
-  </main>
 
 
-  <!-- =========================
-       BẢNG CHỌN HẠT
-  ========================== -->
+    <!-- =========================
+         BẢNG CHỌN HẠT
+    ========================== -->
 
-  <div
-    id="seedPanel"
-    class="seed-panel"
-    aria-hidden="true"
-  >
+    <div
+      id="seedPanel"
+      class="seed-panel"
+      aria-hidden="true"
+    >
 
-    <div class="seed-window">
-
-      <div class="seed-header">
-
-        <div>
-          🌱 Chọn hạt giống
-        </div>
+      <div class="seed-box">
 
         <button
           id="seedClose"
           class="seed-close"
+          type="button"
         >
-          ×
+          ✕
         </button>
 
-      </div>
+        <h2>
+          🌱 Chọn hạt giống
+        </h2>
+
+        <p id="selectedPlot">
+          Đang chọn ô đất
+        </p>
+
+        <div class="seed-list">
 
 
-      <div
-        id="selectedPlot"
-        class="selected-plot"
-      >
-        Đang chọn ô đất
-      </div>
+          <button
+            class="seed-item"
+            data-seed="wheat"
+            type="button"
+          >
+            🌾
+            <b>Lúa mì</b>
+            <small>10 🪙 · Lv.1</small>
+          </button>
 
 
-      <div class="seed-list">
-
-        <button
-          class="seed-item"
-          data-seed="wheat"
-        >
-          🌾
-          <span>Lúa mì</span>
-          <small>10 🪙 · Lv.1</small>
-        </button>
-
-
-        <button
-          class="seed-item"
-          data-seed="corn"
-        >
-          🌽
-          <span>Ngô</span>
-          <small>20 🪙 · Lv.3</small>
-        </button>
+          <button
+            class="seed-item"
+            data-seed="corn"
+            type="button"
+          >
+            🌽
+            <b>Ngô</b>
+            <small>20 🪙 · Lv.3</small>
+          </button>
 
 
-        <button
-          class="seed-item"
-          data-seed="radish"
-        >
-          🌱
-          <span>Củ cải</span>
-          <small>35 🪙 · Lv.7</small>
-        </button>
+          <button
+            class="seed-item"
+            data-seed="radish"
+            type="button"
+          >
+            🌱
+            <b>Củ cải</b>
+            <small>35 🪙 · Lv.7</small>
+          </button>
 
 
-        <button
-          class="seed-item"
-          data-seed="carrot"
-        >
-          🥕
-          <span>Cà rốt</span>
-          <small>50 🪙 · Lv.10</small>
-        </button>
+          <button
+            class="seed-item"
+            data-seed="carrot"
+            type="button"
+          >
+            🥕
+            <b>Cà rốt</b>
+            <small>50 🪙 · Lv.10</small>
+          </button>
 
 
-        <button
-          class="seed-item"
-          data-seed="beet"
-        >
-          🫜
-          <span>Củ dền</span>
-          <small>75 🪙 · Lv.13</small>
-        </button>
+          <button
+            class="seed-item"
+            data-seed="beet"
+            type="button"
+          >
+            🫜
+            <b>Củ dền</b>
+            <small>75 🪙 · Lv.13</small>
+          </button>
 
 
-        <button
-          class="seed-item"
-          data-seed="eggplant"
-        >
-          🍆
-          <span>Cà tím</span>
-          <small>100 🪙 · Lv.15</small>
-        </button>
+          <button
+            class="seed-item"
+            data-seed="eggplant"
+            type="button"
+          >
+            🍆
+            <b>Cà tím</b>
+            <small>100 🪙 · Lv.15</small>
+          </button>
 
 
-        <button
-          class="seed-item"
-          data-seed="chili"
-        >
-          🌶️
-          <span>Ớt</span>
-          <small>180 🪙 · Lv.17</small>
-        </button>
+          <button
+            class="seed-item"
+            data-seed="chili"
+            type="button"
+          >
+            🌶️
+            <b>Ớt</b>
+            <small>180 🪙 · Lv.17</small>
+          </button>
 
 
-        <button
-          class="seed-item"
-          data-seed="green_onion"
-        >
-          🌿
-          <span>Hành lá</span>
-          <small>250 🪙 · Lv.20</small>
-        </button>
+          <button
+            class="seed-item"
+            data-seed="green_onion"
+            type="button"
+          >
+            🌿
+            <b>Hành lá</b>
+            <small>250 🪙 · Lv.20</small>
+          </button>
 
 
-        <button
-          class="seed-item"
-          data-seed="cabbage"
-        >
-          🥬
-          <span>Bắp cải</span>
-          <small>500 🪙 · Lv.23</small>
-        </button>
+          <button
+            class="seed-item"
+            data-seed="cabbage"
+            type="button"
+          >
+            🥬
+            <b>Bắp cải</b>
+            <small>500 🪙 · Lv.23</small>
+          </button>
 
 
-        <button
-          class="seed-item"
-          data-seed="pumpkin"
-        >
-          🎃
-          <span>Bí đỏ</span>
-          <small>1000 🪙 · Lv.25</small>
-        </button>
+          <button
+            class="seed-item"
+            data-seed="pumpkin"
+            type="button"
+          >
+            🎃
+            <b>Bí đỏ</b>
+            <small>1000 🪙 · Lv.25</small>
+          </button>
+
+
+        </div>
 
       </div>
 
     </div>
 
-  </div>
+
+  </main>
 
 
   <script src="script.js"></script>
