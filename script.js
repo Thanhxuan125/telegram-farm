@@ -325,7 +325,9 @@ function plantSeed(
 
   plot.dataset.growTime =
     seed.growTime;
-
+  
+plot.dataset.fertilizerUsed =
+  "false";
 
   // Xóa nội dung cũ
   plot.innerHTML = "";
@@ -552,7 +554,177 @@ function updatePlant(plot) {
   );
 
 }
+// =========================
+// HIỆN NÚT PHÂN BÓN
+// =========================
 
+function showFertilizerButton(plot) {
+
+  // Nếu đã có nút thì không tạo thêm
+  if (
+    plot.querySelector(".fertilizer-button")
+  ) {
+
+    return;
+
+  }
+
+
+  // Nếu đã dùng phân bón
+  if (
+    plot.dataset.fertilizerUsed === "true"
+  ) {
+
+    alert(
+      "Vụ này đã sử dụng phân bón rồi."
+    );
+
+    return;
+
+  }
+
+
+  // Không có phân bón
+  if (
+    player.fertilizer <= 0
+  ) {
+
+    alert(
+      "Bạn không có phân bón."
+    );
+
+    return;
+
+  }
+
+
+  // Tạo nút
+  const button =
+    document.createElement("button");
+
+
+  button.className =
+    "fertilizer-button";
+
+
+  button.type =
+    "button";
+
+
+  button.textContent =
+    "🧪 -30 phút";
+
+
+  // Không để click lan xuống ô đất
+  button.addEventListener(
+    "click",
+    (event) => {
+
+      event.stopPropagation();
+
+      useFertilizer(plot);
+
+    }
+  );
+
+
+  plot.appendChild(button);
+
+}
+
+
+// =========================
+// DÙNG PHÂN BÓN
+// =========================
+
+function useFertilizer(plot) {
+
+  // Không có cây
+  if (
+    !plot.dataset.seed
+  ) {
+
+    return;
+
+  }
+
+
+  // Đã dùng rồi
+  if (
+    plot.dataset.fertilizerUsed === "true"
+  ) {
+
+    alert(
+      "Vụ này đã sử dụng phân bón rồi."
+    );
+
+    return;
+
+  }
+
+
+  // Không có phân
+  if (
+    player.fertilizer <= 0
+  ) {
+
+    alert(
+      "Bạn không có phân bón."
+    );
+
+    return;
+
+  }
+
+
+  // Thời điểm trồng
+  const plantedAt =
+    Number(
+      plot.dataset.plantedAt
+    );
+
+
+  // Giảm 30 phút
+  const thirtyMinutes =
+    30 * 60 * 1000;
+
+
+  // Đẩy thời gian trồng lùi 30 phút
+  plot.dataset.plantedAt =
+    plantedAt - thirtyMinutes;
+
+
+  // Đánh dấu đã dùng
+  plot.dataset.fertilizerUsed =
+    "true";
+
+
+  // Trừ 1 phân bón
+  player.fertilizer -= 1;
+
+
+  // Cập nhật HUD
+  updateHUD();
+
+
+  // Xóa nút
+  const button =
+    plot.querySelector(
+      ".fertilizer-button"
+    );
+
+
+  if (button) {
+
+    button.remove();
+
+  }
+
+
+  // Cập nhật cây ngay
+  updatePlant(plot);
+
+}
 
 // =========================
 // THU HOẠCH
@@ -650,7 +822,8 @@ function harvestPlot(plot) {
 
   delete plot.dataset.growTime;
 
-
+delete plot.dataset.fertilizerUsed;
+  
   plot.classList.remove(
     "ready"
   );
