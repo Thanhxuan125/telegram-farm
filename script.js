@@ -9,7 +9,7 @@ const seeds = {
     price: 10,
     level: 1,
     icon: "🌾",
-    growTime: 20
+    growTime: 0,1
   },
 
   corn: {
