@@ -213,16 +213,32 @@ plots.forEach((plot) => {
       }
 
 
-      // Nếu đang có cây
+      // Nếu ô đang có cây
       if (
         plot.dataset.seed
       ) {
+
+        // Nếu cây đã trưởng thành
+        if (
+          plot.classList.contains("ready")
+        ) {
+
+          harvestPlot(plot);
+
+          return;
+
+        }
+
+
+        // Nếu cây đang lớn
+        showFertilizerButton(plot);
 
         return;
 
       }
 
 
+      // Ô đất trống
       openSeedPanel(
         plot.dataset.plot
       );
