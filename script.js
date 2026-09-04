@@ -9,7 +9,7 @@ const seeds = {
     price: 10,
     level: 1,
     icon: "🌾",
-    growTime: 60
+    growTime: 20
   },
 
   corn: {
@@ -99,7 +99,7 @@ let player = {
 
   coins: 1000,
 
-  fertilizer: 3
+  fertilizer: 0
 
 };
 
