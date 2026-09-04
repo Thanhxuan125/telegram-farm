@@ -1,5 +1,5 @@
 // =========================
-// DỮ LIỆU 10 LOẠI CÂY
+// DỮ LIỆU 10 LOẠI HẠT
 // =========================
 
 const seeds = {
@@ -9,7 +9,11 @@ const seeds = {
     price: 10,
     level: 1,
     icon: "🌾",
-    growTime: 20
+    growTime: 20,
+
+    // Phân bón giảm 5-8 phút
+    fertilizerMin: 5,
+    fertilizerMax: 8
   },
 
   corn: {
@@ -17,7 +21,11 @@ const seeds = {
     price: 20,
     level: 3,
     icon: "🌽",
-    growTime: 60
+    growTime: 60,
+
+    // 6-10 phút
+    fertilizerMin: 6,
+    fertilizerMax: 10
   },
 
   radish: {
@@ -25,7 +33,11 @@ const seeds = {
     price: 35,
     level: 7,
     icon: "🌱",
-    growTime: 90
+    growTime: 90,
+
+    // 8-13 phút
+    fertilizerMin: 8,
+    fertilizerMax: 13
   },
 
   carrot: {
@@ -33,7 +45,11 @@ const seeds = {
     price: 50,
     level: 10,
     icon: "🥕",
-    growTime: 150
+    growTime: 150,
+
+    // 10-16 phút
+    fertilizerMin: 10,
+    fertilizerMax: 16
   },
 
   beet: {
@@ -41,7 +57,11 @@ const seeds = {
     price: 75,
     level: 13,
     icon: "🫜",
-    growTime: 280
+    growTime: 280,
+
+    // 12-19 phút
+    fertilizerMin: 12,
+    fertilizerMax: 19
   },
 
   eggplant: {
@@ -49,7 +69,11 @@ const seeds = {
     price: 100,
     level: 15,
     icon: "🍆",
-    growTime: 450
+    growTime: 450,
+
+    // 14-22 phút
+    fertilizerMin: 14,
+    fertilizerMax: 22
   },
 
   chili: {
@@ -57,7 +81,11 @@ const seeds = {
     price: 180,
     level: 17,
     icon: "🌶️",
-    growTime: 650
+    growTime: 650,
+
+    // 16-25 phút
+    fertilizerMin: 16,
+    fertilizerMax: 25
   },
 
   green_onion: {
@@ -65,7 +93,11 @@ const seeds = {
     price: 250,
     level: 20,
     icon: "🌿",
-    growTime: 870
+    growTime: 870,
+
+    // 18-27 phút
+    fertilizerMin: 18,
+    fertilizerMax: 27
   },
 
   cabbage: {
@@ -73,7 +105,11 @@ const seeds = {
     price: 500,
     level: 23,
     icon: "🥬",
-    growTime: 950
+    growTime: 950,
+
+    // 20-29 phút
+    fertilizerMin: 20,
+    fertilizerMax: 29
   },
 
   pumpkin: {
@@ -81,7 +117,11 @@ const seeds = {
     price: 1000,
     level: 25,
     icon: "🎃",
-    growTime: 1200
+    growTime: 1200,
+
+    // 22-30 phút
+    fertilizerMin: 22,
+    fertilizerMax: 30
   }
 
 };
@@ -99,7 +139,9 @@ let player = {
 
   coins: 1000,
 
-  fertilizer: 0
+  // Để 3 để TEST
+  // Khi test xong đổi lại 0
+  fertilizer: 3
 
 };
 
@@ -135,6 +177,9 @@ const expFill =
 const expText =
   document.getElementById("expText");
 
+const levelValue =
+  document.getElementById("levelValue");
+
 
 // =========================
 // Ô ĐẤT ĐANG CHỌN
@@ -149,21 +194,48 @@ let currentPlot = null;
 
 function updateHUD() {
 
-  coinValue.textContent =
-    player.coins;
+  if (coinValue) {
 
-  fertilizerValue.textContent =
-    player.fertilizer;
+    coinValue.textContent =
+      player.coins;
 
-  expText.textContent =
-    player.exp +
-    " / 7000 EXP";
+  }
 
-  const percent =
-    (player.exp / 7000) * 100;
 
-  expFill.style.width =
-    Math.min(percent, 100) + "%";
+  if (fertilizerValue) {
+
+    fertilizerValue.textContent =
+      player.fertilizer;
+
+  }
+
+
+  if (expText) {
+
+    expText.textContent =
+      player.exp +
+      " / 7000 EXP";
+
+  }
+
+
+  if (expFill) {
+
+    const percent =
+      (player.exp / 7000) * 100;
+
+    expFill.style.width =
+      Math.min(percent, 100) + "%";
+
+  }
+
+
+  if (levelValue) {
+
+    levelValue.textContent =
+      "Lv." + player.level;
+
+  }
 
 }
 
@@ -177,9 +249,14 @@ function openSeedPanel(plotNumber) {
   currentPlot =
     plotNumber;
 
-  selectedPlot.textContent =
-    "Đang chọn ô đất số " +
-    plotNumber;
+  if (selectedPlot) {
+
+    selectedPlot.textContent =
+      "Đang chọn ô đất số " +
+      plotNumber;
+
+  }
+
 
   seedPanel.classList.add(
     "show"
@@ -194,63 +271,7 @@ function openSeedPanel(plotNumber) {
 
 
 // =========================
-// BẤM Ô ĐẤT
-// =========================
-
-plots.forEach((plot) => {
-
-  plot.addEventListener(
-    "click",
-    () => {
-
-      // Ô bị khóa
-      if (
-        plot.classList.contains("locked")
-      ) {
-
-        return;
-
-      }
-
-
-      // Nếu ô đang có cây
-      if (
-        plot.dataset.seed
-      ) {
-
-        // Nếu cây đã trưởng thành
-        if (
-          plot.classList.contains("ready")
-        ) {
-
-          harvestPlot(plot);
-
-          return;
-
-        }
-
-
-        // Nếu cây đang lớn
-        showFertilizerButton(plot);
-
-        return;
-
-      }
-
-
-      // Ô đất trống
-      openSeedPanel(
-        plot.dataset.plot
-      );
-
-    }
-  );
-
-});
-
-
-// =========================
-// ĐÓNG BẢNG
+// ĐÓNG BẢNG HẠT
 // =========================
 
 function closeSeedPanel() {
@@ -270,37 +291,404 @@ function closeSeedPanel() {
 
 
 // =========================
+// BẤM Ô ĐẤT
+// =========================
+
+plots.forEach((plot) => {
+
+  plot.addEventListener(
+    "click",
+    () => {
+
+      // ---------------------
+      // Ô bị khóa
+      // ---------------------
+
+      if (
+        plot.classList.contains(
+          "locked"
+        )
+      ) {
+
+        return;
+
+      }
+
+
+      // ---------------------
+      // Đang có cây
+      // ---------------------
+
+      if (
+        plot.dataset.seed
+      ) {
+
+        // Cây trưởng thành
+        if (
+          plot.classList.contains(
+            "ready"
+          )
+        ) {
+
+          harvestPlot(plot);
+
+          return;
+
+        }
+
+
+        // Cây đang lớn
+        showFertilizerButton(
+          plot
+        );
+
+        return;
+
+      }
+
+
+      // ---------------------
+      // Ô đất trống
+      // ---------------------
+
+      openSeedPanel(
+        plot.dataset.plot
+      );
+
+    }
+  );
+
+});
+
+
+// =========================
 // NÚT X
 // =========================
 
-seedClose.addEventListener(
-  "click",
-  closeSeedPanel
-);
+if (seedClose) {
+
+  seedClose.addEventListener(
+    "click",
+    closeSeedPanel
+  );
+
+}
 
 
 // =========================
-// BẤM RA NGOÀI
+// BẤM RA NGOÀI BẢNG
 // =========================
 
-seedPanel.addEventListener(
-  "click",
-  (event) => {
+if (seedPanel) {
 
-    if (
-      event.target === seedPanel
-    ) {
+  seedPanel.addEventListener(
+    "click",
+    (event) => {
 
-      closeSeedPanel();
+      if (
+        event.target === seedPanel
+      ) {
+
+        closeSeedPanel();
+
+      }
 
     }
+  );
 
-  }
-);
+}
 
 
 // =========================
-// TẠO CÂY TRÊN Ô ĐẤT
+// RANDOM SỐ PHÚT
+// =========================
+
+function randomMinutes(
+  min,
+  max
+) {
+
+  return Math.floor(
+    Math.random() *
+    (max - min + 1)
+  ) + min;
+
+}
+
+
+// =========================
+// HIỆN NÚT PHÂN BÓN
+// =========================
+
+function showFertilizerButton(
+  plot
+) {
+
+  // Nếu đã có nút
+  if (
+    plot.querySelector(
+      ".fertilizer-button"
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  // Đã dùng phân bón
+  if (
+    plot.dataset.fertilizerUsed ===
+    "true"
+  ) {
+
+    alert(
+      "Vụ này đã dùng phân bón rồi."
+    );
+
+    return;
+
+  }
+
+
+  // Không còn phân
+  if (
+    player.fertilizer <= 0
+  ) {
+
+    alert(
+      "Bạn không có phân bón."
+    );
+
+    return;
+
+  }
+
+
+  // Lấy hạt
+  const seedId =
+    plot.dataset.seed;
+
+  const seed =
+    seeds[seedId];
+
+
+  if (!seed) {
+
+    return;
+
+  }
+
+
+  // ---------------------
+  // Tạo nút
+  // ---------------------
+
+  const button =
+    document.createElement(
+      "button"
+    );
+
+
+  button.className =
+    "fertilizer-button";
+
+
+  button.type =
+    "button";
+
+
+  button.textContent =
+    "🧪 Dùng phân";
+
+
+  // Không cho click lan
+  button.addEventListener(
+    "click",
+    (event) => {
+
+      event.stopPropagation();
+
+      useFertilizer(plot);
+
+    }
+  );
+
+
+  plot.appendChild(
+    button
+  );
+
+}
+
+
+// =========================
+// DÙNG PHÂN BÓN
+// =========================
+
+function useFertilizer(
+  plot
+) {
+
+  // Không có cây
+  if (
+    !plot.dataset.seed
+  ) {
+
+    return;
+
+  }
+
+
+  // Đã dùng rồi
+  if (
+    plot.dataset.fertilizerUsed ===
+    "true"
+  ) {
+
+    alert(
+      "Vụ này đã dùng phân bón rồi."
+    );
+
+    return;
+
+  }
+
+
+  // Hết phân
+  if (
+    player.fertilizer <= 0
+  ) {
+
+    alert(
+      "Bạn không có phân bón."
+    );
+
+    return;
+
+  }
+
+
+  const seedId =
+    plot.dataset.seed;
+
+  const seed =
+    seeds[seedId];
+
+
+  if (!seed) {
+
+    return;
+
+  }
+
+
+  // ---------------------
+  // RANDOM PHÚT GIẢM
+  // ---------------------
+
+  const reducedMinutes =
+    randomMinutes(
+      seed.fertilizerMin,
+      seed.fertilizerMax
+    );
+
+
+  // ---------------------
+  // Đổi sang mili-giây
+  // ---------------------
+
+  const reduceMs =
+    reducedMinutes *
+    60 *
+    1000;
+
+
+  // ---------------------
+  // Lấy thời gian trồng
+  // ---------------------
+
+  const plantedAt =
+    Number(
+      plot.dataset.plantedAt
+    );
+
+
+  // ---------------------
+  // Đẩy thời gian trồng
+  // về quá khứ
+  // ---------------------
+
+  plot.dataset.plantedAt =
+    plantedAt - reduceMs;
+
+
+  // ---------------------
+  // Đánh dấu đã dùng
+  // ---------------------
+
+  plot.dataset.fertilizerUsed =
+    "true";
+
+
+  // ---------------------
+  // Trừ 1 phân
+  // ---------------------
+
+  player.fertilizer -= 1;
+
+
+  // ---------------------
+  // Xóa nút
+  // ---------------------
+
+  const button =
+    plot.querySelector(
+      ".fertilizer-button"
+    );
+
+
+  if (button) {
+
+    button.remove();
+
+  }
+
+
+  // ---------------------
+  // HUD
+  // ---------------------
+
+  updateHUD();
+
+
+  // ---------------------
+  // Cập nhật cây
+  // ---------------------
+
+  updatePlant(
+    plot
+  );
+
+
+  // ---------------------
+  // Thông báo
+  // ---------------------
+
+  alert(
+    "🧪 Đã bón phân!\n\n" +
+    seed.name +
+    "\n" +
+    "Giảm ngẫu nhiên: " +
+    reducedMinutes +
+    " phút"
+  );
+
+}
+
+
+// =========================
+// TRỒNG CÂY
 // =========================
 
 function plantSeed(
@@ -311,29 +699,46 @@ function plantSeed(
   const seed =
     seeds[seedId];
 
+
   if (!seed) {
+
     return;
+
   }
 
 
-  // Lưu thông tin test
+  // ---------------------
+  // Lưu dữ liệu
+  // ---------------------
+
   plot.dataset.seed =
     seedId;
+
 
   plot.dataset.plantedAt =
     Date.now();
 
+
   plot.dataset.growTime =
     seed.growTime;
-  
-plot.dataset.fertilizerUsed =
-  "false";
 
+
+  plot.dataset.fertilizerUsed =
+    "false";
+
+
+  // ---------------------
   // Xóa nội dung cũ
-  plot.innerHTML = "";
+  // ---------------------
+
+  plot.innerHTML =
+    "";
 
 
-  // Tạo vùng cây
+  // ---------------------
+  // Tạo cây
+  // ---------------------
+
   const plant =
     document.createElement(
       "div"
@@ -343,7 +748,10 @@ plot.dataset.fertilizerUsed =
     "plant";
 
 
-  // Cây non
+  // ---------------------
+  // Icon
+  // ---------------------
+
   const icon =
     document.createElement(
       "div"
@@ -356,7 +764,10 @@ plot.dataset.fertilizerUsed =
     "🌱";
 
 
-  // Tên cây
+  // ---------------------
+  // Tên
+  // ---------------------
+
   const name =
     document.createElement(
       "div"
@@ -369,7 +780,10 @@ plot.dataset.fertilizerUsed =
     seed.name;
 
 
-  // Thời gian
+  // ---------------------
+  // Timer
+  // ---------------------
+
   const timer =
     document.createElement(
       "div"
@@ -379,7 +793,10 @@ plot.dataset.fertilizerUsed =
     "plant-timer";
 
 
-  // Thanh phát triển
+  // ---------------------
+  // Thanh tiến độ
+  // ---------------------
+
   const progress =
     document.createElement(
       "div"
@@ -403,13 +820,25 @@ plot.dataset.fertilizerUsed =
   );
 
 
-  plant.appendChild(icon);
+  // ---------------------
+  // Ghép cây
+  // ---------------------
 
-  plant.appendChild(name);
+  plant.appendChild(
+    icon
+  );
 
-  plant.appendChild(timer);
+  plant.appendChild(
+    name
+  );
 
-  plant.appendChild(progress);
+  plant.appendChild(
+    timer
+  );
+
+  plant.appendChild(
+    progress
+  );
 
 
   plot.appendChild(
@@ -417,7 +846,10 @@ plot.dataset.fertilizerUsed =
   );
 
 
-  // Bắt đầu cập nhật
+  // ---------------------
+  // Bắt đầu timer
+  // ---------------------
+
   updatePlant(
     plot
   );
@@ -429,21 +861,29 @@ plot.dataset.fertilizerUsed =
 // CẬP NHẬT CÂY
 // =========================
 
-function updatePlant(plot) {
+function updatePlant(
+  plot
+) {
 
   const seedId =
     plot.dataset.seed;
 
+
   if (!seedId) {
+
     return;
+
   }
 
 
   const seed =
     seeds[seedId];
 
+
   if (!seed) {
+
     return;
+
   }
 
 
@@ -459,12 +899,9 @@ function updatePlant(plot) {
     1000;
 
 
-  const now =
-    Date.now();
-
-
   const elapsed =
-    now - plantedAt;
+    Date.now() -
+    plantedAt;
 
 
   const percent =
@@ -478,13 +915,15 @@ function updatePlant(plot) {
   const remaining =
     Math.max(
       0,
-      growTimeMs - elapsed
+      growTimeMs -
+      elapsed
     );
 
 
   const minutes =
     Math.floor(
-      remaining / 60000
+      remaining /
+      60000
     );
 
 
@@ -507,30 +946,60 @@ function updatePlant(plot) {
     );
 
 
-  if (!timer || !progressFill) {
+  const icon =
+    plot.querySelector(
+      ".plant-icon"
+    );
+
+
+  if (
+    !timer ||
+    !progressFill
+  ) {
+
     return;
+
   }
 
 
-  // Cây đã trưởng thành
-  if (percent >= 1) {
+  // ---------------------
+  // ĐÃ TRƯỞNG THÀNH
+  // ---------------------
+
+  if (
+    percent >= 1
+  ) {
 
     timer.textContent =
-      "🌾 Thu hoạch!";
+      "🌾 Thu hoạch";
+
 
     progressFill.style.width =
       "100%";
+
 
     plot.classList.add(
       "ready"
     );
 
+
+    if (icon) {
+
+      icon.textContent =
+        seed.icon;
+
+    }
+
+
     return;
 
   }
 
 
-  // Đang lớn
+  // ---------------------
+  // ĐANG LỚN
+  // ---------------------
+
   timer.textContent =
     minutes +
     ":" +
@@ -543,200 +1012,40 @@ function updatePlant(plot) {
     "%";
 
 
-  // Tiếp tục cập nhật
+  // ---------------------
+  // Tiếp tục timer
+  // ---------------------
+
   setTimeout(
     () => {
 
-      updatePlant(plot);
+      updatePlant(
+        plot
+      );
 
     },
     1000
   );
 
 }
-// =========================
-// HIỆN NÚT PHÂN BÓN
-// =========================
 
-function showFertilizerButton(plot) {
-
-  // Nếu đã có nút thì không tạo thêm
-  if (
-    plot.querySelector(".fertilizer-button")
-  ) {
-
-    return;
-
-  }
-
-
-  // Nếu đã dùng phân bón
-  if (
-    plot.dataset.fertilizerUsed === "true"
-  ) {
-
-    alert(
-      "Vụ này đã sử dụng phân bón rồi."
-    );
-
-    return;
-
-  }
-
-
-  // Không có phân bón
-  if (
-    player.fertilizer <= 0
-  ) {
-
-    alert(
-      "Bạn không có phân bón."
-    );
-
-    return;
-
-  }
-
-
-  // Tạo nút
-  const button =
-    document.createElement("button");
-
-
-  button.className =
-    "fertilizer-button";
-
-
-  button.type =
-    "button";
-
-
-  button.textContent =
-    "🧪 -30 phút";
-
-
-  // Không để click lan xuống ô đất
-  button.addEventListener(
-    "click",
-    (event) => {
-
-      event.stopPropagation();
-
-      useFertilizer(plot);
-
-    }
-  );
-
-
-  plot.appendChild(button);
-
-}
-
-
-// =========================
-// DÙNG PHÂN BÓN
-// =========================
-
-function useFertilizer(plot) {
-
-  // Không có cây
-  if (
-    !plot.dataset.seed
-  ) {
-
-    return;
-
-  }
-
-
-  // Đã dùng rồi
-  if (
-    plot.dataset.fertilizerUsed === "true"
-  ) {
-
-    alert(
-      "Vụ này đã sử dụng phân bón rồi."
-    );
-
-    return;
-
-  }
-
-
-  // Không có phân
-  if (
-    player.fertilizer <= 0
-  ) {
-
-    alert(
-      "Bạn không có phân bón."
-    );
-
-    return;
-
-  }
-
-
-  // Thời điểm trồng
-  const plantedAt =
-    Number(
-      plot.dataset.plantedAt
-    );
-
-
-  // Giảm 30 phút
-  const thirtyMinutes =
-    30 * 60 * 1000;
-
-
-  // Đẩy thời gian trồng lùi 30 phút
-  plot.dataset.plantedAt =
-    plantedAt - thirtyMinutes;
-
-
-  // Đánh dấu đã dùng
-  plot.dataset.fertilizerUsed =
-    "true";
-
-
-  // Trừ 1 phân bón
-  player.fertilizer -= 1;
-
-
-  // Cập nhật HUD
-  updateHUD();
-
-
-  // Xóa nút
-  const button =
-    plot.querySelector(
-      ".fertilizer-button"
-    );
-
-
-  if (button) {
-
-    button.remove();
-
-  }
-
-
-  // Cập nhật cây ngay
-  updatePlant(plot);
-
-}
 
 // =========================
 // THU HOẠCH
 // =========================
 
-function harvestPlot(plot) {
+function harvestPlot(
+  plot
+) {
 
   const seedId =
     plot.dataset.seed;
 
+
   if (!seedId) {
+
     return;
+
   }
 
 
@@ -744,7 +1053,14 @@ function harvestPlot(plot) {
     seeds[seedId];
 
 
-  // Chỉ thu hoạch khi đã lớn
+  if (!seed) {
+
+    return;
+
+  }
+
+
+  // Chưa chín
   if (
     !plot.classList.contains(
       "ready"
@@ -756,65 +1072,79 @@ function harvestPlot(plot) {
   }
 
 
-  // ===================
-  // EXP TEST
-  // ===================
+  // ---------------------
+  // RANDOM EXP
+  // 10-300
+  // ---------------------
 
   const gainedExp =
-    Math.floor(
-      Math.random() *
-      291
-    ) + 10;
+    randomMinutes(
+      10,
+      300
+    );
 
 
   player.exp +=
     gainedExp;
 
 
-  // ===================
-  // COIN TEST
-  // ===================
+  // ---------------------
+  // GIÁ BÁN
+  // ---------------------
 
   const sellPrices = {
 
     wheat: 12,
+
     corn: 25,
+
     radish: 40,
+
     carrot: 75,
+
     beet: 88,
+
     eggplant: 125,
+
     chili: 210,
+
     green_onion: 350,
+
     cabbage: 750,
+
     pumpkin: 1250
 
   };
 
 
-  player.coins +=
+  const earnedCoins =
     sellPrices[seedId];
 
 
-  // ===================
+  player.coins +=
+    earnedCoins;
+
+
+  // ---------------------
   // THÔNG BÁO
-  // ===================
+  // ---------------------
 
   alert(
-    "Thu hoạch " +
+    "🌾 Thu hoạch thành công!\n\n" +
     seed.name +
-    " thành công!\n\n" +
+    "\n\n" +
     "+ " +
     gainedExp +
     " EXP\n" +
     "+ " +
-    sellPrices[seedId] +
+    earnedCoins +
     " coin"
   );
 
 
-  // ===================
-  // RESET Ô ĐẤT
-  // ===================
+  // ---------------------
+  // XÓA DỮ LIỆU CÂY
+  // ---------------------
 
   delete plot.dataset.seed;
 
@@ -822,18 +1152,27 @@ function harvestPlot(plot) {
 
   delete plot.dataset.growTime;
 
-delete plot.dataset.fertilizerUsed;
-  
+  delete plot.dataset.fertilizerUsed;
+
+
   plot.classList.remove(
     "ready"
   );
 
+
+  // ---------------------
+  // Trả ô đất về ban đầu
+  // ---------------------
 
   plot.innerHTML =
     `<span class="plot-number">
       ${plot.dataset.plot}
     </span>`;
 
+
+  // ---------------------
+  // HUD
+  // ---------------------
 
   updateHUD();
 
@@ -844,125 +1183,127 @@ delete plot.dataset.fertilizerUsed;
 // CHỌN HẠT
 // =========================
 
-seedItems.forEach((item) => {
+seedItems.forEach(
+  (item) => {
 
-  item.addEventListener(
-    "click",
-    () => {
+    item.addEventListener(
+      "click",
+      () => {
 
-      if (!currentPlot) {
-        return;
-      }
+        if (!currentPlot) {
 
+          return;
 
-      const seedId =
-        item.dataset.seed;
-
-
-      const seed =
-        seeds[seedId];
+        }
 
 
-      if (!seed) {
-        return;
-      }
+        const seedId =
+          item.dataset.seed;
 
 
-      // Kiểm tra level
-      if (
-        player.level <
-        seed.level
-      ) {
+        const seed =
+          seeds[seedId];
 
-        alert(
-          "Cần Lv." +
-          seed.level +
-          " để trồng " +
-          seed.name
+
+        if (!seed) {
+
+          return;
+
+        }
+
+
+        // ---------------------
+        // Kiểm tra level
+        // ---------------------
+
+        if (
+          player.level <
+          seed.level
+        ) {
+
+          alert(
+            "🔒 Cần Lv." +
+            seed.level +
+            " để trồng " +
+            seed.name
+          );
+
+          return;
+
+        }
+
+
+        // ---------------------
+        // Kiểm tra coin
+        // ---------------------
+
+        if (
+          player.coins <
+          seed.price
+        ) {
+
+          alert(
+            "🪙 Không đủ coin!"
+          );
+
+          return;
+
+        }
+
+
+        // ---------------------
+        // Lấy ô
+        // ---------------------
+
+        const plot =
+          document.querySelector(
+            `.plot[data-plot="${currentPlot}"]`
+          );
+
+
+        if (!plot) {
+
+          return;
+
+        }
+
+
+        // ---------------------
+        // Trừ tiền
+        // ---------------------
+
+        player.coins -=
+          seed.price;
+
+
+        // ---------------------
+        // Trồng
+        // ---------------------
+
+        plantSeed(
+          plot,
+          seedId
         );
 
-        return;
+
+        // ---------------------
+        // HUD
+        // ---------------------
+
+        updateHUD();
+
+
+        // ---------------------
+        // Đóng bảng
+        // ---------------------
+
+        closeSeedPanel();
 
       }
+    );
 
-
-      // Kiểm tra coin
-      if (
-        player.coins <
-        seed.price
-      ) {
-
-        alert(
-          "Không đủ coin!"
-        );
-
-        return;
-
-      }
-
-
-      const plot =
-        document.querySelector(
-          `.plot[data-plot="${currentPlot}"]`
-        );
-
-
-      if (!plot) {
-        return;
-      }
-
-
-      // Trừ coin TEST
-      player.coins -=
-        seed.price;
-
-
-      // Trồng cây
-      plantSeed(
-        plot,
-        seedId
-      );
-
-
-      // Cập nhật HUD
-      updateHUD();
-
-
-      // Đóng bảng
-      closeSeedPanel();
-
-    }
-  );
-
-});
-
-
-// =========================
-// BẤM CÂY ĐỂ THU HOẠCH
-// =========================
-
-plots.forEach((plot) => {
-
-  plot.addEventListener(
-    "click",
-    () => {
-
-      if (
-        plot.classList.contains(
-          "ready"
-        )
-      ) {
-
-        harvestPlot(
-          plot
-        );
-
-      }
-
-    }
-  );
-
-});
+  }
+);
 
 
 // =========================
