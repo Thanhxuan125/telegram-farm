@@ -969,6 +969,7 @@ function useFertilizer(
   updatePlant(
     plot
   );
+  saveGame();
 
 
   // ---------------------
@@ -1475,7 +1476,7 @@ function harvestPlot(
   // ---------------------
 
   updateHUD();
-
+saveGame();
 }
 
 
@@ -1610,4 +1611,8 @@ seedItems.forEach(
 // KHỞI ĐỘNG
 // =========================
 
+// Tải dữ liệu đã lưu
+loadGame();
+
+// Cập nhật HUD
 updateHUD();
