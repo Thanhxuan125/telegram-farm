@@ -1265,3 +1265,401 @@ body {
   }
 
 }
+/* ==================================================
+   FIX LAYOUT MOBILE - 20 Ô NHỎ + HUD NHỎ
+================================================== */
+
+
+/* =========================
+   KHUNG TRÊN NHỎ LẠI
+========================= */
+
+.top-hud {
+
+  width: 84%;
+
+  height: 82px;
+
+  min-height: 82px;
+
+  padding: 6px;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    72px
+    72px;
+
+  gap: 5px;
+
+  border-radius: 20px;
+
+}
+
+
+/* =========================
+   LEVEL NHỎ
+========================= */
+
+.level-area {
+
+  gap: 5px;
+
+}
+
+
+.level-circle {
+
+  flex-basis: 42px;
+
+  width: 42px;
+
+  height: 42px;
+
+  border-width: 2px;
+
+}
+
+
+.level-circle span {
+
+  font-size: 19px;
+
+}
+
+
+.level-title {
+
+  font-size: 14px;
+
+  margin-bottom: 2px;
+
+}
+
+
+.exp-bar {
+
+  max-width: 105px;
+
+  height: 7px;
+
+}
+
+
+.exp-text {
+
+  font-size: 8px;
+
+  margin-top: 2px;
+
+}
+
+
+/* =========================
+   COIN + PHÂN NHỎ
+========================= */
+
+.resource-box {
+
+  width: 72px;
+
+  height: 42px;
+
+  min-width: 72px;
+
+  padding: 2px 4px;
+
+  border-radius: 12px;
+
+  gap: 3px;
+
+}
+
+
+.resource-icon {
+
+  font-size: 16px;
+
+}
+
+
+.resource-number {
+
+  font-size: 12px;
+
+}
+
+
+/* ==================================================
+   KHU NHÂN VẬT
+================================================== */
+
+.hero-area {
+
+  height: 235px;
+
+  margin-top: 5px;
+
+}
+
+
+.hero {
+
+  width: 115px;
+
+  max-width: 27vw;
+
+  max-height: 225px;
+
+}
+
+
+/* ==================================================
+   20 Ô ĐẤT NHỎ HƠN
+================================================== */
+
+.farm-area {
+
+  width: 76%;
+
+  max-width: 430px;
+
+  margin:
+    0 auto;
+
+}
+
+
+.farm-grid {
+
+  width: 100%;
+
+  grid-template-columns:
+    repeat(5, 1fr);
+
+  gap: 5px;
+
+}
+
+
+/* =========================
+   Ô ĐẤT
+========================= */
+
+.plot {
+
+  aspect-ratio: 1.12 / 1;
+
+  border-width: 2px;
+
+  border-radius: 10px;
+
+  box-shadow:
+
+    0 3px 0 #064f9d,
+
+    0 4px 6px
+      rgba(
+        0,
+        0,
+        0,
+        .28
+      ),
+
+    inset 0 2px 0
+      rgba(
+        255,
+        255,
+        255,
+        .10
+      );
+
+}
+
+
+.plot-number {
+
+  font-size: 16px;
+
+}
+
+
+.lock {
+
+  top: 3px;
+
+  right: 4px;
+
+  font-size: 8px;
+
+}
+
+
+/* ==================================================
+   MENU NHỎ VÀ NẰM DƯỚI 20 Ô
+================================================== */
+
+.bottom-menu {
+
+  width: 76%;
+
+  max-width: 430px;
+
+  height: 67px;
+
+  margin:
+    10px auto 0;
+
+  padding: 3px;
+
+  border-radius: 18px;
+
+}
+
+
+/* =========================
+   NÚT MENU
+========================= */
+
+.menu-item {
+
+  min-height: 58px;
+
+  padding:
+    2px 1px;
+
+  gap: 1px;
+
+  font-size: 7px;
+
+}
+
+
+.menu-icon {
+
+  font-size: 21px;
+
+}
+
+
+/* ==================================================
+   CÂY TRÊN Ô
+================================================== */
+
+.plant-icon {
+
+  font-size: 20px;
+
+}
+
+
+.plant-name {
+
+  font-size: 5px;
+
+}
+
+
+.plant-timer {
+
+  font-size: 5px;
+
+  padding:
+    1px 3px;
+
+}
+
+
+.plant-progress {
+
+  height: 2px;
+
+  width: 70%;
+
+}
+
+
+/* ==================================================
+   NÚT PHÂN BÓN
+================================================== */
+
+.fertilizer-button {
+
+  width: 86%;
+
+  min-height: 14px;
+
+  font-size: 5px;
+
+  bottom: 2px;
+
+}
+
+
+/* ==================================================
+   ĐIỆN THOẠI 720PX
+================================================== */
+
+@media (min-width: 500px) and (max-width: 800px) {
+
+  .top-hud {
+
+    width: 82%;
+
+    height: 80px;
+
+    grid-template-columns:
+      minmax(0, 1fr)
+      70px
+      70px;
+
+  }
+
+
+  .resource-box {
+
+    width: 70px;
+
+    min-width: 70px;
+
+    height: 40px;
+
+  }
+
+
+  .hero-area {
+
+    height: 225px;
+
+  }
+
+
+  .hero {
+
+    width: 115px;
+
+  }
+
+
+  .farm-area {
+
+    width: 74%;
+
+  }
+
+
+  .farm-grid {
+
+    gap: 5px;
+
+  }
+
+
+  .bottom-menu {
+
+    width: 74%;
+
+    height: 65px;
+
+  }
+
+}
