@@ -126,10 +126,313 @@ const seeds = {
 
 };
 
+// =========================
+// LƯU GAME
+// =========================
+
+function saveGame() {
+
+  const gameData = {
+
+    player: player,
+
+    plots: Array.from(plots).map(
+      (plot) => {
+
+        return {
+
+          number:
+            plot.dataset.plot,
+
+          seed:
+            plot.dataset.seed || null,
+
+          plantedAt:
+            plot.dataset.plantedAt || null,
+
+          growTime:
+            plot.dataset.growTime || null,
+
+          fertilizerUsed:
+            plot.dataset.fertilizerUsed ===
+            "true"
+
+        };
+
+      }
+    )
+
+  };
+
+
+  localStorage.setItem(
+    SAVE_KEY,
+    JSON.stringify(gameData)
+  );
+
+}
+
 
 // =========================
-// NGƯỜI CHƠI TEST
+// TẢI GAME
 // =========================
+
+function loadGame() {
+
+  const saved =
+    localStorage.getItem(
+      SAVE_KEY
+    );
+
+
+  // Chưa có dữ liệu
+  if (!saved) {
+
+    return;
+
+  }
+
+
+  try {
+
+    const gameData =
+      JSON.parse(saved);
+
+
+    // ---------------------
+    // Tải người chơi
+    // ---------------------
+
+    if (
+      gameData.player
+    ) {
+
+      player = {
+
+        ...player,
+
+        ...gameData.player
+
+      };
+
+    }
+
+
+    // ---------------------
+    // Tải các ô đất
+    // ---------------------
+
+    if (
+      Array.isArray(
+        gameData.plots
+      )
+    ) {
+
+      gameData.plots.forEach(
+        (savedPlot) => {
+
+          const plot =
+            document.querySelector(
+              `.plot[data-plot="${savedPlot.number}"]`
+            );
+
+
+          if (
+            !plot ||
+            !savedPlot.seed
+          ) {
+
+            return;
+
+          }
+
+
+          plot.dataset.seed =
+            savedPlot.seed;
+
+
+          plot.dataset.plantedAt =
+            savedPlot.plantedAt;
+
+
+          plot.dataset.growTime =
+            savedPlot.growTime;
+
+
+          plot.dataset.fertilizerUsed =
+            savedPlot.fertilizerUsed
+              ? "true"
+              : "false";
+
+
+          restorePlant(
+            plot
+          );
+
+        }
+      );
+
+    }
+
+
+  } catch (error) {
+
+    console.error(
+      "Không thể tải dữ liệu game:",
+      error
+    );
+
+  }
+
+}
+
+
+// =========================
+// KHÔI PHỤC CÂY
+// =========================
+
+function restorePlant(
+  plot
+) {
+
+  const seedId =
+    plot.dataset.seed;
+
+
+  const seed =
+    seeds[seedId];
+
+
+  if (!seed) {
+
+    return;
+
+  }
+
+
+  // Xóa nội dung cũ
+  plot.innerHTML =
+    "";
+
+
+  // Tạo cây
+  const plant =
+    document.createElement(
+      "div"
+    );
+
+  plant.className =
+    "plant";
+
+
+  // ---------------------
+  // ICON
+  // ---------------------
+
+  const icon =
+    document.createElement(
+      "div"
+    );
+
+  icon.className =
+    "plant-icon";
+
+
+  // ---------------------
+  // TÊN
+  // ---------------------
+
+  const name =
+    document.createElement(
+      "div"
+    );
+
+  name.className =
+    "plant-name";
+
+  name.textContent =
+    seed.name;
+
+
+  // ---------------------
+  // TIMER
+  // ---------------------
+
+  const timer =
+    document.createElement(
+      "div"
+    );
+
+  timer.className =
+    "plant-timer";
+
+
+  // ---------------------
+  // THANH TIẾN ĐỘ
+  // ---------------------
+
+  const progress =
+    document.createElement(
+      "div"
+    );
+
+  progress.className =
+    "plant-progress";
+
+
+  const progressFill =
+    document.createElement(
+      "div"
+    );
+
+  progressFill.className =
+    "plant-progress-fill";
+
+
+  progress.appendChild(
+    progressFill
+  );
+
+
+  // ---------------------
+  // GHÉP
+  // ---------------------
+
+  plant.appendChild(
+    icon
+  );
+
+  plant.appendChild(
+    name
+  );
+
+  plant.appendChild(
+    timer
+  );
+
+  plant.appendChild(
+    progress
+  );
+
+
+  plot.appendChild(
+    plant
+  );
+
+
+  // Cập nhật trạng thái
+  updatePlant(
+    plot
+  );
+saveGame();
+}
+// =========================
+// DỮ LIỆU NGƯỜI CHƠI
+// =========================
+
+const SAVE_KEY =
+  "telegram_farm_save_v1";
+
 
 let player = {
 
@@ -139,12 +442,9 @@ let player = {
 
   coins: 500,
 
-  // Để 3 để TEST
-  // Khi test xong đổi lại 0
-  fertilizer: 0
+  fertilizer: 3
 
 };
-
 
 // =========================
 // LẤY PHẦN TỬ
