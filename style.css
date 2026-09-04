@@ -1274,3 +1274,288 @@ body {
   }
 
 }
+/* =========================
+   NÚT PHÂN BÓN
+========================= */
+
+.fertilizer-button {
+
+  position: absolute;
+
+  z-index: 20;
+
+  left: 50%;
+
+  bottom: 3px;
+
+  transform: translateX(-50%);
+
+  width: 88%;
+
+  min-height: 17px;
+
+  padding: 2px 3px;
+
+  border: 1px solid rgba(255,255,255,0.9);
+
+  border-radius: 6px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #72dc68 0%,
+      #3cae42 100%
+    );
+
+  color: white;
+
+  font-size: 7px;
+
+  font-weight: bold;
+
+  line-height: 11px;
+
+  text-align: center;
+
+  text-shadow:
+    0 1px 2px
+    rgba(0,0,0,0.4);
+
+  box-shadow:
+    0 2px 4px
+    rgba(0,0,0,0.35);
+
+  cursor: pointer;
+
+  -webkit-tap-highlight-color:
+    transparent;
+
+}
+
+
+/* =========================
+   BẤM NÚT
+========================= */
+
+.fertilizer-button:active {
+
+  transform:
+    translateX(-50%)
+    scale(0.92);
+
+}
+
+
+/* =========================
+   CÂY ĐANG TRƯỞNG THÀNH
+========================= */
+
+.plot.ready {
+
+  animation:
+    readyPulse 1.2s infinite;
+
+}
+
+
+.plot.ready .plant-icon {
+
+  transform:
+    scale(1.08);
+
+}
+
+
+@keyframes readyPulse {
+
+  0% {
+
+    transform:
+      scale(1);
+
+  }
+
+  50% {
+
+    transform:
+      scale(1.035);
+
+  }
+
+  100% {
+
+    transform:
+      scale(1);
+
+  }
+
+}
+
+
+/* =========================
+   CÂY
+========================= */
+
+.plant {
+
+  position: relative;
+
+  z-index: 5;
+
+  width: 100%;
+
+  height: 100%;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 1px;
+
+  padding: 2px;
+
+}
+
+
+.plant-icon {
+
+  font-size: 23px;
+
+  line-height: 1;
+
+  filter:
+    drop-shadow(
+      0 2px 2px
+      rgba(0,0,0,0.35)
+    );
+
+}
+
+
+.plant-name {
+
+  max-width: 100%;
+
+  color: white;
+
+  font-size: 6px;
+
+  font-weight: bold;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  text-shadow:
+    0 1px 2px
+    rgba(0,0,0,0.7);
+
+}
+
+
+.plant-timer {
+
+  min-width: 32px;
+
+  padding: 1px 4px;
+
+  border-radius: 5px;
+
+  background:
+    rgba(0,0,0,0.55);
+
+  color: white;
+
+  font-size: 6px;
+
+  font-weight: bold;
+
+  text-align: center;
+
+}
+
+
+.plant-progress {
+
+  width: 80%;
+
+  height: 3px;
+
+  overflow: hidden;
+
+  border-radius: 5px;
+
+  background:
+    rgba(0,0,0,0.35);
+
+}
+
+
+.plant-progress-fill {
+
+  width: 0%;
+
+  height: 100%;
+
+  border-radius: 5px;
+
+  background:
+    #8ee35c;
+
+  transition:
+    width 0.8s linear;
+
+}
+
+
+/* =========================
+   MÀN HÌNH NHỎ
+========================= */
+
+@media (max-width: 380px) {
+
+  .plant-icon {
+
+    font-size: 20px;
+
+  }
+
+
+  .plot.ready .plant-icon {
+
+    font-size: 25px;
+
+  }
+
+
+  .plant-name {
+
+    font-size: 5px;
+
+  }
+
+
+  .plant-timer {
+
+    font-size: 5px;
+
+    min-width: 29px;
+
+  }
+
+
+  .fertilizer-button {
+
+    font-size: 6px;
+
+    min-height: 15px;
+
+  }
+
+}
