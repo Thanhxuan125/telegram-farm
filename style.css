@@ -1679,8 +1679,8 @@ body {
     width: 94%;
     max-width: none;
 
-    height: 58px;
-    min-height: 58px;
+    height: 50px;
+    min-height: 50px;
 
     margin: 10px auto 0;
 
@@ -1832,10 +1832,10 @@ body {
 ========================================================= */
 
 .resource-box {
-    width: 72px;
-    min-width: 72px;
+    width: 70px;
+    min-width: 70px;
 
-    height: 48px;
+    height: 40px;
 
     padding: 3px;
 
