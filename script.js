@@ -137,11 +137,11 @@ let player = {
 
   exp: 0,
 
-  coins: 1000,
+  coins: 500,
 
   // Để 3 để TEST
   // Khi test xong đổi lại 0
-  fertilizer: 3
+  fertilizer: 0
 
 };
 
