@@ -99,7 +99,7 @@ let player = {
 
   coins: 1000,
 
-  fertilizer: 0
+  fertilizer: 3
 
 };
 
