@@ -1,55 +1,35 @@
 /* ==================================================
    NÔNG TRẠI XANH
-   BLUE FARM GAME UI
-================================================== */
-
-
-/* ==================================================
-   RESET
-================================================== */
+   MOBILE FIRST
+   ================================================== */
 
 * {
-
   box-sizing: border-box;
-
-  margin: 0;
-
-  padding: 0;
-
   -webkit-tap-highlight-color: transparent;
-
 }
-
 
 html,
 body {
-
+  margin: 0;
+  padding: 0;
   width: 100%;
-
   min-height: 100%;
-
 }
 
-
 body {
-
   font-family:
     Arial,
-    Helvetica,
     sans-serif;
 
+  background: #087fe0;
+
   overflow-x: hidden;
-
-  background: #087fe5;
-
-  color: white;
-
 }
 
 
 /* ==================================================
    GAME
-================================================== */
+   ================================================== */
 
 .game {
 
@@ -57,34 +37,29 @@ body {
 
   width: 100%;
 
-  min-height: 100vh;
+  min-height: 100dvh;
 
   padding:
-
     14px
-
-    12px
-
-    18px;
+    0
+    16px;
 
   background-image:
+    url("assets/background.png");
 
-    url("/assets/background.png");
+  background-repeat: no-repeat;
 
   background-size: cover;
 
   background-position:
-
     center top;
-
-  background-repeat: no-repeat;
 
 }
 
 
 /* ==================================================
-   KHUNG TRÊN
-================================================== */
+   HUD
+   ================================================== */
 
 .top-hud {
 
@@ -92,76 +67,50 @@ body {
 
   z-index: 50;
 
-  width: min(
-    94%,
-    640px
-  );
+  width: 90%;
 
-  margin:
+  height: 108px;
 
-    0 auto;
+  margin: 0 auto;
 
-  min-height: 82px;
-
-  padding:
-
-    10px;
+  padding: 7px;
 
   display: grid;
 
   grid-template-columns:
-
-    1fr
-
-    auto
-
-    auto;
-
-  gap: 8px;
+    minmax(0, 1fr)
+    88px
+    88px;
 
   align-items: center;
 
+  gap: 7px;
 
   border:
+    3px solid
+    #d8f5ff;
 
-    2px solid
-
-    rgba(
-      255,
-      255,
-      255,
-      .85
-    );
-
-  border-radius: 23px;
-
+  border-radius: 25px;
 
   background:
-
     linear-gradient(
       180deg,
-      #27bff5 0%,
-      #087fe2 48%,
-      #0754bd 100%
+      #24b9ee 0%,
+      #078ce0 48%,
+      #0669c9 100%
     );
-
 
   box-shadow:
 
     0 5px 0
-      rgba(
-        0,
-        62,
-        150,
-        .75
-      ),
+      #034d9c,
 
-    0 8px 18px
+    0 8px 14px
       rgba(
         0,
-        55,
-        130,
-        .35
+        35,
+        80,
+        .40
       ),
 
     inset 0 2px 0
@@ -169,7 +118,7 @@ body {
         255,
         255,
         255,
-        .5
+        .30
       );
 
 }
@@ -177,9 +126,9 @@ body {
 
 /* ==================================================
    LEVEL
-================================================== */
+   ================================================== */
 
-.level-box {
+.level-area {
 
   min-width: 0;
 
@@ -187,20 +136,17 @@ body {
 
   align-items: center;
 
-  gap: 9px;
+  gap: 7px;
 
 }
 
-
 .level-circle {
 
-  flex:
+  flex: 0 0 55px;
 
-    0 0 54px;
+  width: 55px;
 
-  width: 54px;
-
-  height: 54px;
+  height: 55px;
 
   display: flex;
 
@@ -209,26 +155,21 @@ body {
   justify-content: center;
 
   border:
-
     3px solid
-
-    #d9f8ff;
+    #eaffff;
 
   border-radius: 50%;
 
-
   background:
-
     linear-gradient(
       180deg,
-      #68d76b,
-      #269f3b
+      #69df61,
+      #23a63f
     );
-
 
   box-shadow:
 
-    inset 0 3px 4px
+    inset 0 2px 4px
       rgba(
         255,
         255,
@@ -236,7 +177,7 @@ body {
         .35
       ),
 
-    0 3px 7px
+    0 2px 4px
       rgba(
         0,
         0,
@@ -246,80 +187,65 @@ body {
 
 }
 
-
 .level-circle span {
-
-  font-size: 24px;
-
-  font-weight: 900;
 
   color: white;
 
-  text-shadow:
+  font-size: 27px;
 
+  font-weight: 900;
+
+  text-shadow:
     0 2px 2px
     rgba(
       0,
       0,
       0,
-      .3
+      .35
     );
 
 }
-
 
 .level-info {
 
   min-width: 0;
 
-}
+  flex: 1;
 
+}
 
 .level-title {
 
   margin-bottom: 4px;
 
-  font-size: 17px;
+  color: white;
+
+  font-size: 20px;
 
   font-weight: 900;
 
-  color: white;
-
 }
-
 
 .exp-bar {
 
   width: 100%;
 
-  height: 12px;
+  max-width: 120px;
+
+  height: 10px;
 
   overflow: hidden;
 
   border:
-
     1px solid
-
-    rgba(
-      255,
-      255,
-      255,
-      .55
-    );
+    #b7d7e8;
 
   border-radius: 10px;
 
   background:
-
-    rgba(
-      0,
-      47,
-      120,
-      .55
-    );
+    #d7e2e5;
 
 }
-
 
 .exp-fill {
 
@@ -327,57 +253,39 @@ body {
 
   height: 100%;
 
-  border-radius: inherit;
+  border-radius: 10px;
 
   background:
-
     linear-gradient(
       90deg,
-      #b7ff39,
-      #47d95b
+      #70e35e,
+      #31b840
     );
-
-  box-shadow:
-
-    inset 0 2px 0
-      rgba(
-        255,
-        255,
-        255,
-        .55
-      );
-
-  transition:
-
-    width .3s ease;
 
 }
 
-
 .exp-text {
 
-  margin-top: 2px;
+  margin-top: 3px;
+
+  color: white;
 
   font-size: 10px;
 
-  color: #e8faff;
+  white-space: nowrap;
 
 }
 
 
 /* ==================================================
-   COIN + PHÂN
-================================================== */
+   COIN / PHÂN
+   ================================================== */
 
 .resource-box {
 
-  min-width: 76px;
+  width: 88px;
 
-  height: 52px;
-
-  padding:
-
-    5px 9px;
+  height: 55px;
 
   display: flex;
 
@@ -385,35 +293,30 @@ body {
 
   justify-content: center;
 
-  gap: 5px;
-
+  gap: 4px;
 
   border:
-
     1px solid
+    #aee8ff;
 
-    rgba(
-      255,
-      255,
-      255,
-      .65
-    );
-
-  border-radius: 15px;
-
+  border-radius: 17px;
 
   background:
-
     linear-gradient(
       180deg,
-      #168ee9,
-      #075dc5
+      #188edc,
+      #0968c4
     );
 
+  color: white;
+
+  font-size: 17px;
+
+  font-weight: 900;
 
   box-shadow:
 
-    inset 0 2px 0
+    inset 0 1px 0
       rgba(
         255,
         255,
@@ -421,16 +324,15 @@ body {
         .25
       ),
 
-    0 3px 5px
+    0 2px 4px
       rgba(
         0,
-        45,
-        110,
-        .3
+        0,
+        0,
+        .25
       );
 
 }
-
 
 .resource-icon {
 
@@ -439,220 +341,54 @@ body {
 }
 
 
-.resource-number {
-
-  font-size: 16px;
-
-  font-weight: 900;
-
-  color: white;
-
-}
-
-
-/* ==================================================
-   TITLE
-================================================== */
-
-.game-title {
-
-  position: relative;
-
-  z-index: 10;
-
-  width: min(
-    92%,
-    430px
-  );
-
-  margin:
-
-    25px auto 0;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  gap: 3px;
-
-  text-align: center;
-
-}
-
-
-.title-text {
-
-  padding:
-
-    8px 18px 10px;
-
-  border-radius: 20px;
-
-  background:
-
-    linear-gradient(
-      180deg,
-      #f3a72c,
-      #a95608
-    );
-
-
-  border:
-
-    3px solid
-
-    #ffd76a;
-
-
-  box-shadow:
-
-    0 4px 0
-      #713c08,
-
-    inset 0 2px 0
-      rgba(
-        255,
-        255,
-        255,
-        .45
-      );
-
-}
-
-
-.title-text div {
-
-  font-size:
-
-    clamp(
-      27px,
-      8vw,
-      43px
-    );
-
-  line-height: .9;
-
-  font-weight: 1000;
-
-  color: #fff5c7;
-
-  text-shadow:
-
-    0 3px 0 #9d4d00,
-
-    0 5px 5px
-      rgba(
-        0,
-        0,
-        0,
-        .35
-      );
-
-}
-
-
-.title-text strong {
-
-  display: block;
-
-  margin-top: 2px;
-
-  font-size:
-
-    clamp(
-      34px,
-      10vw,
-      52px
-    );
-
-  line-height: .85;
-
-  color: #67df31;
-
-  text-shadow:
-
-    0 3px 0 #207a18,
-
-    0 5px 5px
-      rgba(
-        0,
-        0,
-        0,
-        .35
-      );
-
-}
-
-
-.title-leaf {
-
-  font-size: 32px;
-
-  filter:
-
-    drop-shadow(
-      0 3px 2px
-      rgba(
-        0,
-        0,
-        0,
-        .3
-      )
-    );
-
-}
-
-
 /* ==================================================
    NHÂN VẬT
-================================================== */
+   ================================================== */
 
 .hero-area {
 
   position: relative;
 
+  z-index: 5;
+
   width: 100%;
 
   height: 285px;
 
-  display: flex;
+  margin-top: 12px;
 
-  justify-content: center;
+  display: flex;
 
   align-items: flex-end;
 
-}
+  justify-content: center;
 
+  pointer-events: none;
+
+}
 
 .hero {
 
-  position: relative;
+  width: 135px;
 
-  z-index: 8;
+  max-width: 28vw;
 
-  width:
-
-    clamp(
-      125px,
-      30vw,
-      190px
-    );
+  height: auto;
 
   max-height: 270px;
 
   object-fit: contain;
 
-  filter:
+  object-position: bottom;
 
+  filter:
     drop-shadow(
-      0 8px 7px
+      0 5px 4px
       rgba(
         0,
         0,
         0,
-        .32
+        .30
       )
     );
 
@@ -660,8 +396,8 @@ body {
 
 
 /* ==================================================
-   FARM
-================================================== */
+   KHU 20 Ô
+   ================================================== */
 
 .farm-area {
 
@@ -669,39 +405,37 @@ body {
 
   z-index: 20;
 
-  width: min(
-    94%,
-    520px
-  );
+  width: 88%;
+
+  max-width: 640px;
 
   margin:
-
-    -8px auto 0;
+    -5px auto 0;
 
 }
 
 
+/* ==================================================
+   GRID 5 × 4
+   ================================================== */
+
 .farm-grid {
+
+  width: 100%;
 
   display: grid;
 
   grid-template-columns:
+    repeat(5, 1fr);
 
-    repeat(
-      5,
-      1fr
-    );
-
-  gap:
-
-    8px;
+  gap: 6px;
 
 }
 
 
 /* ==================================================
    Ô ĐẤT
-================================================== */
+   ================================================== */
 
 .plot {
 
@@ -709,42 +443,34 @@ body {
 
   width: 100%;
 
-  aspect-ratio: 1.18 / 1;
+  aspect-ratio: 1.15 / 1;
+
+  padding: 0;
 
   border:
-
     3px solid
+    #078de1;
 
-    #0797ef;
-
-  border-radius: 14px;
-
-  overflow: hidden;
-
-  cursor: pointer;
-
+  border-radius: 15px;
 
   background:
-
     linear-gradient(
-      180deg,
-      #6c431f 0%,
-      #4d2b13 52%,
-      #351b0c 100%
+      145deg,
+      #6b3b1d,
+      #3b2112
     );
-
 
   box-shadow:
 
     0 4px 0
-      #064f9d,
+      #07549b,
 
     0 6px 9px
       rgba(
         0,
-        45,
-        80,
-        .38
+        0,
+        0,
+        .32
       ),
 
     inset 0 2px 0
@@ -752,183 +478,112 @@ body {
         255,
         255,
         255,
-        .2
+        .12
       );
 
+  cursor: pointer;
 
-  transition:
-
-    transform .12s ease,
-
-    filter .12s ease;
+  overflow: hidden;
 
 }
 
 
-.plot::before {
+/* Đường viền trong */
+
+.plot::after {
 
   content: "";
 
   position: absolute;
 
-  inset: 4px;
+  inset: 5px;
 
-  pointer-events: none;
+  border:
+    1px solid
+    rgba(
+      255,
+      211,
+      145,
+      .28
+    );
 
   border-radius: 9px;
 
-  border:
-
-    1px solid
-
-    rgba(
-      255,
-      203,
-      91,
-      .25
-    );
+  pointer-events: none;
 
 }
 
 
-.plot::after {
-
-  content: "•  •";
-
-  position: absolute;
-
-  left: 9px;
-
-  top: 5px;
-
-  color:
-
-    rgba(
-      255,
-      255,
-      255,
-      .12
-    );
-
-  font-size: 10px;
-
-}
-
-
-.plot:active {
-
-  transform:
-    scale(.94);
-
-}
-
-
-/* ==================================================
-   SỐ Ô ĐẤT
-================================================== */
+/* Số ô */
 
 .plot-number {
 
-  position: absolute;
+  position: relative;
 
   z-index: 3;
 
-  left: 50%;
+  color: #fff8ee;
 
-  top: 50%;
-
-  transform:
-    translate(
-      -50%,
-      -50%
-    );
-
-  font-size:
-
-    clamp(
-      17px,
-      5vw,
-      27px
-    );
+  font-size: 22px;
 
   font-weight: 900;
 
-  color: #fff6df;
-
   text-shadow:
 
-    0 2px 0 #5d2e10,
-
-    0 3px 4px
+    0 2px 2px
       rgba(
         0,
         0,
         0,
-        .5
+        .65
       );
 
 }
 
 
-.lock {
-
-  position: absolute;
-
-  z-index: 4;
-
-  right: 5px;
-
-  top: 4px;
-
-  font-size: 10px;
-
-  opacity: .9;
-
-}
-
-
-/* ==================================================
-   Ô KHÓA
-================================================== */
+/* Ô khóa */
 
 .plot.locked {
 
   background:
-
     linear-gradient(
-      180deg,
-      #55331b,
-      #301b0d
+      145deg,
+      #43291c,
+      #241810
     );
 
   border-color:
+    #087fd2;
 
-    #0874c8;
-
-  filter:
-
-    saturate(.7);
+  opacity: .95;
 
 }
-
 
 .plot.locked .plot-number {
 
   color:
+    #aaa49d;
 
-    rgba(
-      255,
-      255,
-      255,
-      .55
-    );
+}
+
+.lock {
+
+  position: absolute;
+
+  z-index: 10;
+
+  top: 4px;
+
+  right: 5px;
+
+  font-size: 10px;
 
 }
 
 
 /* ==================================================
    CÂY
-================================================== */
+   ================================================== */
 
 .plant {
 
@@ -952,43 +607,34 @@ body {
 
 }
 
-
 .plant-icon {
 
-  font-size:
-
-    clamp(
-      22px,
-      6vw,
-      32px
-    );
+  font-size: 24px;
 
   line-height: 1;
 
   filter:
-
     drop-shadow(
-      0 3px 2px
+      0 2px 2px
       rgba(
         0,
         0,
         0,
-        .35
+        .45
       )
     );
 
 }
 
-
 .plant-name {
 
-  max-width: 92%;
-
-  font-size: 7px;
-
-  font-weight: 900;
+  max-width: 90%;
 
   color: white;
+
+  font-size: 6px;
+
+  font-weight: 900;
 
   white-space: nowrap;
 
@@ -997,65 +643,53 @@ body {
   text-overflow: ellipsis;
 
   text-shadow:
-
     0 1px 2px
-    rgba(
-      0,
-      0,
-      0,
-      .8
-    );
+    #000;
 
 }
-
 
 .plant-timer {
 
   padding:
+    1px 4px;
 
-    2px 5px;
-
-  border-radius: 7px;
+  border-radius: 5px;
 
   background:
-
     rgba(
       0,
       0,
       0,
-      .65
+      .62
     );
-
-  font-size: 7px;
-
-  font-weight: 900;
 
   color: white;
 
-}
+  font-size: 6px;
 
+  font-weight: 900;
+
+}
 
 .plant-progress {
 
-  width: 78%;
+  width: 75%;
 
-  height: 4px;
+  height: 3px;
 
   overflow: hidden;
 
   border-radius: 5px;
 
   background:
-
     rgba(
       0,
       0,
       0,
-      .55
+      .40
     );
 
 }
-
 
 .plant-progress-fill {
 
@@ -1064,83 +698,20 @@ body {
   height: 100%;
 
   background:
-
-    linear-gradient(
-      90deg,
-      #5ee75c,
-      #d6ff4b
-    );
+    #6ee65c;
 
 }
 
 
 /* ==================================================
-   CÂY CHÍN
-================================================== */
-
-.plot.ready {
-
-  border-color:
-
-    #39e8ff;
-
-  box-shadow:
-
-    0 0 0 2px
-      rgba(
-        55,
-        222,
-        255,
-        .25
-      ),
-
-    0 5px 12px
-      rgba(
-        0,
-        95,
-        180,
-        .55
-      );
-
-  animation:
-
-    readyPulse 1.2s infinite;
-
-}
-
-
-@keyframes readyPulse {
-
-  0% {
-
-    transform: scale(1);
-
-  }
-
-  50% {
-
-    transform: scale(1.025);
-
-  }
-
-  100% {
-
-    transform: scale(1);
-
-  }
-
-}
-
-
-/* ==================================================
-   NÚT PHÂN
-================================================== */
+   PHÂN BÓN
+   ================================================== */
 
 .fertilizer-button {
 
   position: absolute;
 
-  z-index: 30;
+  z-index: 25;
 
   left: 50%;
 
@@ -1151,53 +722,34 @@ body {
 
   width: 88%;
 
-  min-height: 19px;
+  min-height: 17px;
+
+  padding: 2px;
 
   border:
-
     1px solid white;
 
-  border-radius: 7px;
+  border-radius: 6px;
 
   background:
-
     linear-gradient(
       180deg,
-      #58e96b,
-      #149c39
+      #55d968,
+      #218f39
     );
 
   color: white;
 
-  font-size: 7px;
+  font-size: 6px;
 
   font-weight: 900;
-
-  box-shadow:
-
-    0 2px 4px
-      rgba(
-        0,
-        0,
-        0,
-        .4
-      );
-
-}
-
-
-.fertilizer-button:active {
-
-  transform:
-    translateX(-50%)
-    scale(.92);
 
 }
 
 
 /* ==================================================
-   MENU DƯỚI
-================================================== */
+   MENU DƯỚI 20 Ô
+   ================================================== */
 
 .bottom-menu {
 
@@ -1205,903 +757,45 @@ body {
 
   z-index: 60;
 
-  width: min(
-    94%,
-    620px
-  );
+  width: 88%;
+
+  max-width: 640px;
+
+  height: 83px;
 
   margin:
-
-    18px auto 0;
-
-  padding: 5px;
-
-
-  display: grid;
-
-  grid-template-columns:
-
-    repeat(
-      5,
-      1fr
-    );
-
-
-  border:
-
-    2px solid
-
-    #80eaff;
-
-  border-radius: 23px;
-
-
-  background:
-
-    linear-gradient(
-      180deg,
-      #19aaf0 0%,
-      #087fe1 48%,
-      #0751b7 100%
-    );
-
-
-  box-shadow:
-
-    0 5px 0
-      #043e8d,
-
-    0 8px 18px
-      rgba(
-        0,
-        40,
-        100,
-        .45
-      ),
-
-    inset 0 2px 0
-      rgba(
-        255,
-        255,
-        255,
-        .4
-      );
-
-}
-
-
-.menu-item {
-
-  min-width: 0;
-
-  min-height: 70px;
-
-  border: 0;
-
-  border-right:
-
-    1px solid
-
-    rgba(
-      255,
-      255,
-      255,
-      .2
-    );
-
-  background:
-
-    linear-gradient(
-      180deg,
-      rgba(
-        43,
-        190,
-        247,
-        .8
-      ),
-      rgba(
-        5,
-        92,
-        191,
-        .8
-      )
-    );
-
-  color: white;
-
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: center;
-
-  justify-content: center;
-
-  gap: 2px;
-
-  cursor: pointer;
-
-  font-size:
-
-    clamp(
-      8px,
-      2.5vw,
-      12px
-    );
-
-  font-weight: 900;
-
-  text-shadow:
-
-    0 2px 2px
-      rgba(
-        0,
-        0,
-        0,
-        .4
-      );
-
-}
-
-
-.menu-item:first-child {
-
-  border-radius: 17px 0 0 17px;
-
-}
-
-
-.menu-item:last-child {
-
-  border-right: 0;
-
-  border-radius: 0 17px 17px 0;
-
-}
-
-
-.menu-item:active {
-
-  transform:
-    scale(.94);
-
-}
-
-
-.menu-icon {
-
-  display: block;
-
-  font-size:
-
-    clamp(
-      24px,
-      7vw,
-      36px
-    );
-
-  line-height: 1;
-
-}
-
-
-/* ==================================================
-   SEED PANEL
-================================================== */
-
-.seed-panel {
-
-  position: fixed;
-
-  z-index: 200;
-
-  inset: 0;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  padding: 15px;
-
-  background:
-
-    rgba(
-      0,
-      38,
-      91,
-      .72
-    );
-
-  backdrop-filter:
-
-    blur(4px);
-
-  opacity: 0;
-
-  visibility: hidden;
-
-  pointer-events: none;
-
-  transition:
-
-    opacity .2s ease;
-
-}
-
-
-.seed-panel.show {
-
-  opacity: 1;
-
-  visibility: visible;
-
-  pointer-events: auto;
-
-}
-
-
-.seed-window {
-
-  width: min(
-    94vw,
-    430px
-  );
-
-  max-height: 80vh;
-
-  overflow-y: auto;
-
-  border:
-
-    2px solid
-
-    #8deaff;
-
-  border-radius: 22px;
-
-  background:
-
-    linear-gradient(
-      180deg,
-      #0fa8ed,
-      #0865c8
-    );
-
-  box-shadow:
-
-    0 8px 30px
-      rgba(
-        0,
-        0,
-        0,
-        .5
-      );
-
-}
-
-
-.seed-header {
-
-  min-height: 58px;
-
-  padding:
-
-    8px 12px;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  font-size: 19px;
-
-  font-weight: 900;
-
-  text-shadow:
-
-    0 2px 2px
-      rgba(
-        0,
-        0,
-        0,
-        .3
-      );
-
-}
-
-
-.seed-close {
-
-  width: 36px;
-
-  height: 36px;
-
-  border: 0;
-
-  border-radius: 50%;
-
-  background:
-
-    #0871d0;
-
-  color: white;
-
-  font-size: 27px;
-
-  font-weight: bold;
-
-}
-
-
-.selected-plot {
-
-  margin:
-
-    0 12px 10px;
-
-  padding: 8px;
-
-  border-radius: 10px;
-
-  background:
-
-    rgba(
-      0,
-      50,
-      120,
-      .4
-    );
-
-  text-align: center;
-
-  font-size: 12px;
-
-  font-weight: bold;
-
-}
-
-
-.seed-list {
-
-  padding:
-
-    0 10px 12px;
-
-  display: grid;
-
-  grid-template-columns:
-
-    repeat(
-      2,
-      1fr
-    );
-
-  gap: 8px;
-
-}
-
-
-.seed-item {
-
-  min-height: 83px;
-
-  padding: 8px;
-
-  border:
-
-    1px solid
-
-    #9aeaff;
-
-  border-radius: 13px;
-
-  background:
-
-    linear-gradient(
-      180deg,
-      #2bc3f5,
-      #0878d5
-    );
-
-  color: white;
-
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: center;
-
-  justify-content: center;
-
-  gap: 2px;
-
-  font-size: 26px;
-
-  font-weight: 900;
-
-  box-shadow:
-
-    0 3px 0
-      #0452a0;
-
-}
-
-
-.seed-item span {
-
-  font-size: 12px;
-
-}
-
-
-.seed-item small {
-
-  font-size: 9px;
-
-  opacity: .95;
-
-}
-
-
-.seed-item:active {
-
-  transform:
-    scale(.94);
-
-}
-
-
-/* ==================================================
-   MÀN HÌNH NHỎ
-================================================== */
-
-@media (
-  max-width: 390px
-) {
-
-  .game {
-
-    padding-top: 9px;
-
-  }
-
-
-  .top-hud {
-
-    min-height: 73px;
-
-    padding: 7px;
-
-    border-radius: 18px;
-
-    gap: 5px;
-
-  }
-
-
-  .level-circle {
-
-    flex-basis: 46px;
-
-    width: 46px;
-
-    height: 46px;
-
-  }
-
-
-  .level-circle span {
-
-    font-size: 21px;
-
-  }
-
-
-  .level-title {
-
-    font-size: 14px;
-
-  }
-
-
-  .resource-box {
-
-    min-width: 63px;
-
-    height: 45px;
-
-    padding: 4px;
-
-  }
-
-
-  .resource-icon {
-
-    font-size: 18px;
-
-  }
-
-
-  .resource-number {
-
-    font-size: 13px;
-
-  }
-
-
-  .game-title {
-
-    margin-top: 18px;
-
-  }
-
-
-  .hero-area {
-
-    height: 245px;
-
-  }
-
-
-  .hero {
-
-    width: 125px;
-
-    max-height: 235px;
-
-  }
-
-
-  .farm-area {
-
-    margin-top: -3px;
-
-  }
-
-
-  .farm-grid {
-
-    gap: 5px;
-
-  }
-
-
-  .plot {
-
-    border-width: 2px;
-
-    border-radius: 10px;
-
-  }
-
-
-  .plot-number {
-
-    font-size: 16px;
-
-  }
-
-
-  .bottom-menu {
-
-    margin-top: 13px;
-
-    border-radius: 19px;
-
-  }
-
-
-  .menu-item {
-
-    min-height: 62px;
-
-  }
-
-
-  .menu-icon {
-
-    font-size: 25px;
-
-  }
-
-}
-
-
-/* ==================================================
-   MÀN HÌNH RẤT THẤP
-================================================== */
-
-@media (
-  max-height: 700px
-) {
-
-  .hero-area {
-
-    height: 210px;
-
-  }
-
-
-  .hero {
-
-    max-height: 205px;
-
-  }
-
-
-  .game-title {
-
-    margin-top: 12px;
-
-  }
-
-
-  .farm-grid {
-
-    gap: 4px;
-
-  }
-
-
-  .bottom-menu {
-
-    margin-top: 10px;
-
-  }
-
-}
-/* ==================================================
-   FIX GIAO DIỆN ĐIỆN THOẠI 720x1520
-   ================================================== */
-
-html,
-body {
-  width: 100%;
-  min-height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  overflow-x: hidden;
-}
-
-.game {
-  width: 100%;
-  min-height: 100vh;
-
-  padding:
-    8px
-    8px
-    14px;
-
-  background-size: cover;
-  background-position: center top;
-}
-
-
-/* ==================================================
-   HUD TRÊN
-   ================================================== */
-
-.top-hud {
-
-  width: 94%;
-
-  min-height: 70px;
-
-  margin: 0 auto;
-
-  padding: 7px;
-
-  grid-template-columns:
-    minmax(0, 1fr)
-    82px
-    82px;
-
-  gap: 6px;
-
-  border-radius: 19px;
-
-}
-
-
-/* LEVEL */
-
-.level-box {
-  gap: 7px;
-}
-
-.level-circle {
-
-  flex: 0 0 47px;
-
-  width: 47px;
-
-  height: 47px;
-
-  border-width: 2px;
-
-}
-
-.level-circle span {
-  font-size: 21px;
-}
-
-.level-title {
-  font-size: 15px;
-  margin-bottom: 3px;
-}
-
-.exp-bar {
-  height: 9px;
-}
-
-.exp-text {
-  font-size: 9px;
-}
-
-
-/* COIN + PHÂN */
-
-.resource-box {
-
-  min-width: 0;
-
-  width: 82px;
-
-  height: 45px;
-
-  padding: 3px 6px;
-
-  border-radius: 13px;
-
-}
-
-.resource-icon {
-  font-size: 18px;
-}
-
-.resource-number {
-  font-size: 14px;
-}
-
-
-/* ==================================================
-   LOGO
-   ================================================== */
-
-.game-title {
-
-  width: 76%;
-
-  margin:
-
-    14px auto 0;
-
-}
-
-
-/*
-   Không tạo thêm khung lớn che logo background.
-   Làm phần chữ nhẹ hơn.
-*/
-
-.title-text {
-
-  padding:
-    5px 12px 7px;
-
-  border-radius: 15px;
-
-  border-width: 2px;
-
-  box-shadow:
-    0 3px 0 #713c08;
-
-}
-
-.title-text div {
-
-  font-size: 28px;
-
-}
-
-.title-text strong {
-
-  font-size: 35px;
-
-}
-
-.title-leaf {
-
-  font-size: 23px;
-
-}
-
-
-/* ==================================================
-   NHÂN VẬT
-   ================================================== */
-
-.hero-area {
-
-  height: 225px;
-
-  margin-top: -2px;
-
-  align-items: flex-end;
-
-}
-
-.hero {
-
-  width: 125px;
-
-  max-height: 220px;
-
-}
-
-
-/* ==================================================
-   KHU 20 Ô ĐẤT
-   ================================================== */
-
-.farm-area {
-
-  width: 94%;
-
-  max-width: 680px;
-
-  margin:
-
-    0 auto;
-
-}
-
-
-/* 5 cột × 4 hàng */
-
-.farm-grid {
-
-  width: 100%;
+    13px auto 0;
 
   display: grid;
 
   grid-template-columns:
     repeat(5, 1fr);
 
-  gap: 6px;
+  border:
+    2px solid
+    #bceeff;
 
-}
+  border-radius: 24px;
 
+  overflow: hidden;
 
-/* ==================================================
-   Ô ĐẤT
-   ================================================== */
-
-.plot {
-
-  width: 100%;
-
-  aspect-ratio: 1.12 / 1;
-
-  border-width: 2px;
-
-  border-radius: 11px;
+  background:
+    linear-gradient(
+      180deg,
+      #1aa9e9,
+      #0879d3
+    );
 
   box-shadow:
 
-    0 3px 0 #064f9d,
+    0 4px 0
+      #07539b,
 
-    0 4px 7px
+    0 7px 12px
       rgba(
         0,
-        45,
-        80,
+        0,
+        0,
         .35
       ),
 
@@ -2110,266 +804,386 @@ body {
         255,
         255,
         255,
-        .16
+        .22
       );
 
 }
 
-.plot-number {
 
-  font-size: 18px;
+/* từng nút */
+
+.menu-item {
+
+  min-width: 0;
+
+  border: 0;
+
+  border-right:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      .22
+    );
+
+  background:
+    transparent;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 2px;
+
+  color: white;
+
+  font-size: 9px;
+
+  font-weight: 900;
+
+  text-shadow:
+    0 1px 2px
+    rgba(
+      0,
+      0,
+      0,
+      .35
+    );
 
 }
 
-.lock {
+.menu-item:last-child {
 
-  right: 4px;
+  border-right: 0;
 
-  top: 3px;
+}
+
+.menu-icon {
+
+  font-size: 27px;
+
+  line-height: 1;
+
+}
+
+.menu-item:active {
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      .15
+    );
+
+  transform:
+    scale(.96);
+
+}
+
+
+/* ==================================================
+   BẢNG HẠT
+   ================================================== */
+
+.seed-panel {
+
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 200;
+
+  display: none;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 20px;
+
+  background:
+    rgba(
+      0,
+      35,
+      70,
+      .65
+    );
+
+}
+
+.seed-panel.show {
+
+  display: flex;
+
+}
+
+.seed-box {
+
+  position: relative;
+
+  width: 94%;
+
+  max-width: 420px;
+
+  max-height: 80vh;
+
+  overflow-y: auto;
+
+  padding: 18px;
+
+  border:
+    3px solid
+    #bceeff;
+
+  border-radius: 22px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #21afe9,
+      #0876cf
+    );
+
+  box-shadow:
+    0 8px 25px
+    rgba(
+      0,
+      0,
+      0,
+      .45
+    );
+
+}
+
+.seed-box h2 {
+
+  margin:
+    0 0 4px;
+
+  color: white;
+
+  text-align: center;
+
+}
+
+.seed-box p {
+
+  margin:
+    0 0 12px;
+
+  color: white;
+
+  text-align: center;
+
+  font-size: 12px;
+
+}
+
+.seed-close {
+
+  position: absolute;
+
+  top: 8px;
+
+  right: 10px;
+
+  width: 30px;
+
+  height: 30px;
+
+  border: 0;
+
+  border-radius: 50%;
+
+  background: #075fae;
+
+  color: white;
+
+  font-size: 16px;
+
+}
+
+.seed-list {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, 1fr);
+
+  gap: 8px;
+
+}
+
+.seed-item {
+
+  min-height: 75px;
+
+  border:
+    1px solid
+    #aeeaff;
+
+  border-radius: 12px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      .14
+    );
+
+  color: white;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 2px;
+
+}
+
+.seed-item b {
+
+  font-size: 12px;
+
+}
+
+.seed-item small {
 
   font-size: 9px;
 
 }
 
+.seed-item:active {
 
-/* ==================================================
-   CÂY TRONG Ô
-   ================================================== */
-
-.plant-icon {
-
-  font-size: 22px;
-
-}
-
-.plant-name {
-
-  font-size: 6px;
-
-}
-
-.plant-timer {
-
-  font-size: 6px;
-
-  padding:
-    1px 4px;
-
-}
-
-.plant-progress {
-
-  height: 3px;
-
-  width: 76%;
+  transform:
+    scale(.95);
 
 }
 
 
 /* ==================================================
-   NÚT PHÂN
+   CÂY CHÍN
    ================================================== */
 
-.fertilizer-button {
+.plot.ready {
 
-  min-height: 16px;
+  animation:
+    readyPulse 1.2s infinite;
 
-  font-size: 6px;
+}
 
-  bottom: 2px;
+@keyframes readyPulse {
+
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.025);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 
 }
 
 
 /* ==================================================
-   MENU DƯỚI Ô ĐẤT
+   MÀN HÌNH ĐIỆN THOẠI
    ================================================== */
 
-.bottom-menu {
-
-  position: relative;
-
-  left: auto;
-
-  bottom: auto;
-
-  transform: none;
-
-  z-index: 60;
-
-  width: 94%;
-
-  margin:
-
-    14px auto 0;
-
-  padding: 4px;
-
-  border-radius: 18px;
-
-}
-
-
-/* Không để menu fixed */
-
-.menu-item {
-
-  min-height: 58px;
-
-  padding:
-    3px 1px;
-
-  gap: 2px;
-
-  font-size: 8px;
-
-}
-
-
-.menu-icon {
-
-  font-size: 25px;
-
-}
-
-
-/* ==================================================
-   MOBILE 720x1520
-   ================================================== */
-
-@media (
-  min-width: 500px
-) and (
-  max-width: 800px
-) {
+@media (max-width: 500px) {
 
   .game {
 
-    padding:
-      8px
-      10px
-      15px;
+    padding-top: 10px;
 
   }
-
 
   .top-hud {
 
-    width: 92%;
+    width: 91%;
 
-    min-height: 72px;
+    height: 103px;
 
-  }
-
-
-  .game-title {
-
-    width: 70%;
-
-    margin-top: 13px;
+    grid-template-columns:
+      minmax(0, 1fr)
+      82px
+      82px;
 
   }
 
+  .level-circle {
 
-  .hero-area {
+    flex-basis: 51px;
 
-    height: 230px;
+    width: 51px;
 
-  }
-
-
-  .hero {
-
-    width: 132px;
+    height: 51px;
 
   }
 
+  .level-circle span {
 
-  .farm-area {
-
-    width: 92%;
-
-  }
-
-
-  .farm-grid {
-
-    gap: 7px;
+    font-size: 25px;
 
   }
 
+  .level-title {
 
-  .plot {
-
-    aspect-ratio: 1.16 / 1;
+    font-size: 18px;
 
   }
 
+  .resource-box {
 
-  .plot-number {
+    width: 82px;
+
+    height: 51px;
+
+    font-size: 15px;
+
+  }
+
+  .resource-icon {
 
     font-size: 19px;
 
   }
 
-
-  .bottom-menu {
-
-    width: 92%;
-
-    margin-top: 15px;
-
-  }
-
-
-  .menu-item {
-
-    min-height: 62px;
-
-    font-size: 9px;
-
-  }
-
-
-  .menu-icon {
-
-    font-size: 27px;
-
-  }
-
-}
-
-
-/* ==================================================
-   ĐIỆN THOẠI THẤP
-   ================================================== */
-
-@media (
-  max-height: 1550px
-) {
-
-  .game-title {
-
-    margin-top: 10px;
-
-  }
-
-
   .hero-area {
 
-    height: 205px;
+    height: 280px;
+
+    margin-top: 13px;
 
   }
-
 
   .hero {
 
-    width: 120px;
-
-    max-height: 200px;
+    width: 125px;
 
   }
 
+  .farm-area {
+
+    width: 89%;
+
+    margin-top: -7px;
+
+  }
 
   .farm-grid {
 
@@ -2377,17 +1191,76 @@ body {
 
   }
 
-
   .plot {
 
-    aspect-ratio: 1.15 / 1;
+    border-width: 2px;
+
+    border-radius: 13px;
 
   }
 
+  .plot-number {
+
+    font-size: 20px;
+
+  }
 
   .bottom-menu {
 
+    width: 89%;
+
+    height: 78px;
+
     margin-top: 11px;
+
+    border-radius: 20px;
+
+  }
+
+  .menu-icon {
+
+    font-size: 24px;
+
+  }
+
+  .menu-item {
+
+    font-size: 8px;
+
+  }
+
+}
+
+
+/* ==================================================
+   MÀN HÌNH THẤP
+   ================================================== */
+
+@media (max-height: 1450px) {
+
+  .hero-area {
+
+    height: 250px;
+
+  }
+
+  .hero {
+
+    width: 115px;
+
+  }
+
+  .farm-area {
+
+    margin-top: -8px;
+
+  }
+
+  .bottom-menu {
+
+    height: 73px;
+
+    margin-top: 9px;
 
   }
 
