@@ -1853,3 +1853,542 @@ body {
   }
 
 }
+/* ==================================================
+   FIX GIAO DIỆN ĐIỆN THOẠI 720x1520
+   ================================================== */
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+.game {
+  width: 100%;
+  min-height: 100vh;
+
+  padding:
+    8px
+    8px
+    14px;
+
+  background-size: cover;
+  background-position: center top;
+}
+
+
+/* ==================================================
+   HUD TRÊN
+   ================================================== */
+
+.top-hud {
+
+  width: 94%;
+
+  min-height: 70px;
+
+  margin: 0 auto;
+
+  padding: 7px;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    82px
+    82px;
+
+  gap: 6px;
+
+  border-radius: 19px;
+
+}
+
+
+/* LEVEL */
+
+.level-box {
+  gap: 7px;
+}
+
+.level-circle {
+
+  flex: 0 0 47px;
+
+  width: 47px;
+
+  height: 47px;
+
+  border-width: 2px;
+
+}
+
+.level-circle span {
+  font-size: 21px;
+}
+
+.level-title {
+  font-size: 15px;
+  margin-bottom: 3px;
+}
+
+.exp-bar {
+  height: 9px;
+}
+
+.exp-text {
+  font-size: 9px;
+}
+
+
+/* COIN + PHÂN */
+
+.resource-box {
+
+  min-width: 0;
+
+  width: 82px;
+
+  height: 45px;
+
+  padding: 3px 6px;
+
+  border-radius: 13px;
+
+}
+
+.resource-icon {
+  font-size: 18px;
+}
+
+.resource-number {
+  font-size: 14px;
+}
+
+
+/* ==================================================
+   LOGO
+   ================================================== */
+
+.game-title {
+
+  width: 76%;
+
+  margin:
+
+    14px auto 0;
+
+}
+
+
+/*
+   Không tạo thêm khung lớn che logo background.
+   Làm phần chữ nhẹ hơn.
+*/
+
+.title-text {
+
+  padding:
+    5px 12px 7px;
+
+  border-radius: 15px;
+
+  border-width: 2px;
+
+  box-shadow:
+    0 3px 0 #713c08;
+
+}
+
+.title-text div {
+
+  font-size: 28px;
+
+}
+
+.title-text strong {
+
+  font-size: 35px;
+
+}
+
+.title-leaf {
+
+  font-size: 23px;
+
+}
+
+
+/* ==================================================
+   NHÂN VẬT
+   ================================================== */
+
+.hero-area {
+
+  height: 225px;
+
+  margin-top: -2px;
+
+  align-items: flex-end;
+
+}
+
+.hero {
+
+  width: 125px;
+
+  max-height: 220px;
+
+}
+
+
+/* ==================================================
+   KHU 20 Ô ĐẤT
+   ================================================== */
+
+.farm-area {
+
+  width: 94%;
+
+  max-width: 680px;
+
+  margin:
+
+    0 auto;
+
+}
+
+
+/* 5 cột × 4 hàng */
+
+.farm-grid {
+
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(5, 1fr);
+
+  gap: 6px;
+
+}
+
+
+/* ==================================================
+   Ô ĐẤT
+   ================================================== */
+
+.plot {
+
+  width: 100%;
+
+  aspect-ratio: 1.12 / 1;
+
+  border-width: 2px;
+
+  border-radius: 11px;
+
+  box-shadow:
+
+    0 3px 0 #064f9d,
+
+    0 4px 7px
+      rgba(
+        0,
+        45,
+        80,
+        .35
+      ),
+
+    inset 0 2px 0
+      rgba(
+        255,
+        255,
+        255,
+        .16
+      );
+
+}
+
+.plot-number {
+
+  font-size: 18px;
+
+}
+
+.lock {
+
+  right: 4px;
+
+  top: 3px;
+
+  font-size: 9px;
+
+}
+
+
+/* ==================================================
+   CÂY TRONG Ô
+   ================================================== */
+
+.plant-icon {
+
+  font-size: 22px;
+
+}
+
+.plant-name {
+
+  font-size: 6px;
+
+}
+
+.plant-timer {
+
+  font-size: 6px;
+
+  padding:
+    1px 4px;
+
+}
+
+.plant-progress {
+
+  height: 3px;
+
+  width: 76%;
+
+}
+
+
+/* ==================================================
+   NÚT PHÂN
+   ================================================== */
+
+.fertilizer-button {
+
+  min-height: 16px;
+
+  font-size: 6px;
+
+  bottom: 2px;
+
+}
+
+
+/* ==================================================
+   MENU DƯỚI Ô ĐẤT
+   ================================================== */
+
+.bottom-menu {
+
+  position: relative;
+
+  left: auto;
+
+  bottom: auto;
+
+  transform: none;
+
+  z-index: 60;
+
+  width: 94%;
+
+  margin:
+
+    14px auto 0;
+
+  padding: 4px;
+
+  border-radius: 18px;
+
+}
+
+
+/* Không để menu fixed */
+
+.menu-item {
+
+  min-height: 58px;
+
+  padding:
+    3px 1px;
+
+  gap: 2px;
+
+  font-size: 8px;
+
+}
+
+
+.menu-icon {
+
+  font-size: 25px;
+
+}
+
+
+/* ==================================================
+   MOBILE 720x1520
+   ================================================== */
+
+@media (
+  min-width: 500px
+) and (
+  max-width: 800px
+) {
+
+  .game {
+
+    padding:
+      8px
+      10px
+      15px;
+
+  }
+
+
+  .top-hud {
+
+    width: 92%;
+
+    min-height: 72px;
+
+  }
+
+
+  .game-title {
+
+    width: 70%;
+
+    margin-top: 13px;
+
+  }
+
+
+  .hero-area {
+
+    height: 230px;
+
+  }
+
+
+  .hero {
+
+    width: 132px;
+
+  }
+
+
+  .farm-area {
+
+    width: 92%;
+
+  }
+
+
+  .farm-grid {
+
+    gap: 7px;
+
+  }
+
+
+  .plot {
+
+    aspect-ratio: 1.16 / 1;
+
+  }
+
+
+  .plot-number {
+
+    font-size: 19px;
+
+  }
+
+
+  .bottom-menu {
+
+    width: 92%;
+
+    margin-top: 15px;
+
+  }
+
+
+  .menu-item {
+
+    min-height: 62px;
+
+    font-size: 9px;
+
+  }
+
+
+  .menu-icon {
+
+    font-size: 27px;
+
+  }
+
+}
+
+
+/* ==================================================
+   ĐIỆN THOẠI THẤP
+   ================================================== */
+
+@media (
+  max-height: 1550px
+) {
+
+  .game-title {
+
+    margin-top: 10px;
+
+  }
+
+
+  .hero-area {
+
+    height: 205px;
+
+  }
+
+
+  .hero {
+
+    width: 120px;
+
+    max-height: 200px;
+
+  }
+
+
+  .farm-grid {
+
+    gap: 5px;
+
+  }
+
+
+  .plot {
+
+    aspect-ratio: 1.15 / 1;
+
+  }
+
+
+  .bottom-menu {
+
+    margin-top: 11px;
+
+  }
+
+}
