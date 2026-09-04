@@ -1676,11 +1676,11 @@ body {
 ========================================================= */
 
 .top-hud {
-    width: 84%;
+    width: 70%;
     max-width: 620px;
 
-    height: 92px;
-    min-height: 92px;
+    height: 80px;
+    min-height: 80px;
 
     margin: 12px auto 0;
 
