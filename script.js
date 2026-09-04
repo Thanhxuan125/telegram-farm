@@ -1,5 +1,5 @@
 // =========================
-// DỮ LIỆU HẠT GIỐNG
+// DỮ LIỆU 10 LOẠI CÂY
 // =========================
 
 const seeds = {
@@ -88,7 +88,7 @@ const seeds = {
 
 
 // =========================
-// NGƯỜI CHƠI TẠM THỜI
+// NGƯỜI CHƠI TEST
 // =========================
 
 let player = {
@@ -169,6 +169,31 @@ function updateHUD() {
 
 
 // =========================
+// MỞ BẢNG HẠT
+// =========================
+
+function openSeedPanel(plotNumber) {
+
+  currentPlot =
+    plotNumber;
+
+  selectedPlot.textContent =
+    "Đang chọn ô đất số " +
+    plotNumber;
+
+  seedPanel.classList.add(
+    "show"
+  );
+
+  seedPanel.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+}
+
+
+// =========================
 // BẤM Ô ĐẤT
 // =========================
 
@@ -178,7 +203,7 @@ plots.forEach((plot) => {
     "click",
     () => {
 
-      // Ô khóa
+      // Ô bị khóa
       if (
         plot.classList.contains("locked")
       ) {
@@ -188,7 +213,7 @@ plots.forEach((plot) => {
       }
 
 
-      // Nếu đã có cây
+      // Nếu đang có cây
       if (
         plot.dataset.seed
       ) {
@@ -198,23 +223,8 @@ plots.forEach((plot) => {
       }
 
 
-      currentPlot =
-        plot.dataset.plot;
-
-
-      selectedPlot.textContent =
-        "Đang chọn ô đất số " +
-        currentPlot;
-
-
-      seedPanel.classList.add(
-        "show"
-      );
-
-
-      seedPanel.setAttribute(
-        "aria-hidden",
-        "false"
+      openSeedPanel(
+        plot.dataset.plot
       );
 
     }
@@ -274,7 +284,375 @@ seedPanel.addEventListener(
 
 
 // =========================
-// GIEO HẠT
+// TẠO CÂY TRÊN Ô ĐẤT
+// =========================
+
+function plantSeed(
+  plot,
+  seedId
+) {
+
+  const seed =
+    seeds[seedId];
+
+  if (!seed) {
+    return;
+  }
+
+
+  // Lưu thông tin test
+  plot.dataset.seed =
+    seedId;
+
+  plot.dataset.plantedAt =
+    Date.now();
+
+  plot.dataset.growTime =
+    seed.growTime;
+
+
+  // Xóa nội dung cũ
+  plot.innerHTML = "";
+
+
+  // Tạo vùng cây
+  const plant =
+    document.createElement(
+      "div"
+    );
+
+  plant.className =
+    "plant";
+
+
+  // Cây non
+  const icon =
+    document.createElement(
+      "div"
+    );
+
+  icon.className =
+    "plant-icon";
+
+  icon.textContent =
+    "🌱";
+
+
+  // Tên cây
+  const name =
+    document.createElement(
+      "div"
+    );
+
+  name.className =
+    "plant-name";
+
+  name.textContent =
+    seed.name;
+
+
+  // Thời gian
+  const timer =
+    document.createElement(
+      "div"
+    );
+
+  timer.className =
+    "plant-timer";
+
+
+  // Thanh phát triển
+  const progress =
+    document.createElement(
+      "div"
+    );
+
+  progress.className =
+    "plant-progress";
+
+
+  const progressFill =
+    document.createElement(
+      "div"
+    );
+
+  progressFill.className =
+    "plant-progress-fill";
+
+
+  progress.appendChild(
+    progressFill
+  );
+
+
+  plant.appendChild(icon);
+
+  plant.appendChild(name);
+
+  plant.appendChild(timer);
+
+  plant.appendChild(progress);
+
+
+  plot.appendChild(
+    plant
+  );
+
+
+  // Bắt đầu cập nhật
+  updatePlant(
+    plot
+  );
+
+}
+
+
+// =========================
+// CẬP NHẬT CÂY
+// =========================
+
+function updatePlant(plot) {
+
+  const seedId =
+    plot.dataset.seed;
+
+  if (!seedId) {
+    return;
+  }
+
+
+  const seed =
+    seeds[seedId];
+
+  if (!seed) {
+    return;
+  }
+
+
+  const plantedAt =
+    Number(
+      plot.dataset.plantedAt
+    );
+
+
+  const growTimeMs =
+    seed.growTime *
+    60 *
+    1000;
+
+
+  const now =
+    Date.now();
+
+
+  const elapsed =
+    now - plantedAt;
+
+
+  const percent =
+    Math.min(
+      elapsed /
+      growTimeMs,
+      1
+    );
+
+
+  const remaining =
+    Math.max(
+      0,
+      growTimeMs - elapsed
+    );
+
+
+  const minutes =
+    Math.floor(
+      remaining / 60000
+    );
+
+
+  const seconds =
+    Math.floor(
+      (remaining % 60000) /
+      1000
+    );
+
+
+  const timer =
+    plot.querySelector(
+      ".plant-timer"
+    );
+
+
+  const progressFill =
+    plot.querySelector(
+      ".plant-progress-fill"
+    );
+
+
+  if (!timer || !progressFill) {
+    return;
+  }
+
+
+  // Cây đã trưởng thành
+  if (percent >= 1) {
+
+    timer.textContent =
+      "🌾 Thu hoạch!";
+
+    progressFill.style.width =
+      "100%";
+
+    plot.classList.add(
+      "ready"
+    );
+
+    return;
+
+  }
+
+
+  // Đang lớn
+  timer.textContent =
+    minutes +
+    ":" +
+    String(seconds)
+      .padStart(2, "0");
+
+
+  progressFill.style.width =
+    (percent * 100) +
+    "%";
+
+
+  // Tiếp tục cập nhật
+  setTimeout(
+    () => {
+
+      updatePlant(plot);
+
+    },
+    1000
+  );
+
+}
+
+
+// =========================
+// THU HOẠCH
+// =========================
+
+function harvestPlot(plot) {
+
+  const seedId =
+    plot.dataset.seed;
+
+  if (!seedId) {
+    return;
+  }
+
+
+  const seed =
+    seeds[seedId];
+
+
+  // Chỉ thu hoạch khi đã lớn
+  if (
+    !plot.classList.contains(
+      "ready"
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  // ===================
+  // EXP TEST
+  // ===================
+
+  const gainedExp =
+    Math.floor(
+      Math.random() *
+      291
+    ) + 10;
+
+
+  player.exp +=
+    gainedExp;
+
+
+  // ===================
+  // COIN TEST
+  // ===================
+
+  const sellPrices = {
+
+    wheat: 12,
+    corn: 25,
+    radish: 40,
+    carrot: 75,
+    beet: 88,
+    eggplant: 125,
+    chili: 210,
+    green_onion: 350,
+    cabbage: 750,
+    pumpkin: 1250
+
+  };
+
+
+  player.coins +=
+    sellPrices[seedId];
+
+
+  // ===================
+  // THÔNG BÁO
+  // ===================
+
+  alert(
+    "Thu hoạch " +
+    seed.name +
+    " thành công!\n\n" +
+    "+ " +
+    gainedExp +
+    " EXP\n" +
+    "+ " +
+    sellPrices[seedId] +
+    " coin"
+  );
+
+
+  // ===================
+  // RESET Ô ĐẤT
+  // ===================
+
+  delete plot.dataset.seed;
+
+  delete plot.dataset.plantedAt;
+
+  delete plot.dataset.growTime;
+
+
+  plot.classList.remove(
+    "ready"
+  );
+
+
+  plot.innerHTML =
+    `<span class="plot-number">
+      ${plot.dataset.plot}
+    </span>`;
+
+
+  updateHUD();
+
+}
+
+
+// =========================
+// CHỌN HẠT
 // =========================
 
 seedItems.forEach((item) => {
@@ -301,19 +679,16 @@ seedItems.forEach((item) => {
       }
 
 
-      // ===================
-      // KIỂM TRA LEVEL
-      // ===================
-
+      // Kiểm tra level
       if (
         player.level <
         seed.level
       ) {
 
         alert(
-          "Bạn cần đạt Lv." +
+          "Cần Lv." +
           seed.level +
-          " để mở khóa " +
+          " để trồng " +
           seed.name
         );
 
@@ -322,10 +697,7 @@ seedItems.forEach((item) => {
       }
 
 
-      // ===================
-      // KIỂM TRA COIN
-      // ===================
-
+      // Kiểm tra coin
       if (
         player.coins <
         seed.price
@@ -340,10 +712,6 @@ seedItems.forEach((item) => {
       }
 
 
-      // ===================
-      // TÌM Ô ĐẤT
-      // ===================
-
       const plot =
         document.querySelector(
           `.plot[data-plot="${currentPlot}"]`
@@ -355,64 +723,52 @@ seedItems.forEach((item) => {
       }
 
 
-      // ===================
-      // TRỪ COIN
-      // ===================
-
+      // Trừ coin TEST
       player.coins -=
         seed.price;
 
 
-      // ===================
-      // LƯU HẠT
-      // ===================
-
-      plot.dataset.seed =
-        seedId;
-
-
-      // ===================
-      // XÓA SỐ Ô
-      // ===================
-
-      plot.innerHTML = "";
-
-
-      // ===================
-      // TẠO CÂY
-      // ===================
-
-      const planted =
-        document.createElement(
-          "span"
-        );
-
-
-      planted.className =
-        "planted-seed";
-
-
-      planted.textContent =
-        seed.icon;
-
-
-      plot.appendChild(
-        planted
+      // Trồng cây
+      plantSeed(
+        plot,
+        seedId
       );
 
 
-      // ===================
-      // CẬP NHẬT HUD
-      // ===================
-
+      // Cập nhật HUD
       updateHUD();
 
 
-      // ===================
-      // ĐÓNG BẢNG
-      // ===================
-
+      // Đóng bảng
       closeSeedPanel();
+
+    }
+  );
+
+});
+
+
+// =========================
+// BẤM CÂY ĐỂ THU HOẠCH
+// =========================
+
+plots.forEach((plot) => {
+
+  plot.addEventListener(
+    "click",
+    () => {
+
+      if (
+        plot.classList.contains(
+          "ready"
+        )
+      ) {
+
+        harvestPlot(
+          plot
+        );
+
+      }
 
     }
   );
