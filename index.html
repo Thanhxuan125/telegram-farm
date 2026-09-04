@@ -121,7 +121,175 @@
       class="farm-grid"
       aria-label="Nông trại"
     >
+<!-- =========================
+     HUD NGƯỜI CHƠI
+========================= -->
 
+<section class="player-hud">
+
+  <div class="hud-top">
+
+    <div class="level-box">
+
+      <span
+        class="level-value"
+        id="levelValue"
+      >
+        Lv.1
+      </span>
+
+    </div>
+
+
+    <div class="resource-box">
+
+      <span class="resource-icon">
+        🪙
+      </span>
+
+      <span id="coinValue">
+        1000
+      </span>
+
+    </div>
+
+
+    <div class="resource-box">
+
+      <span class="resource-icon">
+        🧪
+      </span>
+
+      <span id="fertilizerValue">
+        3
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <!-- THANH EXP -->
+
+  <div class="exp-area">
+
+    <div class="exp-bar">
+
+      <div
+        class="exp-fill"
+        id="expFill"
+      ></div>
+
+    </div>
+
+    <span
+      class="exp-text"
+      id="expText"
+    >
+      0 / 7000 EXP
+    </span>
+
+  </div>
+
+</section>
+
+
+<!-- =========================
+     THANH MENU
+========================= -->
+
+<nav
+  class="bottom-menu"
+  aria-label="Menu game"
+>
+
+
+  <button
+    class="menu-button"
+    type="button"
+    id="friendsButton"
+  >
+
+    <span class="menu-icon">
+      👥
+    </span>
+
+    <span class="menu-text">
+      Bạn bè
+    </span>
+
+  </button>
+
+
+  <button
+    class="menu-button"
+    type="button"
+    id="seedsButton"
+  >
+
+    <span class="menu-icon">
+      🌱
+    </span>
+
+    <span class="menu-text">
+      Hạt giống
+    </span>
+
+  </button>
+
+
+  <button
+    class="menu-button"
+    type="button"
+    id="shopButton"
+  >
+
+    <span class="menu-icon">
+      🛒
+    </span>
+
+    <span class="menu-text">
+      Shop
+    </span>
+
+  </button>
+
+
+  <button
+    class="menu-button"
+    type="button"
+    id="tasksButton"
+  >
+
+    <span class="menu-icon">
+      🎯
+    </span>
+
+    <span class="menu-text">
+      Nhiệm vụ
+    </span>
+
+  </button>
+
+
+  <button
+    class="menu-button"
+    type="button"
+    id="walletButton"
+  >
+
+    <span class="menu-icon">
+      💰
+    </span>
+
+    <span class="menu-text">
+      Ví
+    </span>
+
+  </button>
+
+
+</nav>
       <button
         class="plot unlocked"
         data-plot="1"
