@@ -1,1712 +1,289 @@
+/* ==================================================
+   NÔNG TRẠI XANH
+   BLUE FARM GAME UI
+================================================== */
+
+
+/* ==================================================
+   RESET
+================================================== */
+
 * {
-  margin: 0;
-  padding: 0;
+
   box-sizing: border-box;
+
+  margin: 0;
+
+  padding: 0;
+
+  -webkit-tap-highlight-color: transparent;
+
 }
 
 
 html,
 body {
+
   width: 100%;
-  height: 100%;
+
+  min-height: 100%;
+
 }
 
 
 body {
-  overflow: hidden;
-
-  background: #000;
 
   font-family:
     Arial,
     Helvetica,
     sans-serif;
-}
 
+  overflow-x: hidden;
 
-.game {
-  position: relative;
-
-  width: 100%;
-  height: 100dvh;
-
-  overflow: hidden;
-}
-
-
-/* =========================
-   BACKGROUND
-========================= */
-
-.background {
-  position: absolute;
-
-  inset: 0;
-
-  width: 100%;
-  height: 100%;
-
-  display: block;
-
-  object-fit: cover;
-
-  object-position: center center;
-
-  z-index: 0;
-}
-
-
-/* =========================
-   NHÂN VẬT
-========================= */
-
-.hero {
-  position: absolute;
-
-  z-index: 2;
-
-  width: 110px;
-
-  height: auto;
-
-  left: 50%;
-
-  top: 34%;
-
-  transform: translateX(-50%);
-
-  filter:
-    drop-shadow(
-      0 3px 4px rgba(0,0,0,0.25)
-    );
-
-  pointer-events: none;
-}
-
-
-/* =========================
-   HUD
-========================= */
-
-.player-hud {
-  position: absolute;
-
-  z-index: 5;
-
-  top: 12px;
-
-  left: 50%;
-
-  transform: translateX(-50%);
-
-  width: 92%;
-
-  max-width: 360px;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  gap: 10px;
-
-  padding: 8px 10px;
-
-  border-radius: 16px;
-
-  background:
-    rgba(255,255,255,0.88);
-
-  box-shadow:
-    0 3px 10px rgba(0,0,0,0.22);
-
-  backdrop-filter: blur(5px);
-}
-
-
-.hud-level {
-  display: flex;
-
-  align-items: center;
-
-  gap: 8px;
-
-  min-width: 0;
-}
-
-
-.level-badge {
-  width: 38px;
-  height: 38px;
-
-  flex: 0 0 38px;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 50%;
-
-  background:
-    linear-gradient(
-      180deg,
-      #72c85b,
-      #3c962f
-    );
+  background: #087fe5;
 
   color: white;
 
-  font-size: 16px;
+}
 
-  font-weight: bold;
 
-  border: 2px solid #d9f0c9;
+/* ==================================================
+   GAME
+================================================== */
+
+.game {
+
+  position: relative;
+
+  width: 100%;
+
+  min-height: 100vh;
+
+  padding:
+
+    14px
+
+    12px
+
+    18px;
+
+  background-image:
+
+    url("/assets/background.png");
+
+  background-size: cover;
+
+  background-position:
+
+    center top;
+
+  background-repeat: no-repeat;
+
+}
+
+
+/* ==================================================
+   KHUNG TRÊN
+================================================== */
+
+.top-hud {
+
+  position: relative;
+
+  z-index: 50;
+
+  width: min(
+    94%,
+    640px
+  );
+
+  margin:
+
+    0 auto;
+
+  min-height: 82px;
+
+  padding:
+
+    10px;
+
+  display: grid;
+
+  grid-template-columns:
+
+    1fr
+
+    auto
+
+    auto;
+
+  gap: 8px;
+
+  align-items: center;
+
+
+  border:
+
+    2px solid
+
+    rgba(
+      255,
+      255,
+      255,
+      .85
+    );
+
+  border-radius: 23px;
+
+
+  background:
+
+    linear-gradient(
+      180deg,
+      #27bff5 0%,
+      #087fe2 48%,
+      #0754bd 100%
+    );
+
 
   box-shadow:
-    0 2px 5px rgba(0,0,0,0.22);
+
+    0 5px 0
+      rgba(
+        0,
+        62,
+        150,
+        .75
+      ),
+
+    0 8px 18px
+      rgba(
+        0,
+        55,
+        130,
+        .35
+      ),
+
+    inset 0 2px 0
+      rgba(
+        255,
+        255,
+        255,
+        .5
+      );
+
+}
+
+
+/* ==================================================
+   LEVEL
+================================================== */
+
+.level-box {
+
+  min-width: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+}
+
+
+.level-circle {
+
+  flex:
+
+    0 0 54px;
+
+  width: 54px;
+
+  height: 54px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border:
+
+    3px solid
+
+    #d9f8ff;
+
+  border-radius: 50%;
+
+
+  background:
+
+    linear-gradient(
+      180deg,
+      #68d76b,
+      #269f3b
+    );
+
+
+  box-shadow:
+
+    inset 0 3px 4px
+      rgba(
+        255,
+        255,
+        255,
+        .35
+      ),
+
+    0 3px 7px
+      rgba(
+        0,
+        0,
+        0,
+        .3
+      );
+
+}
+
+
+.level-circle span {
+
+  font-size: 24px;
+
+  font-weight: 900;
+
+  color: white;
+
+  text-shadow:
+
+    0 2px 2px
+    rgba(
+      0,
+      0,
+      0,
+      .3
+    );
+
 }
 
 
 .level-info {
-  min-width: 90px;
-
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 2px;
-}
-
-
-.level-info strong {
-  color: #3d742d;
-
-  font-size: 13px;
-}
-
-
-.level-info small {
-  color: #777;
-
-  font-size: 8px;
-}
-
-
-.exp-bar {
-  width: 100%;
-
-  height: 7px;
-
-  overflow: hidden;
-
-  border-radius: 10px;
-
-  background: #d9dfd5;
-}
-
-
-.exp-fill {
-  width: 0%;
-
-  height: 100%;
-
-  border-radius: 10px;
-
-  background:
-    linear-gradient(
-      90deg,
-      #79c95b,
-      #b4e66a
-    );
-
-  transition:
-    width 0.3s ease;
-}
-
-
-.hud-resources {
-  display: flex;
-
-  align-items: center;
-
-  gap: 6px;
-}
-
-
-.resource {
-  min-width: 58px;
-
-  height: 30px;
-
-  padding: 0 7px;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  gap: 4px;
-
-  border-radius: 10px;
-
-  background: #f3f8ed;
-
-  border: 1px solid #d4e5c8;
-}
-
-
-.resource span {
-  font-size: 15px;
-}
-
-
-.resource strong {
-  color: #555;
-
-  font-size: 11px;
-}
-
-
-/* =========================
-   20 Ô ĐẤT
-========================= */
-
-.farm-grid {
-  position: absolute;
-
-  z-index: 3;
-
-  left: 50%;
-
-  top: 64%;
-
-  transform: translateX(-50%);
-
-  width: 62%;
-
-  max-width: 290px;
-
-  display: grid;
-
-  grid-template-columns:
-    repeat(5, 1fr);
-
-  column-gap: 5px;
-
-  row-gap: 6px;
-}
-
-
-.plot {
-  position: relative;
-
-  width: 100%;
-
-  aspect-ratio: 1.15 / 1;
-
-  padding: 0;
-
-  border: 2px solid #99602e;
-
-  border-radius: 9px;
-
-  background:
-    linear-gradient(
-      180deg,
-      #b9783b 0%,
-      #925725 50%,
-      #70401f 100%
-    );
-
-  box-shadow:
-    inset 0 2px 2px
-      rgba(255,255,255,0.18),
-
-    inset 0 -3px 4px
-      rgba(0,0,0,0.25),
-
-    0 2px 4px
-      rgba(0,0,0,0.25);
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  cursor: pointer;
-
-  overflow: hidden;
-
-  -webkit-tap-highlight-color:
-    transparent;
-
-  transition:
-    transform 0.12s ease;
-}
-
-
-.plot::before {
-  content: "";
-
-  position: absolute;
-
-  left: 7px;
-
-  right: 7px;
-
-  top: 0;
-
-  height: 4px;
-
-  border-radius:
-    0 0 50% 50%;
-
-  background: #69ad3c;
-
-  pointer-events: none;
-}
-
-
-.plot.unlocked {
-  background:
-    linear-gradient(
-      180deg,
-      #c07e3e 0%,
-      #995a27 50%,
-      #75421f 100%
-    );
-
-  border-color: #d29a54;
-}
-
-
-.plot.locked {
-  background:
-    linear-gradient(
-      180deg,
-      #806044 0%,
-      #60462f 50%,
-      #493524 100%
-    );
-
-  border-color: #806346;
-
-  opacity: 0.72;
-}
-
-
-.plot-number {
-  position: relative;
-
-  z-index: 2;
-
-  color:
-    rgba(255,255,255,0.9);
-
-  font-size: 9px;
-
-  font-weight: bold;
-
-  text-shadow:
-    0 1px 2px
-    rgba(0,0,0,0.6);
-}
-
-
-.lock {
-  position: relative;
-
-  z-index: 2;
-
-  font-size: 17px;
-
-  filter:
-    drop-shadow(
-      0 2px 2px
-      rgba(0,0,0,0.45)
-    );
-}
-
-
-.plot:active {
-  transform: scale(0.94);
-}
-
-
-/* =========================
-   BẢNG HẠT
-========================= */
-
-.seed-panel {
-  position: fixed;
-
-  inset: 0;
-
-  z-index: 20;
-
-  display: none;
-
-  align-items: flex-end;
-
-  justify-content: center;
-
-  background:
-    rgba(0,0,0,0.48);
-}
-
-
-.seed-panel.show {
-  display: flex;
-}
-
-
-.seed-box {
-  position: relative;
-
-  width: 96%;
-
-  max-width: 430px;
-
-  max-height: 82dvh;
-
-  margin-bottom: 8px;
-
-  padding:
-    16px 8px 10px;
-
-  border-radius:
-    20px 20px 16px 16px;
-
-  background:
-    linear-gradient(
-      180deg,
-      #effcff 0%,
-      #d9f6ff 45%,
-      #c4eefb 100%
-    );
-
-  border:
-    2px solid #65c6e8;
-
-  box-shadow:
-    0 -5px 22px
-    rgba(0,0,0,0.30);
-
-  animation:
-    seedUp 0.2s ease;
-}
-
-
-@keyframes seedUp {
-
-  from {
-    transform:
-      translateY(100%);
-  }
-
-  to {
-    transform:
-      translateY(0);
-  }
-
-}
-
-
-.seed-box h2 {
-  text-align: center;
-
-  margin:
-    0 35px 2px;
-
-  color: #0876ae;
-
-  font-size: 19px;
-
-  text-shadow:
-    0 1px 1px
-    rgba(255,255,255,0.9);
-}
-
-
-.selected-plot {
-  text-align: center;
-
-  margin-bottom: 8px;
-
-  color: #55727d;
-
-  font-size: 11px;
-}
-
-
-.seed-close {
-  position: absolute;
-
-  top: 7px;
-
-  right: 8px;
-
-  width: 31px;
-  height: 31px;
-
-  padding: 0;
-
-  border: 2px solid #b4dbe8;
-
-  border-radius: 50%;
-
-  background: #ffffff;
-
-  color: #468096;
-
-  font-size: 23px;
-
-  line-height: 25px;
-
-  cursor: pointer;
-
-  box-shadow:
-    0 2px 5px
-    rgba(0,0,0,0.15);
-}
-
-
-/* =========================
-   10 THẺ HẠT
-========================= */
-
-.seed-list {
-  display: grid;
-
-  grid-template-columns:
-    repeat(5, 1fr);
-
-  gap: 6px;
-
-  max-height: 62dvh;
-
-  overflow-y: auto;
-
-  padding: 3px;
-
-  -webkit-overflow-scrolling: touch;
-}
-
-
-/* =========================
-   THẺ
-========================= */
-
-.seed-item {
-  position: relative;
 
   min-width: 0;
 
-  min-height: 92px;
-
-  padding:
-    4px 2px 4px;
-
-  border:
-    2px solid #a8e1f4;
-
-  border-radius: 11px;
-
-  background:
-    linear-gradient(
-      180deg,
-      #5cc9ef 0%,
-      #249bd3 48%,
-      #0879b8 100%
-    );
-
-  box-shadow:
-
-    inset 0 2px 2px
-      rgba(255,255,255,0.60),
-
-    inset 0 -3px 4px
-      rgba(0,0,0,0.18),
-
-    0 2px 4px
-      rgba(0,0,0,0.22);
-
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: center;
-
-  justify-content: flex-start;
-
-  gap: 2px;
-
-  text-align: center;
-
-  cursor: pointer;
-
-  overflow: hidden;
-
-  -webkit-tap-highlight-color:
-    transparent;
-
-  transition:
-    transform 0.12s ease,
-    filter 0.12s ease;
 }
 
 
-/* Ánh sáng */
+.level-title {
 
-.seed-item::before {
-  content: "";
+  margin-bottom: 4px;
 
-  position: absolute;
-
-  top: 2px;
-
-  left: 7px;
-
-  right: 7px;
-
-  height: 13px;
-
-  border-radius: 50%;
-
-  background:
-    rgba(255,255,255,0.25);
-
-  pointer-events: none;
-}
-
-
-/* =========================
-   ICON
-========================= */
-
-.seed-icon {
-  position: relative;
-
-  z-index: 2;
-
-  width: 43px;
-  height: 43px;
-
-  margin-top: 2px;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  font-size: 29px;
-
-  line-height: 1;
-
-  filter:
-    drop-shadow(
-      0 2px 2px
-      rgba(0,0,0,0.35)
-    );
-}
-
-
-/* =========================
-   TÊN
-========================= */
-
-.seed-item strong {
-  position: relative;
-
-  z-index: 2;
-
-  width: 100%;
-
-  color: white;
-
-  font-size: 9px;
-
-  font-weight: bold;
-
-  line-height: 11px;
-
-  white-space: nowrap;
-
-  overflow: hidden;
-
-  text-overflow: ellipsis;
-
-  text-shadow:
-    0 1px 2px
-    rgba(0,0,0,0.60);
-}
-
-
-/* =========================
-   GIÁ
-========================= */
-
-.seed-price {
-  position: relative;
-
-  z-index: 2;
-
-  min-width: 40px;
-
-  padding:
-    1px 4px;
-
-  border-radius: 7px;
-
-  background:
-    rgba(255,255,255,0.94);
-
-  color: #146f9d;
-
-  font-size: 8px;
-
-  font-weight: bold;
-
-  line-height: 11px;
-
-  box-shadow:
-    0 1px 2px
-    rgba(0,0,0,0.22);
-}
-
-
-/* =========================
-   LEVEL
-========================= */
-
-.seed-level {
-  position: relative;
-
-  z-index: 2;
-
-  color: #eaffff;
-
-  font-size: 7px;
-
-  font-weight: bold;
-
-  line-height: 9px;
-
-  text-shadow:
-    0 1px 2px
-    rgba(0,0,0,0.50);
-}
-
-
-/* =========================
-   BẤM
-========================= */
-
-.seed-item:active {
-  transform: scale(0.91);
-
-  filter: brightness(1.12);
-}
-
-
-/* =========================
-   SCROLLBAR
-========================= */
-
-.seed-list::-webkit-scrollbar {
-  width: 3px;
-}
-
-
-.seed-list::-webkit-scrollbar-thumb {
-  background: #54afd0;
-
-  border-radius: 10px;
-}
-
-
-/* =========================
-   MÀN HÌNH NHỎ
-========================= */
-
-@media (max-width: 380px) {
-
-  .player-hud {
-    width: 94%;
-
-    padding:
-      7px 8px;
-
-    gap: 5px;
-  }
-
-
-  .level-badge {
-    width: 34px;
-    height: 34px;
-
-    flex-basis: 34px;
-
-    font-size: 14px;
-  }
-
-
-  .level-info {
-    min-width: 75px;
-  }
-
-
-  .resource {
-    min-width: 50px;
-
-    padding: 0 5px;
-  }
-
-
-  .resource span {
-    font-size: 13px;
-  }
-
-
-  .resource strong {
-    font-size: 10px;
-  }
-
-
-  .seed-list {
-    gap: 5px;
-
-    padding: 2px;
-  }
-
-
-  .seed-item {
-    min-height: 84px;
-
-    padding:
-      3px 2px 3px;
-
-    border-radius: 9px;
-  }
-
-
-  .seed-icon {
-    width: 36px;
-    height: 36px;
-
-    font-size: 25px;
-  }
-
-
-  .seed-item strong {
-    font-size: 8px;
-
-    line-height: 10px;
-  }
-
-
-  .seed-price {
-    min-width: 36px;
-
-    font-size: 7px;
-
-    padding:
-      1px 2px;
-  }
-
-
-  .seed-level {
-    font-size: 6px;
-  }
-
-}
-/* =========================
-   CÂY ĐÃ GIEO
-========================= */
-
-.planted-seed {
-
-  position: relative;
-
-  z-index: 4;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  width: 100%;
-
-  height: 100%;
-
-  font-size: 25px;
-
-  filter:
-    drop-shadow(
-      0 2px 2px
-      rgba(0,0,0,0.35)
-    );
-
-  animation:
-    seedAppear 0.2s ease;
-}
-
-
-@keyframes seedAppear {
-
-  from {
-
-    transform:
-      scale(0.4);
-
-    opacity: 0;
-
-  }
-
-  to {
-
-    transform:
-      scale(1);
-
-    opacity: 1;
-
-  }
-
-}
-/* =========================
-   CÂY TRÊN Ô ĐẤT
-========================= */
-
-.plant {
-
-  position: relative;
-
-  z-index: 5;
-
-  width: 100%;
-
-  height: 100%;
-
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: center;
-
-  justify-content: center;
-
-  gap: 1px;
-
-  padding: 2px;
-
-}
-
-
-/* =========================
-   ICON CÂY
-========================= */
-
-.plant-icon {
-
-  font-size: 23px;
-
-  line-height: 1;
-
-  filter:
-    drop-shadow(
-      0 2px 2px
-      rgba(0,0,0,0.35)
-    );
-
-}
-
-
-/* =========================
-   TÊN CÂY
-========================= */
-
-.plant-name {
-
-  max-width: 100%;
-
-  color: white;
-
-  font-size: 6px;
-
-  font-weight: bold;
-
-  white-space: nowrap;
-
-  overflow: hidden;
-
-  text-overflow: ellipsis;
-
-  text-shadow:
-    0 1px 2px
-    rgba(0,0,0,0.7);
-
-}
-
-
-/* =========================
-   ĐỒNG HỒ
-========================= */
-
-.plant-timer {
-
-  min-width: 32px;
-
-  padding: 1px 4px;
-
-  border-radius: 5px;
-
-  background:
-    rgba(0,0,0,0.55);
-
-  color: white;
-
-  font-size: 6px;
-
-  font-weight: bold;
-
-  text-align: center;
-
-}
-
-
-/* =========================
-   THANH TIẾN ĐỘ
-========================= */
-
-.plant-progress {
-
-  width: 80%;
-
-  height: 3px;
-
-  overflow: hidden;
-
-  border-radius: 5px;
-
-  background:
-    rgba(0,0,0,0.35);
-
-}
-
-
-.plant-progress-fill {
-
-  width: 0%;
-
-  height: 100%;
-
-  border-radius: 5px;
-
-  background:
-    #8ee35c;
-
-  transition:
-    width 0.8s linear;
-
-}
-
-
-/* =========================
-   CÂY ĐÃ TRƯỞNG THÀNH
-========================= */
-
-.plot.ready {
-
-  animation:
-    readyPulse 1.2s infinite;
-
-}
-
-
-.plot.ready .plant-icon {
-
-  font-size: 28px;
-
-}
-
-
-.plot.ready .plant-timer {
-
-  background:
-    #e9a900;
-
-}
-
-
-@keyframes readyPulse {
-
-  0% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(1.04);
-  }
-
-  100% {
-    transform: scale(1);
-  }
-
-}
-
-
-/* =========================
-   MÀN HÌNH NHỎ
-========================= */
-
-@media (max-width: 380px) {
-
-  .plant-icon {
-    font-size: 20px;
-  }
-
-  .plot.ready .plant-icon {
-    font-size: 25px;
-  }
-
-  .plant-name {
-    font-size: 5px;
-  }
-
-  .plant-timer {
-    font-size: 5px;
-    min-width: 29px;
-  }
-
-}
-/* =========================
-   NÚT PHÂN BÓN
-========================= */
-
-.fertilizer-button {
-
-  position: absolute;
-
-  z-index: 20;
-
-  left: 50%;
-
-  bottom: 3px;
-
-  transform: translateX(-50%);
-
-  width: 90%;
-
-  min-height: 17px;
-
-  padding: 2px 3px;
-
-  border: 1px solid #fff;
-
-  border-radius: 6px;
-
-  background:
-    linear-gradient(
-      180deg,
-      #74d65c,
-      #319b39
-    );
-
-  color: white;
-
-  font-size: 7px;
-
-  font-weight: bold;
-
-  line-height: 11px;
-
-  text-align: center;
-
-  box-shadow:
-    0 2px 3px
-    rgba(0,0,0,0.35);
-
-  cursor: pointer;
-
-  -webkit-tap-highlight-color:
-    transparent;
-}
-
-
-.fertilizer-button:active {
-
-  transform:
-    translateX(-50%)
-    scale(0.92);
-
-}
-
-
-/* Khi cây đang lớn */
-
-.plot:not(.ready) {
-
-  cursor: pointer;
-
-}
-
-
-/* =========================
-   MÀN HÌNH NHỎ
-========================= */
-
-@media (max-width: 380px) {
-
-  .fertilizer-button {
-
-    font-size: 6px;
-
-    min-height: 15px;
-
-    bottom: 2px;
-
-  }
-
-}
-/* =========================
-   NÚT PHÂN BÓN
-========================= */
-
-.fertilizer-button {
-
-  position: absolute;
-
-  z-index: 20;
-
-  left: 50%;
-
-  bottom: 3px;
-
-  transform: translateX(-50%);
-
-  width: 88%;
-
-  min-height: 17px;
-
-  padding: 2px 3px;
-
-  border: 1px solid rgba(255,255,255,0.9);
-
-  border-radius: 6px;
-
-  background:
-    linear-gradient(
-      180deg,
-      #72dc68 0%,
-      #3cae42 100%
-    );
-
-  color: white;
-
-  font-size: 7px;
-
-  font-weight: bold;
-
-  line-height: 11px;
-
-  text-align: center;
-
-  text-shadow:
-    0 1px 2px
-    rgba(0,0,0,0.4);
-
-  box-shadow:
-    0 2px 4px
-    rgba(0,0,0,0.35);
-
-  cursor: pointer;
-
-  -webkit-tap-highlight-color:
-    transparent;
-
-}
-
-
-/* =========================
-   BẤM NÚT
-========================= */
-
-.fertilizer-button:active {
-
-  transform:
-    translateX(-50%)
-    scale(0.92);
-
-}
-
-
-/* =========================
-   CÂY ĐANG TRƯỞNG THÀNH
-========================= */
-
-.plot.ready {
-
-  animation:
-    readyPulse 1.2s infinite;
-
-}
-
-
-.plot.ready .plant-icon {
-
-  transform:
-    scale(1.08);
-
-}
-
-
-@keyframes readyPulse {
-
-  0% {
-
-    transform:
-      scale(1);
-
-  }
-
-  50% {
-
-    transform:
-      scale(1.035);
-
-  }
-
-  100% {
-
-    transform:
-      scale(1);
-
-  }
-
-}
-
-
-/* =========================
-   CÂY
-========================= */
-
-.plant {
-
-  position: relative;
-
-  z-index: 5;
-
-  width: 100%;
-
-  height: 100%;
-
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: center;
-
-  justify-content: center;
-
-  gap: 1px;
-
-  padding: 2px;
-
-}
-
-
-.plant-icon {
-
-  font-size: 23px;
-
-  line-height: 1;
-
-  filter:
-    drop-shadow(
-      0 2px 2px
-      rgba(0,0,0,0.35)
-    );
-
-}
-
-
-.plant-name {
-
-  max-width: 100%;
-
-  color: white;
-
-  font-size: 6px;
-
-  font-weight: bold;
-
-  white-space: nowrap;
-
-  overflow: hidden;
-
-  text-overflow: ellipsis;
-
-  text-shadow:
-    0 1px 2px
-    rgba(0,0,0,0.7);
-
-}
-
-
-.plant-timer {
-
-  min-width: 32px;
-
-  padding: 1px 4px;
-
-  border-radius: 5px;
-
-  background:
-    rgba(0,0,0,0.55);
-
-  color: white;
-
-  font-size: 6px;
-
-  font-weight: bold;
-
-  text-align: center;
-
-}
-
-
-.plant-progress {
-
-  width: 80%;
-
-  height: 3px;
-
-  overflow: hidden;
-
-  border-radius: 5px;
-
-  background:
-    rgba(0,0,0,0.35);
-
-}
-
-
-.plant-progress-fill {
-
-  width: 0%;
-
-  height: 100%;
-
-  border-radius: 5px;
-
-  background:
-    #8ee35c;
-
-  transition:
-    width 0.8s linear;
-
-}
-
-
-/* =========================
-   MÀN HÌNH NHỎ
-========================= */
-
-@media (max-width: 380px) {
-
-  .plant-icon {
-
-    font-size: 20px;
-
-  }
-
-
-  .plot.ready .plant-icon {
-
-    font-size: 25px;
-
-  }
-
-
-  .plant-name {
-
-    font-size: 5px;
-
-  }
-
-
-  .plant-timer {
-
-    font-size: 5px;
-
-    min-width: 29px;
-
-  }
-
-
-  .fertilizer-button {
-
-    font-size: 6px;
-
-    min-height: 15px;
-
-  }
-
-}
-/* =========================
-   PLAYER HUD
-========================= */
-
-.player-hud {
-
-  position: absolute;
-
-  z-index: 10;
-
-  top: 12px;
-
-  left: 50%;
-
-  transform:
-    translateX(-50%);
-
-  width: 88%;
-
-  max-width: 360px;
-
-  padding: 8px 10px;
-
-  border-radius: 16px;
-
-  background:
-    rgba(255,255,255,0.90);
-
-  border:
-    2px solid
-    rgba(255,255,255,0.75);
-
-  box-shadow:
-    0 3px 10px
-    rgba(0,0,0,0.20);
-
-  backdrop-filter:
-    blur(4px);
-
-}
-
-
-/* =========================
-   HUD TOP
-========================= */
-
-.hud-top {
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  gap: 6px;
-
-}
-
-
-/* =========================
-   LEVEL
-========================= */
-
-.level-box {
-
-  min-width: 52px;
-
-  padding: 6px 8px;
-
-  border-radius: 10px;
-
-  background:
-    linear-gradient(
-      180deg,
-      #6bb9df,
-      #398bb8
-    );
-
-  color: white;
-
-  text-align: center;
-
-  box-shadow:
-    inset 0 1px 2px
-    rgba(255,255,255,0.4);
-
-}
-
-
-.level-value {
-
-  font-size: 13px;
+  font-size: 17px;
 
   font-weight: 900;
 
-  text-shadow:
-    0 1px 2px
-    rgba(0,0,0,0.25);
-
-}
-
-
-/* =========================
-   COIN + PHÂN
-========================= */
-
-.resource-box {
-
-  min-width: 78px;
-
-  padding: 6px 8px;
-
-  border-radius: 10px;
-
-  background:
-    rgba(238,248,241,0.95);
-
-  border:
-    1px solid
-    #d0e3d0;
-
-  color: #385c3d;
-
-  font-size: 12px;
-
-  font-weight: 800;
-
-  text-align: center;
-
-}
-
-
-.resource-icon {
-
-  margin-right: 3px;
-
-}
-
-
-/* =========================
-   EXP
-========================= */
-
-.exp-area {
-
-  position: relative;
-
-  margin-top: 7px;
+  color: white;
 
 }
 
@@ -1715,18 +292,31 @@ body {
 
   width: 100%;
 
-  height: 9px;
+  height: 12px;
 
   overflow: hidden;
 
-  border-radius: 20px;
+  border:
+
+    1px solid
+
+    rgba(
+      255,
+      255,
+      255,
+      .55
+    );
+
+  border-radius: 10px;
 
   background:
-    #d5e3d3;
 
-  border:
-    1px solid
-    rgba(0,0,0,0.08);
+    rgba(
+      0,
+      47,
+      120,
+      .55
+    );
 
 }
 
@@ -1737,103 +327,987 @@ body {
 
   height: 100%;
 
-  border-radius: 20px;
+  border-radius: inherit;
 
   background:
+
     linear-gradient(
       90deg,
-      #62c96b,
-      #a2df5c
+      #b7ff39,
+      #47d95b
     );
 
+  box-shadow:
+
+    inset 0 2px 0
+      rgba(
+        255,
+        255,
+        255,
+        .55
+      );
+
   transition:
-    width 0.3s ease;
+
+    width .3s ease;
 
 }
 
 
 .exp-text {
 
-  display: block;
+  margin-top: 2px;
 
-  margin-top: 3px;
+  font-size: 10px;
 
-  color: #5c735d;
+  color: #e8faff;
 
-  font-size: 8px;
+}
 
-  font-weight: bold;
+
+/* ==================================================
+   COIN + PHÂN
+================================================== */
+
+.resource-box {
+
+  min-width: 76px;
+
+  height: 52px;
+
+  padding:
+
+    5px 9px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 5px;
+
+
+  border:
+
+    1px solid
+
+    rgba(
+      255,
+      255,
+      255,
+      .65
+    );
+
+  border-radius: 15px;
+
+
+  background:
+
+    linear-gradient(
+      180deg,
+      #168ee9,
+      #075dc5
+    );
+
+
+  box-shadow:
+
+    inset 0 2px 0
+      rgba(
+        255,
+        255,
+        255,
+        .25
+      ),
+
+    0 3px 5px
+      rgba(
+        0,
+        45,
+        110,
+        .3
+      );
+
+}
+
+
+.resource-icon {
+
+  font-size: 22px;
+
+}
+
+
+.resource-number {
+
+  font-size: 16px;
+
+  font-weight: 900;
+
+  color: white;
+
+}
+
+
+/* ==================================================
+   TITLE
+================================================== */
+
+.game-title {
+
+  position: relative;
+
+  z-index: 10;
+
+  width: min(
+    92%,
+    430px
+  );
+
+  margin:
+
+    25px auto 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 3px;
 
   text-align: center;
 
 }
 
 
-/* =========================
-   MENU DƯỚI
-========================= */
+.title-text {
 
-.bottom-menu {
+  padding:
 
-  position: absolute;
+    8px 18px 10px;
 
-  z-index: 12;
-
-  left: 50%;
-
-  bottom: 10px;
-
-  transform:
-    translateX(-50%);
-
-  width: 94%;
-
-  max-width: 420px;
-
-  padding: 7px 5px;
-
-  display: grid;
-
-  grid-template-columns:
-    repeat(5, 1fr);
-
-  gap: 4px;
-
-  border-radius: 18px;
+  border-radius: 20px;
 
   background:
-    rgba(255,255,255,0.93);
+
+    linear-gradient(
+      180deg,
+      #f3a72c,
+      #a95608
+    );
+
 
   border:
-    2px solid
-    rgba(255,255,255,0.8);
+
+    3px solid
+
+    #ffd76a;
+
 
   box-shadow:
-    0 -3px 12px
-    rgba(0,0,0,0.18);
 
-  backdrop-filter:
-    blur(5px);
+    0 4px 0
+      #713c08,
+
+    inset 0 2px 0
+      rgba(
+        255,
+        255,
+        255,
+        .45
+      );
 
 }
 
 
-/* =========================
-   BUTTON
-========================= */
+.title-text div {
 
-.menu-button {
+  font-size:
+
+    clamp(
+      27px,
+      8vw,
+      43px
+    );
+
+  line-height: .9;
+
+  font-weight: 1000;
+
+  color: #fff5c7;
+
+  text-shadow:
+
+    0 3px 0 #9d4d00,
+
+    0 5px 5px
+      rgba(
+        0,
+        0,
+        0,
+        .35
+      );
+
+}
+
+
+.title-text strong {
+
+  display: block;
+
+  margin-top: 2px;
+
+  font-size:
+
+    clamp(
+      34px,
+      10vw,
+      52px
+    );
+
+  line-height: .85;
+
+  color: #67df31;
+
+  text-shadow:
+
+    0 3px 0 #207a18,
+
+    0 5px 5px
+      rgba(
+        0,
+        0,
+        0,
+        .35
+      );
+
+}
+
+
+.title-leaf {
+
+  font-size: 32px;
+
+  filter:
+
+    drop-shadow(
+      0 3px 2px
+      rgba(
+        0,
+        0,
+        0,
+        .3
+      )
+    );
+
+}
+
+
+/* ==================================================
+   NHÂN VẬT
+================================================== */
+
+.hero-area {
+
+  position: relative;
+
+  width: 100%;
+
+  height: 285px;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: flex-end;
+
+}
+
+
+.hero {
+
+  position: relative;
+
+  z-index: 8;
+
+  width:
+
+    clamp(
+      125px,
+      30vw,
+      190px
+    );
+
+  max-height: 270px;
+
+  object-fit: contain;
+
+  filter:
+
+    drop-shadow(
+      0 8px 7px
+      rgba(
+        0,
+        0,
+        0,
+        .32
+      )
+    );
+
+}
+
+
+/* ==================================================
+   FARM
+================================================== */
+
+.farm-area {
+
+  position: relative;
+
+  z-index: 20;
+
+  width: min(
+    94%,
+    520px
+  );
+
+  margin:
+
+    -8px auto 0;
+
+}
+
+
+.farm-grid {
+
+  display: grid;
+
+  grid-template-columns:
+
+    repeat(
+      5,
+      1fr
+    );
+
+  gap:
+
+    8px;
+
+}
+
+
+/* ==================================================
+   Ô ĐẤT
+================================================== */
+
+.plot {
+
+  position: relative;
+
+  width: 100%;
+
+  aspect-ratio: 1.18 / 1;
+
+  border:
+
+    3px solid
+
+    #0797ef;
+
+  border-radius: 14px;
+
+  overflow: hidden;
+
+  cursor: pointer;
+
+
+  background:
+
+    linear-gradient(
+      180deg,
+      #6c431f 0%,
+      #4d2b13 52%,
+      #351b0c 100%
+    );
+
+
+  box-shadow:
+
+    0 4px 0
+      #064f9d,
+
+    0 6px 9px
+      rgba(
+        0,
+        45,
+        80,
+        .38
+      ),
+
+    inset 0 2px 0
+      rgba(
+        255,
+        255,
+        255,
+        .2
+      );
+
+
+  transition:
+
+    transform .12s ease,
+
+    filter .12s ease;
+
+}
+
+
+.plot::before {
+
+  content: "";
+
+  position: absolute;
+
+  inset: 4px;
+
+  pointer-events: none;
+
+  border-radius: 9px;
+
+  border:
+
+    1px solid
+
+    rgba(
+      255,
+      203,
+      91,
+      .25
+    );
+
+}
+
+
+.plot::after {
+
+  content: "•  •";
+
+  position: absolute;
+
+  left: 9px;
+
+  top: 5px;
+
+  color:
+
+    rgba(
+      255,
+      255,
+      255,
+      .12
+    );
+
+  font-size: 10px;
+
+}
+
+
+.plot:active {
+
+  transform:
+    scale(.94);
+
+}
+
+
+/* ==================================================
+   SỐ Ô ĐẤT
+================================================== */
+
+.plot-number {
+
+  position: absolute;
+
+  z-index: 3;
+
+  left: 50%;
+
+  top: 50%;
+
+  transform:
+    translate(
+      -50%,
+      -50%
+    );
+
+  font-size:
+
+    clamp(
+      17px,
+      5vw,
+      27px
+    );
+
+  font-weight: 900;
+
+  color: #fff6df;
+
+  text-shadow:
+
+    0 2px 0 #5d2e10,
+
+    0 3px 4px
+      rgba(
+        0,
+        0,
+        0,
+        .5
+      );
+
+}
+
+
+.lock {
+
+  position: absolute;
+
+  z-index: 4;
+
+  right: 5px;
+
+  top: 4px;
+
+  font-size: 10px;
+
+  opacity: .9;
+
+}
+
+
+/* ==================================================
+   Ô KHÓA
+================================================== */
+
+.plot.locked {
+
+  background:
+
+    linear-gradient(
+      180deg,
+      #55331b,
+      #301b0d
+    );
+
+  border-color:
+
+    #0874c8;
+
+  filter:
+
+    saturate(.7);
+
+}
+
+
+.plot.locked .plot-number {
+
+  color:
+
+    rgba(
+      255,
+      255,
+      255,
+      .55
+    );
+
+}
+
+
+/* ==================================================
+   CÂY
+================================================== */
+
+.plant {
+
+  position: relative;
+
+  z-index: 8;
+
+  width: 100%;
+
+  height: 100%;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 2px;
+
+}
+
+
+.plant-icon {
+
+  font-size:
+
+    clamp(
+      22px,
+      6vw,
+      32px
+    );
+
+  line-height: 1;
+
+  filter:
+
+    drop-shadow(
+      0 3px 2px
+      rgba(
+        0,
+        0,
+        0,
+        .35
+      )
+    );
+
+}
+
+
+.plant-name {
+
+  max-width: 92%;
+
+  font-size: 7px;
+
+  font-weight: 900;
+
+  color: white;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  text-shadow:
+
+    0 1px 2px
+    rgba(
+      0,
+      0,
+      0,
+      .8
+    );
+
+}
+
+
+.plant-timer {
+
+  padding:
+
+    2px 5px;
+
+  border-radius: 7px;
+
+  background:
+
+    rgba(
+      0,
+      0,
+      0,
+      .65
+    );
+
+  font-size: 7px;
+
+  font-weight: 900;
+
+  color: white;
+
+}
+
+
+.plant-progress {
+
+  width: 78%;
+
+  height: 4px;
+
+  overflow: hidden;
+
+  border-radius: 5px;
+
+  background:
+
+    rgba(
+      0,
+      0,
+      0,
+      .55
+    );
+
+}
+
+
+.plant-progress-fill {
+
+  width: 0%;
+
+  height: 100%;
+
+  background:
+
+    linear-gradient(
+      90deg,
+      #5ee75c,
+      #d6ff4b
+    );
+
+}
+
+
+/* ==================================================
+   CÂY CHÍN
+================================================== */
+
+.plot.ready {
+
+  border-color:
+
+    #39e8ff;
+
+  box-shadow:
+
+    0 0 0 2px
+      rgba(
+        55,
+        222,
+        255,
+        .25
+      ),
+
+    0 5px 12px
+      rgba(
+        0,
+        95,
+        180,
+        .55
+      );
+
+  animation:
+
+    readyPulse 1.2s infinite;
+
+}
+
+
+@keyframes readyPulse {
+
+  0% {
+
+    transform: scale(1);
+
+  }
+
+  50% {
+
+    transform: scale(1.025);
+
+  }
+
+  100% {
+
+    transform: scale(1);
+
+  }
+
+}
+
+
+/* ==================================================
+   NÚT PHÂN
+================================================== */
+
+.fertilizer-button {
+
+  position: absolute;
+
+  z-index: 30;
+
+  left: 50%;
+
+  bottom: 3px;
+
+  transform:
+    translateX(-50%);
+
+  width: 88%;
+
+  min-height: 19px;
+
+  border:
+
+    1px solid white;
+
+  border-radius: 7px;
+
+  background:
+
+    linear-gradient(
+      180deg,
+      #58e96b,
+      #149c39
+    );
+
+  color: white;
+
+  font-size: 7px;
+
+  font-weight: 900;
+
+  box-shadow:
+
+    0 2px 4px
+      rgba(
+        0,
+        0,
+        0,
+        .4
+      );
+
+}
+
+
+.fertilizer-button:active {
+
+  transform:
+    translateX(-50%)
+    scale(.92);
+
+}
+
+
+/* ==================================================
+   MENU DƯỚI
+================================================== */
+
+.bottom-menu {
+
+  position: relative;
+
+  z-index: 60;
+
+  width: min(
+    94%,
+    620px
+  );
+
+  margin:
+
+    18px auto 0;
+
+  padding: 5px;
+
+
+  display: grid;
+
+  grid-template-columns:
+
+    repeat(
+      5,
+      1fr
+    );
+
+
+  border:
+
+    2px solid
+
+    #80eaff;
+
+  border-radius: 23px;
+
+
+  background:
+
+    linear-gradient(
+      180deg,
+      #19aaf0 0%,
+      #087fe1 48%,
+      #0751b7 100%
+    );
+
+
+  box-shadow:
+
+    0 5px 0
+      #043e8d,
+
+    0 8px 18px
+      rgba(
+        0,
+        40,
+        100,
+        .45
+      ),
+
+    inset 0 2px 0
+      rgba(
+        255,
+        255,
+        255,
+        .4
+      );
+
+}
+
+
+.menu-item {
 
   min-width: 0;
 
-  padding: 5px 2px;
+  min-height: 70px;
 
-  border: none;
+  border: 0;
 
-  border-radius: 12px;
+  border-right:
+
+    1px solid
+
+    rgba(
+      255,
+      255,
+      255,
+      .2
+    );
 
   background:
-    transparent;
+
+    linear-gradient(
+      180deg,
+      rgba(
+        43,
+        190,
+        247,
+        .8
+      ),
+      rgba(
+        5,
+        92,
+        191,
+        .8
+      )
+    );
+
+  color: white;
 
   display: flex;
 
@@ -1847,98 +1321,534 @@ body {
 
   cursor: pointer;
 
-  -webkit-tap-highlight-color:
-    transparent;
+  font-size:
+
+    clamp(
+      8px,
+      2.5vw,
+      12px
+    );
+
+  font-weight: 900;
+
+  text-shadow:
+
+    0 2px 2px
+      rgba(
+        0,
+        0,
+        0,
+        .4
+      );
 
 }
 
 
-.menu-button:active {
+.menu-item:first-child {
+
+  border-radius: 17px 0 0 17px;
+
+}
+
+
+.menu-item:last-child {
+
+  border-right: 0;
+
+  border-radius: 0 17px 17px 0;
+
+}
+
+
+.menu-item:active {
 
   transform:
-    scale(0.90);
-
-  background:
-    #e8f5e8;
+    scale(.94);
 
 }
 
-
-/* =========================
-   ICON
-========================= */
 
 .menu-icon {
 
-  font-size: 21px;
+  display: block;
+
+  font-size:
+
+    clamp(
+      24px,
+      7vw,
+      36px
+    );
 
   line-height: 1;
 
 }
 
 
-/* =========================
-   TEXT
-========================= */
+/* ==================================================
+   SEED PANEL
+================================================== */
 
-.menu-text {
+.seed-panel {
 
-  color: #47704d;
+  position: fixed;
 
-  font-size: 8px;
+  z-index: 200;
 
-  font-weight: 800;
+  inset: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 15px;
+
+  background:
+
+    rgba(
+      0,
+      38,
+      91,
+      .72
+    );
+
+  backdrop-filter:
+
+    blur(4px);
+
+  opacity: 0;
+
+  visibility: hidden;
+
+  pointer-events: none;
+
+  transition:
+
+    opacity .2s ease;
 
 }
 
 
-/* =========================
-   MOBILE
-========================= */
+.seed-panel.show {
 
-@media (max-width: 380px) {
+  opacity: 1;
 
-  .player-hud {
+  visibility: visible;
 
-    top: 8px;
+  pointer-events: auto;
 
-    width: 91%;
+}
 
-    padding: 7px 8px;
+
+.seed-window {
+
+  width: min(
+    94vw,
+    430px
+  );
+
+  max-height: 80vh;
+
+  overflow-y: auto;
+
+  border:
+
+    2px solid
+
+    #8deaff;
+
+  border-radius: 22px;
+
+  background:
+
+    linear-gradient(
+      180deg,
+      #0fa8ed,
+      #0865c8
+    );
+
+  box-shadow:
+
+    0 8px 30px
+      rgba(
+        0,
+        0,
+        0,
+        .5
+      );
+
+}
+
+
+.seed-header {
+
+  min-height: 58px;
+
+  padding:
+
+    8px 12px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  font-size: 19px;
+
+  font-weight: 900;
+
+  text-shadow:
+
+    0 2px 2px
+      rgba(
+        0,
+        0,
+        0,
+        .3
+      );
+
+}
+
+
+.seed-close {
+
+  width: 36px;
+
+  height: 36px;
+
+  border: 0;
+
+  border-radius: 50%;
+
+  background:
+
+    #0871d0;
+
+  color: white;
+
+  font-size: 27px;
+
+  font-weight: bold;
+
+}
+
+
+.selected-plot {
+
+  margin:
+
+    0 12px 10px;
+
+  padding: 8px;
+
+  border-radius: 10px;
+
+  background:
+
+    rgba(
+      0,
+      50,
+      120,
+      .4
+    );
+
+  text-align: center;
+
+  font-size: 12px;
+
+  font-weight: bold;
+
+}
+
+
+.seed-list {
+
+  padding:
+
+    0 10px 12px;
+
+  display: grid;
+
+  grid-template-columns:
+
+    repeat(
+      2,
+      1fr
+    );
+
+  gap: 8px;
+
+}
+
+
+.seed-item {
+
+  min-height: 83px;
+
+  padding: 8px;
+
+  border:
+
+    1px solid
+
+    #9aeaff;
+
+  border-radius: 13px;
+
+  background:
+
+    linear-gradient(
+      180deg,
+      #2bc3f5,
+      #0878d5
+    );
+
+  color: white;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 2px;
+
+  font-size: 26px;
+
+  font-weight: 900;
+
+  box-shadow:
+
+    0 3px 0
+      #0452a0;
+
+}
+
+
+.seed-item span {
+
+  font-size: 12px;
+
+}
+
+
+.seed-item small {
+
+  font-size: 9px;
+
+  opacity: .95;
+
+}
+
+
+.seed-item:active {
+
+  transform:
+    scale(.94);
+
+}
+
+
+/* ==================================================
+   MÀN HÌNH NHỎ
+================================================== */
+
+@media (
+  max-width: 390px
+) {
+
+  .game {
+
+    padding-top: 9px;
 
   }
 
 
-  .level-box {
+  .top-hud {
 
-    min-width: 48px;
+    min-height: 73px;
 
-    padding: 5px 6px;
+    padding: 7px;
+
+    border-radius: 18px;
+
+    gap: 5px;
+
+  }
+
+
+  .level-circle {
+
+    flex-basis: 46px;
+
+    width: 46px;
+
+    height: 46px;
+
+  }
+
+
+  .level-circle span {
+
+    font-size: 21px;
+
+  }
+
+
+  .level-title {
+
+    font-size: 14px;
 
   }
 
 
   .resource-box {
 
-    min-width: 68px;
+    min-width: 63px;
 
-    padding: 5px 5px;
+    height: 45px;
 
-    font-size: 10px;
+    padding: 4px;
+
+  }
+
+
+  .resource-icon {
+
+    font-size: 18px;
+
+  }
+
+
+  .resource-number {
+
+    font-size: 13px;
+
+  }
+
+
+  .game-title {
+
+    margin-top: 18px;
+
+  }
+
+
+  .hero-area {
+
+    height: 245px;
+
+  }
+
+
+  .hero {
+
+    width: 125px;
+
+    max-height: 235px;
+
+  }
+
+
+  .farm-area {
+
+    margin-top: -3px;
+
+  }
+
+
+  .farm-grid {
+
+    gap: 5px;
+
+  }
+
+
+  .plot {
+
+    border-width: 2px;
+
+    border-radius: 10px;
+
+  }
+
+
+  .plot-number {
+
+    font-size: 16px;
+
+  }
+
+
+  .bottom-menu {
+
+    margin-top: 13px;
+
+    border-radius: 19px;
+
+  }
+
+
+  .menu-item {
+
+    min-height: 62px;
 
   }
 
 
   .menu-icon {
 
-    font-size: 19px;
+    font-size: 25px;
+
+  }
+
+}
+
+
+/* ==================================================
+   MÀN HÌNH RẤT THẤP
+================================================== */
+
+@media (
+  max-height: 700px
+) {
+
+  .hero-area {
+
+    height: 210px;
 
   }
 
 
-  .menu-text {
+  .hero {
 
-    font-size: 7px;
+    max-height: 205px;
+
+  }
+
+
+  .game-title {
+
+    margin-top: 12px;
+
+  }
+
+
+  .farm-grid {
+
+    gap: 4px;
+
+  }
+
+
+  .bottom-menu {
+
+    margin-top: 10px;
 
   }
 
