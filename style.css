@@ -1185,3 +1185,92 @@ body {
   }
 
 }
+/* =========================
+   NÚT PHÂN BÓN
+========================= */
+
+.fertilizer-button {
+
+  position: absolute;
+
+  z-index: 20;
+
+  left: 50%;
+
+  bottom: 3px;
+
+  transform: translateX(-50%);
+
+  width: 90%;
+
+  min-height: 17px;
+
+  padding: 2px 3px;
+
+  border: 1px solid #fff;
+
+  border-radius: 6px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #74d65c,
+      #319b39
+    );
+
+  color: white;
+
+  font-size: 7px;
+
+  font-weight: bold;
+
+  line-height: 11px;
+
+  text-align: center;
+
+  box-shadow:
+    0 2px 3px
+    rgba(0,0,0,0.35);
+
+  cursor: pointer;
+
+  -webkit-tap-highlight-color:
+    transparent;
+}
+
+
+.fertilizer-button:active {
+
+  transform:
+    translateX(-50%)
+    scale(0.92);
+
+}
+
+
+/* Khi cây đang lớn */
+
+.plot:not(.ready) {
+
+  cursor: pointer;
+
+}
+
+
+/* =========================
+   MÀN HÌNH NHỎ
+========================= */
+
+@media (max-width: 380px) {
+
+  .fertilizer-button {
+
+    font-size: 6px;
+
+    min-height: 15px;
+
+    bottom: 2px;
+
+  }
+
+}
