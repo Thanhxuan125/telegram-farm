@@ -1,30 +1,41 @@
 /* =========================================================
    NÔNG TRẠI XANH
-   STYLE.CSS HOÀN CHỈNH
-   MOBILE FIRST
+   MOBILE FARM UI
+========================================================= */
+
+
+/* =========================================================
+   RESET
 ========================================================= */
 
 * {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+
+  margin: 0;
+  padding: 0;
+
+  -webkit-tap-highlight-color: transparent;
 }
+
 
 html,
 body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    min-height: 100%;
+  width: 100%;
+  height: 100%;
+
+  margin: 0;
 }
 
+
 body {
-    font-family:
-        Arial,
-        sans-serif;
+  overflow: hidden;
 
-    background: #087fe0;
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
 
-    overflow-x: hidden;
+  background: #087ddd;
 }
 
 
@@ -33,98 +44,96 @@ body {
 ========================================================= */
 
 .game {
-    position: relative;
 
-    width: 100%;
-    min-height: 100dvh;
+  position: relative;
 
-    padding:
-        4px
-        0
-        20px;
+  width: 100%;
+  height: 100dvh;
 
-    background-image:
-        url("assets/background.png");
+  overflow: hidden;
 
-    background-repeat: no-repeat;
+  background-image:
+    url("assets/background.png");
 
-    background-size: cover;
+  background-repeat:
+    no-repeat;
 
-    background-position:
-        center top;
+  background-size:
+    cover;
 
-    overflow: hidden;
+  background-position:
+    center top;
 }
 
 
 /* =========================================================
-   HUD TRÊN CÙNG
-   NHỎ + NẰM CAO
+   HUD TRÊN
 ========================================================= */
 
 .top-hud {
 
-    position: relative;
+  position: absolute;
 
-    z-index: 50;
+  z-index: 50;
 
-    width: 94%;
+  top: 5px;
+  left: 50%;
 
-    height: 62px;
+  transform:
+    translateX(-50%);
 
-    min-height: 70px;
+  width: 94%;
 
-    margin:
-        -5px auto 0;
+  height: 72px;
 
-    padding:
-        5px 7px;
+  padding:
+    5px 7px;
 
-    display: grid;
+  display: grid;
 
-    grid-template-columns:
-        minmax(0, 1fr)
-        70px
-        70px;
+  grid-template-columns:
+    minmax(0,1fr)
+    72px
+    72px;
 
-    align-items: center;
+  align-items: center;
 
-    gap: 5px;
+  gap: 5px;
 
-    border:
-        3px solid
-        #c9f4ff;
+  border:
+    2px solid
+    #bfefff;
 
-    border-radius: 20px;
+  border-radius: 18px;
 
-    background:
-        linear-gradient(
-            180deg,
-            #20b8ed 0%,
-            #1095df 48%,
-            #0871c9 100%
-        );
+  background:
+    linear-gradient(
+      180deg,
+      #23b9ee 0%,
+      #098edc 48%,
+      #075fbd 100%
+    );
 
-    box-shadow:
+  box-shadow:
 
-        0 4px 0
-            #0759a8,
+    0 4px 0
+      #044990,
 
-        0 6px 12px
-            rgba(
-                0,
-                0,
-                0,
-                .28
-            ),
+    0 6px 12px
+      rgba(
+        0,
+        40,
+        100,
+        .30
+      ),
 
-        inset 0 2px 0
-            rgba(
-                255,
-                255,
-                255,
-                .35
-            );
+    inset 0 2px 0
+      rgba(
+        255,
+        255,
+        255,
+        .30
+      );
 }
 
 
@@ -134,166 +143,147 @@ body {
 
 .level-area {
 
-    min-width: 0;
+  min-width: 0;
 
-    display: flex;
+  display: flex;
 
-    align-items: center;
+  align-items: center;
 
-    gap: 6px;
+  gap: 6px;
 }
 
 
 .level-circle {
 
-    width: 48px;
+  width: 45px;
+  height: 45px;
 
-    height: 48px;
+  flex:
+    0 0 45px;
 
-    flex:
-        0 0 48px;
+  display: flex;
 
-    display: flex;
+  align-items: center;
 
-    align-items: center;
+  justify-content: center;
 
-    justify-content: center;
+  border:
+    2px solid
+    #eafff1;
 
-    border:
-        3px solid
-        #eaffee;
+  border-radius: 50%;
 
-    border-radius: 50%;
+  background:
+    linear-gradient(
+      180deg,
+      #6add62,
+      #27a83f
+    );
 
-    background:
-        linear-gradient(
-            180deg,
-            #69db61,
-            #27a93f
-        );
+  box-shadow:
 
-    box-shadow:
+    0 3px 0
+      #14772d,
 
-        0 3px 0
-            #147b31,
-
-        0 3px 7px
-            rgba(
-                0,
-                0,
-                0,
-                .3
-            ),
-
-        inset 0 2px 4px
-            rgba(
-                255,
-                255,
-                255,
-                .3
-            );
+    inset 0 2px 3px
+      rgba(
+        255,
+        255,
+        255,
+        .30
+      );
 }
 
 
 .level-circle span {
 
-    color: white;
+  color: white;
 
-    font-size: 20px;
+  font-size: 21px;
 
-    font-weight: 900;
+  font-weight: 900;
 
-    text-shadow:
-        0 2px 2px
-        rgba(
-            0,
-            0,
-            0,
-            .35
-        );
+  text-shadow:
+    0 2px 2px
+    rgba(
+      0,
+      0,
+      0,
+      .3
+    );
 }
 
 
 .level-info {
 
-    min-width: 0;
+  min-width: 0;
 
-    flex: 1;
+  flex: 1;
 }
 
 
 .level-title {
 
-    margin:
-        0 0 3px;
+  margin-bottom: 2px;
 
-    color: white;
+  color: white;
 
-    font-size: 16px;
+  font-size: 14px;
 
-    font-weight: 900;
+  font-weight: 900;
 
-    white-space: nowrap;
-
-    text-shadow:
-        0 2px 2px
-        rgba(
-            0,
-            0,
-            0,
-            .35
-        );
+  white-space: nowrap;
 }
 
 
 .exp-bar {
 
-    width: 100%;
+  width: 100%;
 
-    max-width: 105px;
+  max-width: 110px;
 
-    height: 8px;
+  height: 7px;
 
-    overflow: hidden;
+  overflow: hidden;
 
-    border:
-        1px solid
-        #0867ad;
+  border-radius: 10px;
 
-    border-radius: 10px;
-
-    background:
-        #d8e4df;
+  background:
+    rgba(
+      220,
+      235,
+      235,
+      .85
+    );
 }
 
 
-.exp-fill,
-#expFill {
+.exp-fill {
 
-    width: 0%;
+  width: 0%;
 
-    height: 100%;
+  height: 100%;
 
-    border-radius: 10px;
+  border-radius: inherit;
 
-    background:
-        linear-gradient(
-            90deg,
-            #65e66b,
-            #a9f56d
-        );
+  background:
+    linear-gradient(
+      90deg,
+      #6ae75c,
+      #b8f46a
+    );
 }
 
 
 .exp-text {
 
-    margin-top: 2px;
+  margin-top: 2px;
 
-    color: white;
+  color: white;
 
-    font-size: 8px;
+  font-size: 7px;
 
-    white-space: nowrap;
+  white-space: nowrap;
 }
 
 
@@ -303,168 +293,159 @@ body {
 
 .resource-box {
 
-    width: 70px;
+  width: 72px;
 
-    min-width: 70px;
+  height: 40px;
 
-    height: 40px;
+  display: flex;
 
-    padding: 3px;
+  align-items: center;
 
-    display: flex;
+  justify-content: center;
 
-    align-items: center;
+  gap: 3px;
 
-    justify-content: center;
+  border:
+    1px solid
+    #afeaff;
 
-    gap: 3px;
+  border-radius: 13px;
 
-    border:
-        1px solid
-        #aeeaff;
+  background:
+    linear-gradient(
+      180deg,
+      #168fe2,
+      #086bc4
+    );
 
-    border-radius: 14px;
+  color: white;
 
-    background:
-        linear-gradient(
-            180deg,
-            #168fe0,
-            #0870c8
-        );
+  box-shadow:
 
-    color: white;
+    inset 0 1px 0
+      rgba(
+        255,
+        255,
+        255,
+        .30
+      ),
 
-    font-size: 13px;
-
-    font-weight: 900;
-
-    box-shadow:
-
-        inset 0 1px 0
-            rgba(
-                255,
-                255,
-                255,
-                .35
-            ),
-
-        0 2px 4px
-            rgba(
-                0,
-                0,
-                0,
-                .2
-            );
+    0 2px 4px
+      rgba(
+        0,
+        0,
+        0,
+        .22
+      );
 }
 
 
 .resource-icon {
-    font-size: 17px;
+
+  font-size: 16px;
+
 }
 
 
 .resource-number {
-    font-size: 13px;
 
-    font-weight: 900;
+  font-size: 12px;
 
-    color: white;
+  font-weight: 900;
 }
 
 
 /* =========================================================
    NHÂN VẬT
+   HẠ THẤP HƠN
 ========================================================= */
 
 .hero-area {
 
-    position: relative;
+  position: absolute;
 
-    z-index: 5;
+  z-index: 8;
 
-    width: 100%;
+  left: 0;
 
-    height: 270px;
+  top: 31%;
 
-    margin-top: 1px;
+  width: 100%;
 
-    display: flex;
+  height: 25%;
 
-    align-items: flex-end;
+  display: flex;
 
-    justify-content: center;
+  align-items: flex-end;
 
-    pointer-events: none;
+  justify-content: center;
+
+  pointer-events: none;
 }
 
 
 .hero {
 
-    width: 118px;
+  width: 118px;
 
-    max-width: 28vw;
+  max-width: 25vw;
 
-    max-height: 260px;
+  max-height: 230px;
 
-    height: auto;
+  height: auto;
 
-    object-fit: contain;
+  object-fit: contain;
 
-    object-position: bottom;
+  object-position: bottom;
 
-    position: relative;
+  filter:
 
-    bottom: 2px;
-
-    z-index: 8;
-
-    filter:
-        drop-shadow(
-            0 5px 4px
-            rgba(
-                0,
-                0,
-                0,
-                .30
-            )
-        );
+    drop-shadow(
+      0 5px 4px
+      rgba(
+        0,
+        0,
+        0,
+        .32
+      )
+    );
 }
 
 
 /* =========================================================
-   20 Ô ĐẤT
-   NHỎ + KHÔNG CHE NHÀ/HÀNG RÀO
+   KHU 20 Ô ĐẤT
+   XUỐNG DƯỚI HÀNG RÀO
 ========================================================= */
 
 .farm-area {
 
-    position: relative;
+  position: absolute;
 
-    z-index: 20;
+  z-index: 20;
 
-    width: 68%;
+  left: 50%;
 
-    max-width: 430px;
+  top: 57.5%;
 
-    margin:
-        90px auto 0;
+  transform:
+    translateX(-50%);
+
+  width: 70%;
+
+  max-width: 440px;
 }
 
 
-/* =========================================================
-   GRID 5 × 4
-========================================================= */
-
 .farm-grid {
 
-    width: 100%;
+  width: 100%;
 
-    display: grid;
+  display: grid;
 
-    grid-template-columns:
-        repeat(5, 1fr);
+  grid-template-columns:
+    repeat(5,1fr);
 
-    gap: 5px;
+  gap: 5px;
 }
 
 
@@ -474,169 +455,143 @@ body {
 
 .plot {
 
-    position: relative;
+  position: relative;
 
-    width: 100%;
+  width: 100%;
 
-    min-width: 0;
+  aspect-ratio:
+    1.12 / 1;
 
-    aspect-ratio:
-        1 / .88;
+  padding: 0;
 
-    padding: 0;
+  border:
+    2px solid
+    #0797e9;
 
-    display: flex;
+  border-radius: 10px;
 
-    align-items: center;
+  background:
+    linear-gradient(
+      145deg,
+      #61391e 0%,
+      #472715 48%,
+      #2f1a0c 100%
+    );
 
-    justify-content: center;
+  box-shadow:
 
-    overflow: hidden;
+    0 3px 0
+      #064d91,
 
-    border:
-        3px solid
-        #0798e8;
+    0 4px 6px
+      rgba(
+        0,
+        0,
+        0,
+        .30
+      ),
 
-    border-radius: 11px;
+    inset 0 1px 0
+      rgba(
+        255,
+        255,
+        255,
+        .10
+      );
 
-    background:
-        linear-gradient(
-            145deg,
-            #633a1d 0%,
-            #482714 55%,
-            #321b10 100%
-        );
+  display: flex;
 
-    box-shadow:
+  align-items: center;
 
-        0 3px 0
-            #064d91,
+  justify-content: center;
 
-        0 5px 7px
-            rgba(
-                0,
-                0,
-                0,
-                .28
-            ),
+  overflow: hidden;
 
-        inset 0 2px 0
-            rgba(
-                255,
-                255,
-                255,
-                .10
-            ),
-
-        inset 0 -3px 0
-            rgba(
-                0,
-                0,
-                0,
-                .25
-            );
-
-    cursor: pointer;
+  cursor: pointer;
 }
 
 
-/* =========================================================
-   VIỀN TRONG Ô
-========================================================= */
+/* Viền đất bên trong */
 
 .plot::after {
 
-    content: "";
+  content: "";
 
-    position: absolute;
+  position: absolute;
 
-    inset: 6px;
+  inset: 5px;
 
-    z-index: 1;
+  border:
+    1px solid
+    rgba(
+      220,
+      165,
+      95,
+      .35
+    );
 
-    border:
-        1px solid
-        rgba(
-            222,
-            164,
-            91,
-            .45
-        );
+  border-radius: 7px;
 
-    border-radius: 7px;
-
-    pointer-events: none;
+  pointer-events: none;
 }
 
 
-/* =========================================================
-   SỐ Ô
-========================================================= */
+/* SỐ */
 
 .plot-number {
 
-    position: relative;
+  position: relative;
 
-    z-index: 5;
+  z-index: 5;
 
-    color:
-        #fff4df;
+  color:
+    #fff3df;
 
-    font-size: 17px;
+  font-size: 16px;
 
-    font-weight: 900;
+  font-weight: 900;
 
-    text-shadow:
+  text-shadow:
 
-        0 2px 2px
-            #281308,
-
-        0 0 3px
-            rgba(
-                0,
-                0,
-                0,
-                .4
-            );
+    0 2px 2px
+      rgba(
+        0,
+        0,
+        0,
+        .70
+      );
 }
 
 
-/* =========================================================
-   Ô KHÓA
-========================================================= */
-
-.plot.locked {
-
-    background:
-        linear-gradient(
-            145deg,
-            #43291c,
-            #241810
-        );
-
-    border-color:
-        #087fd2;
-}
-
-
-.plot.locked .plot-number {
-
-    color:
-        #aaa49d;
-}
-
+/* KHÓA */
 
 .lock {
 
-    position: absolute;
+  position: absolute;
 
-    z-index: 10;
+  z-index: 8;
 
-    top: 3px;
+  top: 3px;
 
-    right: 4px;
+  right: 3px;
 
-    font-size: 9px;
+  font-size: 8px;
+}
+
+
+/* Ô KHÓA */
+
+.plot.locked {
+
+  opacity: .90;
+
+  background:
+    linear-gradient(
+      145deg,
+      #452a1c,
+      #24170e
+    );
+
 }
 
 
@@ -646,129 +601,117 @@ body {
 
 .plant {
 
-    position: relative;
+  position: relative;
 
-    z-index: 6;
+  z-index: 10;
 
-    width: 100%;
+  width: 100%;
 
-    height: 100%;
+  height: 100%;
 
-    display: flex;
+  display: flex;
 
-    flex-direction: column;
+  flex-direction: column;
 
-    align-items: center;
+  align-items: center;
 
-    justify-content: center;
+  justify-content: center;
 
-    gap: 1px;
+  gap: 1px;
 }
 
 
 .plant-icon {
 
-    font-size: 19px;
+  font-size: 19px;
 
-    line-height: 1;
+  line-height: 1;
 
-    filter:
-        drop-shadow(
-            0 2px 2px
-            rgba(
-                0,
-                0,
-                0,
-                .4
-            )
-        );
+  filter:
+    drop-shadow(
+      0 2px 2px
+      rgba(
+        0,
+        0,
+        0,
+        .40
+      )
+    );
 }
 
 
 .plant-name {
 
-    max-width: 95%;
+  max-width: 90%;
 
-    color: white;
+  color: white;
 
-    font-size: 5px;
+  font-size: 5px;
 
-    font-weight: 900;
+  font-weight: 900;
 
-    white-space: nowrap;
+  white-space: nowrap;
 
-    overflow: hidden;
+  overflow: hidden;
 
-    text-overflow: ellipsis;
+  text-overflow: ellipsis;
 
-    text-shadow:
-        0 1px 2px
-        rgba(
-            0,
-            0,
-            0,
-            .8
-        );
+  text-shadow:
+    0 1px 2px #000;
 }
 
 
 .plant-timer {
 
-    padding:
-        1px 3px;
+  padding:
+    1px 3px;
 
-    border-radius: 5px;
+  border-radius: 5px;
 
-    background:
-        rgba(
-            0,
-            0,
-            0,
-            .62
-        );
+  background:
+    rgba(
+      0,
+      0,
+      0,
+      .60
+    );
 
-    color: white;
+  color: white;
 
-    font-size: 5px;
+  font-size: 5px;
 
-    font-weight: 900;
+  font-weight: 900;
 }
 
 
 .plant-progress {
 
-    width: 72%;
+  width: 72%;
 
-    height: 2px;
+  height: 2px;
 
-    overflow: hidden;
+  overflow: hidden;
 
-    border-radius: 5px;
+  border-radius: 5px;
 
-    background:
-        rgba(
-            0,
-            0,
-            0,
-            .45
-        );
+  background:
+    rgba(
+      0,
+      0,
+      0,
+      .45
+    );
 }
 
 
 .plant-progress-fill {
 
-    width: 0%;
+  width: 0%;
 
-    height: 100%;
+  height: 100%;
 
-    border-radius: 5px;
-
-    background:
-        linear-gradient(
-            90deg,
-            #57cf5b,
-            #b4ef68
-        );
+  background:
+    #70e75a;
 }
 
 
@@ -778,596 +721,598 @@ body {
 
 .fertilizer-button {
 
-    position: absolute;
+  position: absolute;
 
-    z-index: 20;
+  z-index: 25;
 
-    left: 50%;
+  left: 50%;
 
-    bottom: 3px;
+  bottom: 2px;
 
-    transform:
-        translateX(-50%);
+  transform:
+    translateX(-50%);
 
-    width: 84%;
+  width: 85%;
 
-    min-height: 14px;
+  min-height: 14px;
 
-    padding:
-        1px 2px;
+  padding: 1px;
 
-    border:
-        1px solid white;
+  border:
+    1px solid white;
 
-    border-radius: 5px;
+  border-radius: 5px;
 
-    background:
-        linear-gradient(
-            180deg,
-            #65db69,
-            #28963a
-        );
+  background:
+    linear-gradient(
+      180deg,
+      #63db69,
+      #248e39
+    );
 
-    color: white;
+  color: white;
 
-    font-size: 5px;
+  font-size: 5px;
 
-    font-weight: 900;
+  font-weight: 900;
 }
 
 
 /* =========================================================
-   Ô CHÍN
+   CÂY CHÍN
 ========================================================= */
 
 .plot.ready {
 
-    animation:
-        readyPulse 1.2s infinite;
+  animation:
+    readyPulse
+    1.2s infinite;
 }
 
 
 @keyframes readyPulse {
 
-    0% {
-        transform:
-            scale(1);
-    }
+  0% {
+    transform:
+      scale(1);
+  }
 
-    50% {
-        transform:
-            scale(1.025);
-    }
+  50% {
+    transform:
+      scale(1.025);
+  }
 
-    100% {
-        transform:
-            scale(1);
-    }
+  100% {
+    transform:
+      scale(1);
+  }
+
 }
 
 
 /* =========================================================
-   MENU DƯỚI 20 Ô
+   MENU DƯỚI
+   NẰM CUỐI BACKGROUND
 ========================================================= */
 
 .bottom-menu {
 
-    position: relative;
+  position: absolute;
 
-    z-index: 60;
+  z-index: 60;
 
-    width: 76%;
+  left: 50%;
 
-    max-width: 430px;
+  bottom: 12px;
 
-    height: 65px;
+  transform:
+    translateX(-50%);
 
-    margin:
-        30px auto 24px;
+  width: 76%;
 
-    padding: 3px;
+  max-width: 450px;
 
-    display: grid;
+  height: 63px;
 
-    grid-template-columns:
-        repeat(5, 1fr);
+  padding: 3px;
 
-    overflow: hidden;
+  display: grid;
 
-    border:
-        3px solid
-        #b9efff;
+  grid-template-columns:
+    repeat(5,1fr);
 
-    border-radius: 18px;
+  border:
+    2px solid
+    #bcefff;
 
-    background:
-        linear-gradient(
-            180deg,
-            #20b4ed 0%,
-            #0d91dc 48%,
-            #0875cf 100%
-        );
+  border-radius: 18px;
 
-    box-shadow:
+  overflow: hidden;
 
-        0 4px 0
-            #075aa5,
+  background:
+    linear-gradient(
+      180deg,
+      #20b6ed,
+      #0b8dd9 50%,
+      #076dc7
+    );
 
-        0 7px 12px
-            rgba(
-                0,
-                0,
-                0,
-                .28
-            ),
+  box-shadow:
 
-        inset 0 2px 0
-            rgba(
-                255,
-                255,
-                255,
-                .3
-            );
+    0 4px 0
+      #064c94,
+
+    0 6px 12px
+      rgba(
+        0,
+        0,
+        0,
+        .30
+      ),
+
+    inset 0 2px 0
+      rgba(
+        255,
+        255,
+        255,
+        .30
+      );
 }
 
 
-/* =========================================================
-   NÚT MENU
-========================================================= */
+/* MENU ITEM */
 
 .menu-item {
 
-    min-width: 0;
+  min-width: 0;
 
-    min-height: 58px;
+  min-height: 55px;
 
-    padding:
-        2px 1px;
+  padding:
+    2px 1px;
 
-    display: flex;
+  border: 0;
 
-    flex-direction: column;
+  border-right:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      .20
+    );
 
-    align-items: center;
+  background: transparent;
 
-    justify-content: center;
+  display: flex;
 
-    gap: 0;
+  flex-direction: column;
 
-    border: 0;
+  align-items: center;
 
-    border-right:
-        1px solid
-        rgba(
-            255,
-            255,
-            255,
-            .18
-        );
+  justify-content: center;
 
-    background:
-        transparent;
+  gap: 1px;
 
-    color: white;
+  color: white;
 
-    font-size: 7px;
+  font-size: 7px;
 
-    font-weight: 900;
+  font-weight: 900;
 
-    text-align: center;
-
-    text-shadow:
-        0 1px 2px
-        rgba(
-            0,
-            0,
-            0,
-            .45
-        );
+  text-shadow:
+    0 1px 2px
+    rgba(
+      0,
+      0,
+      0,
+      .45
+    );
 }
 
 
 .menu-item:last-child {
-    border-right: none;
+
+  border-right: 0;
+
 }
 
 
 .menu-icon {
 
-    font-size: 21px;
+  font-size: 20px;
 
-    line-height: 23px;
+  line-height: 22px;
 }
 
 
 .menu-item:active {
 
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            .15
-        );
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      .15
+    );
 
-    transform:
-        scale(.96);
+  transform:
+    scale(.95);
+
 }
 
 
 /* =========================================================
-   BẢNG HẠT
+   BẢNG CHỌN HẠT
 ========================================================= */
 
 .seed-panel {
 
-    position: fixed;
+  position: fixed;
 
-    inset: 0;
+  inset: 0;
 
-    z-index: 200;
+  z-index: 200;
 
-    display: none;
+  display: none;
 
-    align-items: center;
+  align-items: center;
 
-    justify-content: center;
+  justify-content: center;
 
-    padding: 20px;
+  padding: 15px;
 
-    background:
-        rgba(
-            0,
-            35,
-            70,
-            .65
-        );
+  background:
+    rgba(
+      0,
+      37,
+      82,
+      .70
+    );
+
+  backdrop-filter:
+    blur(3px);
 }
 
 
 .seed-panel.show {
-    display: flex;
+
+  display: flex;
+
 }
 
 
 .seed-box {
 
-    position: relative;
+  position: relative;
 
-    width: 94%;
+  width: 94%;
 
-    max-width: 420px;
+  max-width: 420px;
 
-    max-height: 80vh;
+  max-height: 82vh;
 
-    overflow-y: auto;
+  overflow-y: auto;
 
-    padding: 18px;
+  padding:
+    15px 10px 12px;
 
-    border:
-        3px solid
-        #bceeff;
+  border:
+    2px solid
+    #aeeaff;
 
-    border-radius: 22px;
+  border-radius: 20px;
 
-    background:
-        linear-gradient(
-            180deg,
-            #21afe9,
-            #0876cf
-        );
+  background:
+    linear-gradient(
+      180deg,
+      #159fe4,
+      #076ac6
+    );
 
-    box-shadow:
-        0 8px 25px
-        rgba(
-            0,
-            0,
-            0,
-            .45
-        );
+  box-shadow:
+    0 8px 25px
+    rgba(
+      0,
+      0,
+      0,
+      .45
+    );
 }
 
 
 .seed-box h2 {
 
-    margin:
-        0 0 4px;
+  margin-bottom: 3px;
 
-    color: white;
+  color: white;
 
-    text-align: center;
+  text-align: center;
+
+  font-size: 19px;
 }
 
 
 .seed-box p {
 
-    margin:
-        0 0 12px;
+  margin-bottom: 9px;
 
-    color: white;
+  color: #e7faff;
 
-    text-align: center;
+  text-align: center;
 
-    font-size: 12px;
+  font-size: 11px;
 }
 
 
 .seed-close {
 
-    position: absolute;
+  position: absolute;
 
-    top: 8px;
+  top: 7px;
 
-    right: 10px;
+  right: 8px;
 
-    width: 30px;
+  width: 30px;
 
-    height: 30px;
+  height: 30px;
 
-    border: 0;
+  border: 0;
 
-    border-radius: 50%;
+  border-radius: 50%;
 
-    background:
-        #075fae;
+  background:
+    #075cae;
 
-    color: white;
+  color: white;
 
-    font-size: 16px;
+  font-size: 22px;
 }
 
 
 .seed-list {
 
-    display: grid;
+  display: grid;
 
-    grid-template-columns:
-        repeat(2, 1fr);
+  grid-template-columns:
+    repeat(2,1fr);
 
-    gap: 8px;
+  gap: 6px;
 }
 
 
 .seed-item {
 
-    min-height: 75px;
+  min-height: 76px;
 
-    border:
-        1px solid
-        #aeeaff;
+  padding: 4px;
 
-    border-radius: 12px;
+  border:
+    1px solid
+    #aeeaff;
 
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            .14
-        );
+  border-radius: 11px;
 
-    color: white;
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      .13
+    );
 
-    display: flex;
+  color: white;
 
-    flex-direction: column;
+  display: flex;
 
-    align-items: center;
+  flex-direction: column;
 
-    justify-content: center;
+  align-items: center;
 
-    gap: 2px;
+  justify-content: center;
+
+  gap: 1px;
+}
+
+
+.seed-item > span {
+
+  font-size: 26px;
+
+  line-height: 27px;
 }
 
 
 .seed-item b {
-    font-size: 12px;
+
+  font-size: 11px;
 }
 
 
 .seed-item small {
-    font-size: 9px;
-}
 
-
-.seed-item:active {
-    transform:
-        scale(.95);
+  font-size: 8px;
 }
 
 
 /* =========================================================
-   ĐIỆN THOẠI NHỎ
+   MÀN HÌNH ĐIỆN THOẠI
 ========================================================= */
 
-@media (max-width: 380px) {
+@media (max-width: 500px) {
 
-    .game {
-        padding-top: 3px;
-    }
+  .top-hud {
 
+    width: 94%;
 
-    .top-hud {
+    height: 70px;
 
-        width: 94%;
-
-        height: 76px;
-
-        min-height: 76px;
-
-        margin-top: 2px;
-
-        grid-template-columns:
-            minmax(0, 1fr)
-            64px
-            64px;
-
-        gap: 4px;
-    }
+    grid-template-columns:
+      minmax(0,1fr)
+      68px
+      68px;
+  }
 
 
-    .level-circle {
+  .level-circle {
 
-        width: 42px;
+    width: 42px;
 
-        height: 42px;
+    height: 42px;
 
-        flex-basis: 42px;
-    }
-
-
-    .level-circle span {
-        font-size: 18px;
-    }
+    flex-basis: 42px;
+  }
 
 
-    .level-title {
-        font-size: 13px;
-    }
+  .level-circle span {
+
+    font-size: 19px;
+
+  }
 
 
-    .exp-bar {
-        max-width: 95px;
-        height: 7px;
-    }
+  .level-title {
+
+    font-size: 13px;
+
+  }
 
 
-    .exp-text {
-        font-size: 7px;
-    }
+  .resource-box {
+
+    width: 68px;
+
+    min-width: 68px;
+
+    height: 38px;
+
+  }
 
 
-    .resource-box {
+  .resource-icon {
 
-        width: 64px;
+    font-size: 14px;
 
-        min-width: 64px;
-
-        height: 36px;
-
-        border-radius: 12px;
-    }
+  }
 
 
-    .resource-icon {
-        font-size: 14px;
-    }
+  .resource-number {
+
+    font-size: 11px;
+
+  }
 
 
-    .resource-number {
-        font-size: 10px;
-    }
+  .hero-area {
+
+    top: 32%;
+
+    height: 25%;
+
+  }
 
 
-    .hero-area {
-        height: 250px;
-    }
+  .hero {
+
+    width: 112px;
+
+  }
 
 
-    .hero {
-        width: 110px;
-    }
+  .farm-area {
+
+    top: 58%;
+
+    width: 70%;
+
+  }
 
 
-    .farm-area {
+  .farm-grid {
 
-        width: 72%;
+    gap: 4px;
 
-        margin-top: 45px;
-    }
-
-
-    .farm-grid {
-        gap: 4px;
-    }
+  }
 
 
-    .plot {
-        border-width: 2px;
-        border-radius: 9px;
-    }
+  .plot {
+
+    border-radius: 9px;
+
+  }
 
 
-    .plot-number {
-        font-size: 15px;
-    }
+  .plot-number {
+
+    font-size: 15px;
+
+  }
 
 
-    .lock {
-        top: 2px;
-        right: 3px;
-        font-size: 8px;
-    }
+  .bottom-menu {
+
+    width: 76%;
+
+    height: 60px;
+
+    bottom: 10px;
+
+  }
 
 
-    .bottom-menu {
+  .menu-item {
 
-        width: 72%;
+    min-height: 53px;
 
-        height: 60px;
+    font-size: 6px;
 
-        margin:
-            16px auto 23px;
-
-        border-radius: 17px;
-    }
+  }
 
 
-    .menu-item {
+  .menu-icon {
 
-        min-height: 54px;
+    font-size: 19px;
 
-        font-size: 6px;
-    }
+  }
 
-
-    .menu-icon {
-        font-size: 18px;
-        line-height: 20px;
-    }
-
-
-    .plant-icon {
-        font-size: 17px;
-    }
 }
 
 
 /* =========================================================
-   MÀN HÌNH 600PX+
+   ĐIỆN THOẠI THẤP
 ========================================================= */
 
-@media (min-width: 600px) {
+@media (max-height: 720px) {
 
-    .farm-area {
-        width: 68%;
-    }
+  .top-hud {
 
+    height: 66px;
 
-    .bottom-menu {
-        width: 76%;
-    }
-}
+  }
 
 
-/* =========================================================
-   MÀN HÌNH THẤP
-   GIẢM CHIỀU CAO ĐỂ KHÔNG BỊ TRÀN
-========================================================= */
+  .hero-area {
 
-@media (max-height: 750px) {
+    top: 30%;
 
-    .hero-area {
-        height: 225px;
-    }
+    height: 23%;
+
+  }
 
 
-    .farm-area {
-        margin-top: 35px;
-    }
+  .farm-area {
+
+    top: 55%;
+
+  }
 
 
-    .bottom-menu {
-        margin-top: 15px;
-    }
+  .bottom-menu {
+
+    height: 57px;
+
+    bottom: 7px;
+
+  }
+
 }
