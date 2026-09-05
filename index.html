@@ -15,6 +15,11 @@
     "
   >
 
+  <meta
+    name="theme-color"
+    content="#0788df"
+  >
+
   <title>Nông Trại Xanh</title>
 
   <link
@@ -30,9 +35,9 @@
   <main class="game">
 
 
-    <!-- =========================
-         HUD TRÊN
-    ========================== -->
+    <!-- =====================================
+         HUD TRÊN CÙNG
+    ====================================== -->
 
     <section class="top-hud">
 
@@ -42,17 +47,20 @@
       <div class="level-area">
 
         <div class="level-circle">
-          <span id="levelNumber">1</span>
+
+          <span id="levelNumber">
+            1
+          </span>
+
         </div>
+
 
         <div class="level-info">
 
-          <div
-            id="levelValue"
-            class="level-title"
-          >
-            Lv.1
+          <div class="level-title">
+            Lv.<span id="levelValue">1</span>
           </div>
+
 
           <div class="exp-bar">
 
@@ -62,6 +70,7 @@
             ></div>
 
           </div>
+
 
           <div
             id="expText"
@@ -83,14 +92,17 @@
           🪙
         </span>
 
-        <span id="coinValue">
+        <span
+          id="coinValue"
+          class="resource-number"
+        >
           1000
         </span>
 
       </div>
 
 
-      <!-- PHÂN -->
+      <!-- PHÂN BÓN -->
 
       <div class="resource-box">
 
@@ -98,7 +110,10 @@
           🧪
         </span>
 
-        <span id="fertilizerValue">
+        <span
+          id="fertilizerValue"
+          class="resource-number"
+        >
           3
         </span>
 
@@ -108,226 +123,401 @@
 
 
 
-    <!-- =========================
-         KHU NHÂN VẬT
-    ========================== -->
+    <!-- =====================================
+         NHÂN VẬT
+    ====================================== -->
 
     <section class="hero-area">
 
       <img
-        src="assets/hero.png"
+        src="/assets/hero.png"
         class="hero"
-        alt="Nhân vật"
+        alt="Nhân vật nông dân"
       >
 
     </section>
 
 
 
-    <!-- =========================
+    <!-- =====================================
          20 Ô ĐẤT
-    ========================== -->
+    ====================================== -->
 
-    <section class="farm-area">
+    <section
+      class="farm-area"
+      aria-label="20 ô đất"
+    >
 
       <div class="farm-grid">
 
+
+        <!-- 1 -->
 
         <button
           class="plot unlocked"
           data-plot="1"
           type="button"
         >
-          <span class="plot-number">1</span>
+
+          <span class="plot-number">
+            1
+          </span>
+
         </button>
 
+
+        <!-- 2 -->
 
         <button
           class="plot unlocked"
           data-plot="2"
           type="button"
         >
-          <span class="plot-number">2</span>
+
+          <span class="plot-number">
+            2
+          </span>
+
         </button>
 
+
+        <!-- 3 -->
 
         <button
           class="plot unlocked"
           data-plot="3"
           type="button"
         >
-          <span class="plot-number">3</span>
+
+          <span class="plot-number">
+            3
+          </span>
+
         </button>
 
+
+        <!-- 4 -->
 
         <button
           class="plot locked"
           data-plot="4"
           type="button"
         >
-          <span class="plot-number">4</span>
-          <span class="lock">🔒</span>
+
+          <span class="plot-number">
+            4
+          </span>
+
+          <span class="lock">
+            🔒
+          </span>
+
         </button>
 
+
+        <!-- 5 -->
 
         <button
           class="plot locked"
           data-plot="5"
           type="button"
         >
-          <span class="plot-number">5</span>
-          <span class="lock">🔒</span>
+
+          <span class="plot-number">
+            5
+          </span>
+
+          <span class="lock">
+            🔒
+          </span>
+
         </button>
 
+
+        <!-- 6 -->
 
         <button
           class="plot locked"
           data-plot="6"
           type="button"
         >
-          <span class="plot-number">6</span>
-          <span class="lock">🔒</span>
+
+          <span class="plot-number">
+            6
+          </span>
+
+          <span class="lock">
+            🔒
+          </span>
+
         </button>
 
+
+        <!-- 7 -->
 
         <button
           class="plot locked"
           data-plot="7"
           type="button"
         >
-          <span class="plot-number">7</span>
-          <span class="lock">🔒</span>
+
+          <span class="plot-number">
+            7
+          </span>
+
+          <span class="lock">
+            🔒
+          </span>
+
         </button>
 
+
+        <!-- 8 -->
 
         <button
           class="plot locked"
           data-plot="8"
           type="button"
         >
-          <span class="plot-number">8</span>
-          <span class="lock">🔒</span>
+
+          <span class="plot-number">
+            8
+          </span>
+
+          <span class="lock">
+            🔒
+          </span>
+
         </button>
 
+
+        <!-- 9 -->
 
         <button
           class="plot locked"
           data-plot="9"
           type="button"
         >
-          <span class="plot-number">9</span>
-          <span class="lock">🔒</span>
+
+          <span class="plot-number">
+            9
+          </span>
+
+          <span class="lock">
+            🔒
+          </span>
+
         </button>
 
+
+        <!-- 10 -->
 
         <button
           class="plot locked"
           data-plot="10"
           type="button"
         >
-          <span class="plot-number">10</span>
-          <span class="lock">🔒</span>
+
+          <span class="plot-number">
+            10
+          </span>
+
+          <span class="lock">
+            🔒
+          </span>
+
         </button>
 
+
+        <!-- 11 -->
 
         <button
           class="plot locked"
           data-plot="11"
           type="button"
         >
-          <span class="plot-number">11</span>
-          <span class="lock">🔒</span>
+
+          <span class="plot-number">
+            11
+          </span>
+
+          <span class="lock">
+            🔒
+          </span>
+
         </button>
 
+
+        <!-- 12 -->
 
         <button
           class="plot locked"
           data-plot="12"
           type="button"
         >
-          <span class="plot-number">12</span>
-          <span class="lock">🔒</span>
+
+          <span class="plot-number">
+            12
+          </span>
+
+          <span class="lock">
+            🔒
+          </span>
+
         </button>
 
+
+        <!-- 13 -->
 
         <button
           class="plot locked"
           data-plot="13"
           type="button"
         >
-          <span class="plot-number">13</span>
-          <span class="lock">🔒</span>
+
+          <span class="plot-number">
+            13
+          </span>
+
+          <span class="lock">
+            🔒
+          </span>
+
         </button>
 
+
+        <!-- 14 -->
 
         <button
           class="plot locked"
           data-plot="14"
           type="button"
         >
-          <span class="plot-number">14</span>
-          <span class="lock">🔒</span>
+
+          <span class="plot-number">
+            14
+          </span>
+
+          <span class="lock">
+            🔒
+          </span>
+
         </button>
 
+
+        <!-- 15 -->
 
         <button
           class="plot locked"
           data-plot="15"
           type="button"
         >
-          <span class="plot-number">15</span>
-          <span class="lock">🔒</span>
+
+          <span class="plot-number">
+            15
+          </span>
+
+          <span class="lock">
+            🔒
+          </span>
+
         </button>
 
+
+        <!-- 16 -->
 
         <button
           class="plot locked"
           data-plot="16"
           type="button"
         >
-          <span class="plot-number">16</span>
-          <span class="lock">🔒</span>
+
+          <span class="plot-number">
+            16
+          </span>
+
+          <span class="lock">
+            🔒
+          </span>
+
         </button>
 
+
+        <!-- 17 -->
 
         <button
           class="plot locked"
           data-plot="17"
           type="button"
         >
-          <span class="plot-number">17</span>
-          <span class="lock">🔒</span>
+
+          <span class="plot-number">
+            17
+          </span>
+
+          <span class="lock">
+            🔒
+          </span>
+
         </button>
 
+
+        <!-- 18 -->
 
         <button
           class="plot locked"
           data-plot="18"
           type="button"
         >
-          <span class="plot-number">18</span>
-          <span class="lock">🔒</span>
+
+          <span class="plot-number">
+            18
+          </span>
+
+          <span class="lock">
+            🔒
+          </span>
+
         </button>
 
+
+        <!-- 19 -->
 
         <button
           class="plot locked"
           data-plot="19"
           type="button"
         >
-          <span class="plot-number">19</span>
-          <span class="lock">🔒</span>
+
+          <span class="plot-number">
+            19
+          </span>
+
+          <span class="lock">
+            🔒
+          </span>
+
         </button>
 
+
+        <!-- 20 -->
 
         <button
           class="plot locked"
           data-plot="20"
           type="button"
         >
-          <span class="plot-number">20</span>
-          <span class="lock">🔒</span>
+
+          <span class="plot-number">
+            20
+          </span>
+
+          <span class="lock">
+            🔒
+          </span>
+
         </button>
+
 
       </div>
 
@@ -335,9 +525,9 @@
 
 
 
-    <!-- =========================
+    <!-- =====================================
          MENU DƯỚI
-    ========================== -->
+    ====================================== -->
 
     <nav class="bottom-menu">
 
@@ -345,6 +535,7 @@
       <button
         class="menu-item"
         type="button"
+        id="friendsMenu"
       >
 
         <span class="menu-icon">
@@ -360,8 +551,8 @@
 
       <button
         class="menu-item"
-        id="seedMenu"
         type="button"
+        id="seedMenu"
       >
 
         <span class="menu-icon">
@@ -378,6 +569,7 @@
       <button
         class="menu-item"
         type="button"
+        id="shopMenu"
       >
 
         <span class="menu-icon">
@@ -394,6 +586,7 @@
       <button
         class="menu-item"
         type="button"
+        id="taskMenu"
       >
 
         <span class="menu-icon">
@@ -410,6 +603,7 @@
       <button
         class="menu-item"
         type="button"
+        id="walletMenu"
       >
 
         <span class="menu-icon">
@@ -426,156 +620,260 @@
     </nav>
 
 
+  </main>
 
-    <!-- =========================
-         BẢNG CHỌN HẠT
-    ========================== -->
 
-    <div
-      id="seedPanel"
-      class="seed-panel"
-      aria-hidden="true"
-    >
 
-      <div class="seed-box">
+  <!-- =====================================
+       BẢNG CHỌN HẠT
+  ====================================== -->
+
+  <div
+    id="seedPanel"
+    class="seed-panel"
+    aria-hidden="true"
+  >
+
+    <div class="seed-box">
+
+
+      <button
+        id="seedClose"
+        class="seed-close"
+        type="button"
+      >
+        ×
+      </button>
+
+
+      <h2>
+        🌱 Chọn hạt giống
+      </h2>
+
+
+      <p id="selectedPlot">
+        Đang chọn ô đất
+      </p>
+
+
+      <div class="seed-list">
+
 
         <button
-          id="seedClose"
-          class="seed-close"
+          class="seed-item"
           type="button"
+          data-seed="wheat"
         >
-          ✕
+
+          <span>
+            🌾
+          </span>
+
+          <b>
+            Lúa mì
+          </b>
+
+          <small>
+            10 🪙 · Lv.1
+          </small>
+
         </button>
 
-        <h2>
-          🌱 Chọn hạt giống
-        </h2>
 
-        <p id="selectedPlot">
-          Đang chọn ô đất
-        </p>
+        <button
+          class="seed-item"
+          type="button"
+          data-seed="corn"
+        >
 
-        <div class="seed-list">
-
-
-          <button
-            class="seed-item"
-            data-seed="wheat"
-            type="button"
-          >
-            🌾
-            <b>Lúa mì</b>
-            <small>10 🪙 · Lv.1</small>
-          </button>
-
-
-          <button
-            class="seed-item"
-            data-seed="corn"
-            type="button"
-          >
+          <span>
             🌽
-            <b>Ngô</b>
-            <small>20 🪙 · Lv.3</small>
-          </button>
+          </span>
+
+          <b>
+            Ngô
+          </b>
+
+          <small>
+            20 🪙 · Lv.3
+          </small>
+
+        </button>
 
 
-          <button
-            class="seed-item"
-            data-seed="radish"
-            type="button"
-          >
+        <button
+          class="seed-item"
+          type="button"
+          data-seed="radish"
+        >
+
+          <span>
             🌱
-            <b>Củ cải</b>
-            <small>35 🪙 · Lv.7</small>
-          </button>
+          </span>
+
+          <b>
+            Củ cải
+          </b>
+
+          <small>
+            35 🪙 · Lv.7
+          </small>
+
+        </button>
 
 
-          <button
-            class="seed-item"
-            data-seed="carrot"
-            type="button"
-          >
+        <button
+          class="seed-item"
+          type="button"
+          data-seed="carrot"
+        >
+
+          <span>
             🥕
-            <b>Cà rốt</b>
-            <small>50 🪙 · Lv.10</small>
-          </button>
+          </span>
+
+          <b>
+            Cà rốt
+          </b>
+
+          <small>
+            50 🪙 · Lv.10
+          </small>
+
+        </button>
 
 
-          <button
-            class="seed-item"
-            data-seed="beet"
-            type="button"
-          >
+        <button
+          class="seed-item"
+          type="button"
+          data-seed="beet"
+        >
+
+          <span>
             🫜
-            <b>Củ dền</b>
-            <small>75 🪙 · Lv.13</small>
-          </button>
+          </span>
+
+          <b>
+            Củ dền
+          </b>
+
+          <small>
+            75 🪙 · Lv.13
+          </small>
+
+        </button>
 
 
-          <button
-            class="seed-item"
-            data-seed="eggplant"
-            type="button"
-          >
+        <button
+          class="seed-item"
+          type="button"
+          data-seed="eggplant"
+        >
+
+          <span>
             🍆
-            <b>Cà tím</b>
-            <small>100 🪙 · Lv.15</small>
-          </button>
+          </span>
+
+          <b>
+            Cà tím
+          </b>
+
+          <small>
+            100 🪙 · Lv.15
+          </small>
+
+        </button>
 
 
-          <button
-            class="seed-item"
-            data-seed="chili"
-            type="button"
-          >
+        <button
+          class="seed-item"
+          type="button"
+          data-seed="chili"
+        >
+
+          <span>
             🌶️
-            <b>Ớt</b>
-            <small>180 🪙 · Lv.17</small>
-          </button>
+          </span>
+
+          <b>
+            Ớt
+          </b>
+
+          <small>
+            180 🪙 · Lv.17
+          </small>
+
+        </button>
 
 
-          <button
-            class="seed-item"
-            data-seed="green_onion"
-            type="button"
-          >
+        <button
+          class="seed-item"
+          type="button"
+          data-seed="green_onion"
+        >
+
+          <span>
             🌿
-            <b>Hành lá</b>
-            <small>250 🪙 · Lv.20</small>
-          </button>
+          </span>
+
+          <b>
+            Hành lá
+          </b>
+
+          <small>
+            250 🪙 · Lv.20
+          </small>
+
+        </button>
 
 
-          <button
-            class="seed-item"
-            data-seed="cabbage"
-            type="button"
-          >
+        <button
+          class="seed-item"
+          type="button"
+          data-seed="cabbage"
+        >
+
+          <span>
             🥬
-            <b>Bắp cải</b>
-            <small>500 🪙 · Lv.23</small>
-          </button>
+          </span>
+
+          <b>
+            Bắp cải
+          </b>
+
+          <small>
+            500 🪙 · Lv.23
+          </small>
+
+        </button>
 
 
-          <button
-            class="seed-item"
-            data-seed="pumpkin"
-            type="button"
-          >
+        <button
+          class="seed-item"
+          type="button"
+          data-seed="pumpkin"
+        >
+
+          <span>
             🎃
-            <b>Bí đỏ</b>
-            <small>1000 🪙 · Lv.25</small>
-          </button>
+          </span>
 
+          <b>
+            Bí đỏ
+          </b>
 
-        </div>
+          <small>
+            1000 🪙 · Lv.25
+          </small>
+
+        </button>
+
 
       </div>
 
     </div>
 
-
-  </main>
+  </div>
 
 
   <script src="script.js"></script>
