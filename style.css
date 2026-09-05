@@ -797,66 +797,65 @@ body {
 
 .bottom-menu {
 
-  position: absolute;
+    position: absolute;
 
-  z-index: 60;
+    z-index: 60;
 
-  left: 50%;
+    left: 50%;
 
-  bottom: 12px;
+    bottom: 10px;
 
-  transform:
-    translateX(-50%);
+    transform: translateX(-50%);
 
-  width: 94%;
+    width: 88%;
 
-  max-width: 450px;
+    max-width: 430px;
 
-  height: 63px;
+    height: 60px;
 
-  padding: 3px;
+    padding: 3px;
 
-  display: grid;
+    display: grid;
 
-  grid-template-columns:
-    repeat(5,1fr);
+    grid-template-columns:
+        repeat(5, 1fr);
 
-  border:
-    2px solid
-    #bcefff;
+    overflow: hidden;
 
-  border-radius: 18px;
+    border:
+        2px solid
+        #bcefff;
 
-  overflow: hidden;
+    border-radius: 18px;
 
-  background:
-    linear-gradient(
-      180deg,
-      #20b6ed,
-      #0b8dd9 50%,
-      #076dc7
-    );
+    background:
+        linear-gradient(
+            180deg,
+            #20b6ed,
+            #0b8dd9 50%,
+            #076dc7
+        );
 
-  box-shadow:
+    box-shadow:
 
-    0 4px 0
-      #064c94,
+        0 4px 0
+            #064c94,
 
-    0 6px 12px
-      rgba(
-        0,
-        0,
-        0,
-        .30
-      ),
+        0 6px 12px
+            rgba(
+                0,
+                0,
+                0,
+                .30
+            ),
 
-    inset 0 2px 0
-      rgba(
-        255,
-        255,
-        255,
-        .30
-      );
+        inset 0 2px 0
+            rgba(
+                255,
+                255,
+                255,
+                .30
+            );
 }
 
 
@@ -1140,7 +1139,11 @@ body {
 ========================================================= */
 
 @media (max-width: 500px) {
-
+.bottom-menu {
+    width: 88%;
+    height: 58px;
+    bottom: 8px;
+}
   .top-hud {
 
     width: 94%;
@@ -1152,7 +1155,6 @@ body {
       68px
       68px;
   }
-
 
   .level-circle {
 
