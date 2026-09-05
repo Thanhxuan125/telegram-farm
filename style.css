@@ -84,7 +84,7 @@ body {
 
   width: 94%;
 
-  height: 62px;
+  height: 60px;
 
   padding:
     5px 7px;
@@ -732,7 +732,7 @@ body {
   transform:
     translateX(-50%);
 
-  width: 85%;
+  width: 88%;
 
   min-height: 14px;
 
@@ -1286,7 +1286,7 @@ body {
 
   .top-hud {
 
-    height: 66px;
+    height: 60px;
 
   }
 
