@@ -797,65 +797,66 @@ body {
 
 .bottom-menu {
 
-    position: absolute;
+  position: absolute;
 
-    z-index: 60;
+  z-index: 60;
 
-    left: 50%;
+  left: 50%;
 
-    bottom: 10px;
+  bottom: 12px;
 
-    transform: translateX(-50%);
+  transform:
+    translateX(-50%);
 
-    width: 94%;
+  width: 94%;
 
-    max-width: 430px;
+  max-width: 450px;
 
-    height: 60px;
+  height: 63px;
 
-    padding: 3px;
+  padding: 3px;
 
-    display: grid;
+  display: grid;
 
-    grid-template-columns:
-        repeat(5, 1fr);
+  grid-template-columns:
+    repeat(5,1fr);
 
-    overflow: hidden;
+  border:
+    2px solid
+    #bcefff;
 
-    border:
-        2px solid
-        #bcefff;
+  border-radius: 18px;
 
-    border-radius: 18px;
+  overflow: hidden;
 
-    background:
-        linear-gradient(
-            180deg,
-            #20b6ed,
-            #0b8dd9 50%,
-            #076dc7
-        );
+  background:
+    linear-gradient(
+      180deg,
+      #20b6ed,
+      #0b8dd9 50%,
+      #076dc7
+    );
 
-    box-shadow:
+  box-shadow:
 
-        0 4px 0
-            #064c94,
+    0 4px 0
+      #064c94,
 
-        0 6px 12px
-            rgba(
-                0,
-                0,
-                0,
-                .30
-            ),
+    0 6px 12px
+      rgba(
+        0,
+        0,
+        0,
+        .30
+      ),
 
-        inset 0 2px 0
-            rgba(
-                255,
-                255,
-                255,
-                .30
-            );
+    inset 0 2px 0
+      rgba(
+        255,
+        255,
+        255,
+        .30
+      );
 }
 
 
@@ -1152,6 +1153,7 @@ body {
       68px;
   }
 
+
   .level-circle {
 
     width: 42px;
@@ -1249,11 +1251,11 @@ body {
 
   .bottom-menu {
 
-    width: 94%;
+    width: 76%;
 
     height: 60px;
 
-    bottom: 8px;
+    bottom: 10px;
 
   }
 
@@ -1309,7 +1311,7 @@ body {
 
     height: 57px;
 
-    bottom: 8px;
+    bottom: 7px;
 
   }
 
