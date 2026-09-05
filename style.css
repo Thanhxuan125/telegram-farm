@@ -76,7 +76,7 @@ body {
 
   z-index: 50;
 
-  top: -5px;
+  top: -3px;
   left: 50%;
 
   transform:
@@ -84,7 +84,7 @@ body {
 
   width: 94%;
 
-  height: 52px;
+  height: 54px;
 
   padding:
     5px 7px;
@@ -1145,7 +1145,7 @@ body {
 
     width: 94%;
 
-    height: 52px;
+    height: 54px;
 
     grid-template-columns:
       minmax(0,1fr)
@@ -1286,7 +1286,7 @@ body {
 
   .top-hud {
 
-    height: 52px;
+    height: 54px;
 
   }
 
