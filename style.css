@@ -807,7 +807,7 @@ body {
 
     transform: translateX(-50%);
 
-    width: 88%;
+    width: 94%;
 
     max-width: 430px;
 
@@ -1139,11 +1139,7 @@ body {
 ========================================================= */
 
 @media (max-width: 500px) {
-.bottom-menu {
-    width: 88%;
-    height: 58px;
-    bottom: 8px;
-}
+
   .top-hud {
 
     width: 94%;
@@ -1253,11 +1249,11 @@ body {
 
   .bottom-menu {
 
-    width: 76%;
+    width: 94%;
 
     height: 60px;
 
-    bottom: 10px;
+    bottom: 8px;
 
   }
 
@@ -1313,7 +1309,7 @@ body {
 
     height: 57px;
 
-    bottom: 7px;
+    bottom: 8px;
 
   }
 
