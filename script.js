@@ -153,7 +153,11 @@ let player = {
 
   coins: 1000,
 
-  fertilizer: 3
+  fertilizer: 3,
+
+  /* MỚI:
+     3 ô đầu tiên được mở */
+  unlockedPlots: 3
 
 };
 
@@ -214,6 +218,302 @@ function randomNumber(
     Math.random() *
     (max - min + 1)
   ) + min;
+
+}
+
+
+/* ==================================================
+   GIÁ MỞ ĐẤT
+================================================== */
+
+function getPlotUnlockPrice(
+  plotNumber
+) {
+
+  if (plotNumber <= 3) {
+
+    return 0;
+
+  }
+
+
+  /*
+     Ô 4 = 500
+     Ô 5 = 1000
+     Ô 6 = 2000
+     Ô 7 = 4000
+     ...
+  */
+
+  return (
+    500 *
+    Math.pow(
+      2,
+      plotNumber - 4
+    )
+  );
+
+}
+
+
+/* ==================================================
+   KIỂM TRA Ô ĐẤT ĐÃ MỞ
+================================================== */
+
+function isPlotUnlocked(
+  plotNumber
+) {
+
+  return (
+    Number(plotNumber) <=
+    Number(player.unlockedPlots)
+  );
+
+}
+
+
+/* ==================================================
+   CẬP NHẬT GIAO DIỆN 20 Ô
+================================================== */
+
+function updatePlotsLockState() {
+
+  plots.forEach(
+    plot => {
+
+      const plotNumber =
+        Number(
+          plot.dataset.plot
+        );
+
+
+      if (
+        isPlotUnlocked(
+          plotNumber
+        )
+      ) {
+
+        plot.classList.remove(
+          "locked"
+        );
+
+
+        /*
+           Nếu ô đất trống,
+           hiển thị số ô
+        */
+
+        if (
+          !plot.dataset.seed
+        ) {
+
+          plot.innerHTML =
+
+            `<span class="plot-number">
+              ${plotNumber}
+            </span>`;
+
+        }
+
+      }
+
+      else {
+
+        plot.classList.add(
+          "locked"
+        );
+
+
+        /*
+           Chỉ tạo giao diện khóa
+           nếu chưa có cây
+        */
+
+        if (
+          !plot.dataset.seed
+        ) {
+
+          const price =
+            getPlotUnlockPrice(
+              plotNumber
+            );
+
+
+          plot.innerHTML =
+
+            `<span class="plot-number">
+              ${plotNumber}
+            </span>
+
+            <span class="lock">
+              🔒
+            </span>
+
+            <span class="plot-price">
+              ${price.toLocaleString("vi-VN")} 🪙
+            </span>`;
+
+        }
+
+      }
+
+    }
+  );
+
+}
+
+
+/* ==================================================
+   MỞ KHÓA Ô ĐẤT
+================================================== */
+
+function unlockPlot(
+  plotNumber
+) {
+
+  plotNumber =
+    Number(plotNumber);
+
+
+  /* Không cho mở ô đã mở */
+
+  if (
+    isPlotUnlocked(
+      plotNumber
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  /*
+     Chỉ được mở tuần tự.
+     Ví dụ:
+     Muốn mở ô 6 phải mở ô 5 trước.
+  */
+
+  if (
+    plotNumber !==
+    Number(player.unlockedPlots) + 1
+  ) {
+
+    alert(
+
+      "🔒 Bạn phải mở ô đất " +
+
+      (
+        Number(player.unlockedPlots) +
+        1
+      ) +
+
+      " trước."
+
+    );
+
+    return;
+
+  }
+
+
+  const price =
+    getPlotUnlockPrice(
+      plotNumber
+    );
+
+
+  /* Không đủ tiền */
+
+  if (
+    player.coins <
+    price
+  ) {
+
+    alert(
+
+      "❌ Không đủ xu!\n\n" +
+
+      "Cần: " +
+
+      price.toLocaleString(
+        "vi-VN"
+      ) +
+
+      " xu\n" +
+
+      "Bạn có: " +
+
+      player.coins.toLocaleString(
+        "vi-VN"
+      ) +
+
+      " xu"
+
+    );
+
+    return;
+
+  }
+
+
+  const confirmed =
+    confirm(
+
+      "🔓 Mở khóa ô đất " +
+
+      plotNumber +
+
+      "?\n\n" +
+
+      "Giá: " +
+
+      price.toLocaleString(
+        "vi-VN"
+      ) +
+
+      " xu"
+
+    );
+
+
+  if (!confirmed) {
+
+    return;
+
+  }
+
+
+  /* Trừ tiền */
+
+  player.coins -=
+    price;
+
+
+  /* Mở ô */
+
+  player.unlockedPlots =
+    plotNumber;
+
+
+  /* Cập nhật */
+
+  updatePlotsLockState();
+
+  updateHUD();
+
+  saveGame();
+
+
+  alert(
+
+    "🎉 Đã mở khóa ô đất " +
+
+    plotNumber +
+
+    "!"
+
+  );
 
 }
 
@@ -327,6 +627,8 @@ function loadGame() {
 
   if (!saved) {
 
+    updatePlotsLockState();
+
     return;
 
   }
@@ -347,6 +649,40 @@ function loadGame() {
         ...data.player
 
       };
+
+    }
+
+
+    /*
+       Nếu dữ liệu cũ chưa có
+       unlockedPlots thì mặc định 3.
+    */
+
+    if (
+      !Number.isInteger(
+        Number(player.unlockedPlots)
+      )
+    ) {
+
+      player.unlockedPlots = 3;
+
+    }
+
+
+    if (
+      player.unlockedPlots < 3
+    ) {
+
+      player.unlockedPlots = 3;
+
+    }
+
+
+    if (
+      player.unlockedPlots > 20
+    ) {
+
+      player.unlockedPlots = 20;
 
     }
 
@@ -405,6 +741,9 @@ function loadGame() {
 
     }
 
+
+    updatePlotsLockState();
+
   }
 
   catch (error) {
@@ -413,6 +752,8 @@ function loadGame() {
       "Không thể tải game:",
       error
     );
+
+    updatePlotsLockState();
 
   }
 
@@ -1139,7 +1480,15 @@ plots.forEach(
       "click",
       () => {
 
-        /* Ô khóa */
+        const plotNumber =
+          Number(
+            plot.dataset.plot
+          );
+
+
+        /* ==========================
+           Ô KHÓA
+        ========================== */
 
         if (
           plot.classList.contains(
@@ -1147,8 +1496,8 @@ plots.forEach(
           )
         ) {
 
-          alert(
-            "🔒 Ô đất chưa mở."
+          unlockPlot(
+            plotNumber
           );
 
           return;
@@ -1156,7 +1505,9 @@ plots.forEach(
         }
 
 
-        /* Có cây */
+        /* ==========================
+           CÓ CÂY
+        ========================== */
 
         if (
           plot.dataset.seed
@@ -1187,10 +1538,12 @@ plots.forEach(
         }
 
 
-        /* Đất trống */
+        /* ==========================
+           ĐẤT TRỐNG
+        ========================== */
 
         openSeedPanel(
-          plot.dataset.plot
+          plotNumber
         );
 
       }
