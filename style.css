@@ -690,4 +690,32 @@ body {
 .seed-box h2 {
   margin-bottom: 3px;
 
- 
+ .seed-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+
+  width: 32px;
+  height: 32px;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: #e53935;
+  color: white;
+
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  z-index: 20;
+}
+
+.seed-close:active {
+  transform: scale(.9);
+}
