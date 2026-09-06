@@ -138,8 +138,7 @@ const sellPrices = {
    SAVE KEY
 ================================================== */
 
-const SAVE_KEY =
-  "telegram_farm_save_v3";
+const SAVE_KEY = "telegram_farm_save_v3";
 
 
 /* ==================================================
@@ -149,7 +148,6 @@ const SAVE_KEY =
 function createEmptyInventory() {
 
   return {
-
     wheat: 0,
     corn: 0,
     radish: 0,
@@ -160,7 +158,6 @@ function createEmptyInventory() {
     green_onion: 0,
     cabbage: 0,
     pumpkin: 0
-
   };
 
 }
@@ -180,18 +177,9 @@ let player = {
 
   fertilizer: 3,
 
-  /*
-     3 ô đất đầu tiên được mở
-  */
-
   unlockedPlots: 3,
 
-  /*
-     KHO NÔNG SẢN
-  */
-
-  inventory:
-    createEmptyInventory()
+  inventory: createEmptyInventory()
 
 };
 
@@ -203,65 +191,41 @@ let player = {
 const plots =
   document.querySelectorAll(".plot");
 
-
 const seedPanel =
-  document.getElementById(
-    "seedPanel"
-  );
-
+  document.getElementById("seedPanel");
 
 const seedClose =
-  document.getElementById(
-    "seedClose"
-  );
-
+  document.getElementById("seedClose");
 
 const selectedPlot =
-  document.getElementById(
-    "selectedPlot"
-  );
-
+  document.getElementById("selectedPlot");
 
 const seedItems =
-  document.querySelectorAll(
-    ".seed-item"
-  );
-
+  document.querySelectorAll(".seed-item");
 
 const coinValue =
-  document.getElementById(
-    "coinValue"
-  );
-
+  document.getElementById("coinValue");
 
 const fertilizerValue =
-  document.getElementById(
-    "fertilizerValue"
-  );
-
+  document.getElementById("fertilizerValue");
 
 const expFill =
-  document.getElementById(
-    "expFill"
-  );
-
+  document.getElementById("expFill");
 
 const expText =
-  document.getElementById(
-    "expText"
-  );
-
+  document.getElementById("expText");
 
 const levelValue =
-  document.getElementById(
-    "levelValue"
-  );
-
+  document.getElementById("levelValue");
 
 const levelNumber =
-  document.getElementById(
-    "levelNumber"
-  );
+  document.getElementById("levelNumber");
+
+const shopMenu =
+  document.getElementById("shopMenu");
+
+const shopPanel =
+  document.getElementById("shopPanel");
 
 
 let currentPlot = null;
@@ -271,14 +235,10 @@ let currentPlot = null;
    RANDOM
 ================================================== */
 
-function randomNumber(
-  min,
-  max
-) {
+function randomNumber(min, max) {
 
   return Math.floor(
-    Math.random() *
-    (max - min + 1)
+    Math.random() * (max - min + 1)
   ) + min;
 
 }
@@ -288,33 +248,15 @@ function randomNumber(
    GIÁ MỞ ĐẤT
 ================================================== */
 
-function getPlotUnlockPrice(
-  plotNumber
-) {
+function getPlotUnlockPrice(plotNumber) {
 
-  if (
-    plotNumber <= 3
-  ) {
-
+  if (plotNumber <= 3) {
     return 0;
-
   }
-
-
-  /*
-     Ô 4 = 500
-     Ô 5 = 1.000
-     Ô 6 = 2.000
-     Ô 7 = 4.000
-     ...
-  */
 
   return (
     500 *
-    Math.pow(
-      2,
-      plotNumber - 4
-    )
+    Math.pow(2, plotNumber - 4)
   );
 
 }
@@ -324,9 +266,7 @@ function getPlotUnlockPrice(
    KIỂM TRA Ô ĐẤT
 ================================================== */
 
-function isPlotUnlocked(
-  plotNumber
-) {
+function isPlotUnlocked(plotNumber) {
 
   return (
     Number(plotNumber) <=
@@ -342,77 +282,55 @@ function isPlotUnlocked(
 
 function updatePlotsLockState() {
 
-  plots.forEach(
-    plot => {
+  plots.forEach(plot => {
 
-      const plotNumber =
-        Number(
-          plot.dataset.plot
-        );
+    const plotNumber =
+      Number(plot.dataset.plot);
 
+    if (isPlotUnlocked(plotNumber)) {
 
-      if (
-        isPlotUnlocked(
-          plotNumber
-        )
-      ) {
+      plot.classList.remove("locked");
 
-        plot.classList.remove(
-          "locked"
-        );
+      if (!plot.dataset.seed) {
 
-
-        if (
-          !plot.dataset.seed
-        ) {
-
-          plot.innerHTML =
-
-            `<span class="plot-number">
-              ${plotNumber}
-            </span>`;
-
-        }
-
-      }
-
-      else {
-
-        plot.classList.add(
-          "locked"
-        );
-
-
-        if (
-          !plot.dataset.seed
-        ) {
-
-          const price =
-            getPlotUnlockPrice(
-              plotNumber
-            );
-
-
-          plot.innerHTML =
-
-            `<span class="plot-number">
-              ${plotNumber}
-            </span>
-
-            <span class="lock">
-              🔒
-            </span>
-
-            <span class="plot-price">
-              ${price.toLocaleString("vi-VN")} 🪙
-            </span>`;
-
-        }
+        plot.innerHTML = `
+          <span class="plot-number">
+            ${plotNumber}
+          </span>
+        `;
 
       }
 
     }
-  );
+
+    else {
+
+      plot.classList.add("locked");
+
+      if (!plot.dataset.seed) {
+
+        const price =
+          getPlotUnlockPrice(plotNumber);
+
+        plot.innerHTML = `
+          <span class="plot-number">
+            ${plotNumber}
+          </span>
+
+          <span class="lock">
+            🔒
+          </span>
+
+          <span class="plot-price">
+            ${price.toLocaleString("vi-VN")} 🪙
+          </span>
+        `;
+
+      }
+
+    }
+
+  });
 
 }
 
@@ -421,28 +339,13 @@ function updatePlotsLockState() {
    MỞ KHÓA Ô ĐẤT
 ================================================== */
 
-function unlockPlot(
-  plotNumber
-) {
+function unlockPlot(plotNumber) {
 
-  plotNumber =
-    Number(plotNumber);
+  plotNumber = Number(plotNumber);
 
-
-  if (
-    isPlotUnlocked(
-      plotNumber
-    )
-  ) {
-
+  if (isPlotUnlocked(plotNumber)) {
     return;
-
   }
-
-
-  /*
-     Phải mở tuần tự
-  */
 
   if (
     plotNumber !==
@@ -450,95 +353,51 @@ function unlockPlot(
   ) {
 
     alert(
-
       "🔒 Bạn phải mở ô đất " +
-
-      (
-        Number(player.unlockedPlots) +
-        1
-      ) +
-
+      (Number(player.unlockedPlots) + 1) +
       " trước."
-
     );
 
     return;
 
   }
-
 
   const price =
-    getPlotUnlockPrice(
-      plotNumber
-    );
+    getPlotUnlockPrice(plotNumber);
 
-
-  if (
-    player.coins <
-    price
-  ) {
+  if (player.coins < price) {
 
     alert(
-
       "❌ Không đủ xu!\n\n" +
-
       "Cần: " +
-
-      price.toLocaleString(
-        "vi-VN"
-      ) +
-
+      price.toLocaleString("vi-VN") +
       " xu\n" +
-
       "Bạn có: " +
-
-      player.coins.toLocaleString(
-        "vi-VN"
-      ) +
-
+      player.coins.toLocaleString("vi-VN") +
       " xu"
-
     );
 
     return;
 
   }
-
 
   const confirmed =
     confirm(
-
       "🔓 Mở khóa ô đất " +
-
       plotNumber +
-
       "?\n\n" +
-
       "Giá: " +
-
-      price.toLocaleString(
-        "vi-VN"
-      ) +
-
+      price.toLocaleString("vi-VN") +
       " xu"
-
     );
 
-
   if (!confirmed) {
-
     return;
-
   }
 
+  player.coins -= price;
 
-  player.coins -=
-    price;
-
-
-  player.unlockedPlots =
-    plotNumber;
-
+  player.unlockedPlots = plotNumber;
 
   updatePlotsLockState();
 
@@ -546,15 +405,10 @@ function unlockPlot(
 
   saveGame();
 
-
   alert(
-
     "🎉 Đã mở khóa ô đất " +
-
     plotNumber +
-
     "!"
-
   );
 
 }
@@ -569,12 +423,9 @@ function updateHUD() {
   if (coinValue) {
 
     coinValue.textContent =
-      player.coins.toLocaleString(
-        "vi-VN"
-      );
+      player.coins.toLocaleString("vi-VN");
 
   }
-
 
   if (fertilizerValue) {
 
@@ -582,7 +433,6 @@ function updateHUD() {
       player.fertilizer;
 
   }
-
 
   if (expText) {
 
@@ -592,34 +442,22 @@ function updateHUD() {
 
   }
 
-
   if (expFill) {
 
     const percent =
-      (
-        player.exp /
-        7000
-      ) *
-      100;
-
+      (player.exp / 7000) * 100;
 
     expFill.style.width =
-      Math.min(
-        percent,
-        100
-      ) + "%";
+      Math.min(percent, 100) + "%";
 
   }
-
 
   if (levelValue) {
 
     levelValue.textContent =
-      "Lv." +
-      player.level;
+      "Lv." + player.level;
 
   }
-
 
   if (levelNumber) {
 
@@ -637,14 +475,9 @@ function updateHUD() {
 
 function saveGame() {
 
-  /*
-     Đảm bảo inventory luôn tồn tại
-  */
-
   if (
     !player.inventory ||
-    typeof player.inventory !==
-    "object"
+    typeof player.inventory !== "object"
   ) {
 
     player.inventory =
@@ -652,44 +485,30 @@ function saveGame() {
 
   }
 
-
   const data = {
 
     player: player,
 
-    plots:
-      Array.from(
-        plots
-      ).map(
-        plot => ({
+    plots: Array.from(plots).map(plot => ({
 
-          number:
-            plot.dataset.plot,
+      number: plot.dataset.plot,
 
-          seed:
-            plot.dataset.seed ||
-            null,
+      seed:
+        plot.dataset.seed || null,
 
-          plantedAt:
-            plot.dataset.plantedAt ||
-            null,
+      plantedAt:
+        plot.dataset.plantedAt || null,
 
-          fertilizerUsed:
-            plot.dataset.fertilizerUsed ===
-            "true"
+      fertilizerUsed:
+        plot.dataset.fertilizerUsed === "true"
 
-        })
-      )
+    }))
 
   };
 
-
   localStorage.setItem(
-
     SAVE_KEY,
-
     JSON.stringify(data)
-
   );
 
 }
@@ -702,10 +521,7 @@ function saveGame() {
 function loadGame() {
 
   const saved =
-    localStorage.getItem(
-      SAVE_KEY
-    );
-
+    localStorage.getItem(SAVE_KEY);
 
   if (!saved) {
 
@@ -718,34 +534,23 @@ function loadGame() {
 
   }
 
-
   try {
 
     const data =
       JSON.parse(saved);
 
-
     if (data.player) {
 
       player = {
-
         ...player,
-
         ...data.player
-
       };
 
     }
 
-
-    /* ==========================
-       KHO
-    ========================== */
-
     if (
       !player.inventory ||
-      typeof player.inventory !==
-      "object"
+      typeof player.inventory !== "object"
     ) {
 
       player.inventory =
@@ -753,91 +558,54 @@ function loadGame() {
 
     }
 
-
-    /*
-       Bổ sung những loại nông sản
-       chưa tồn tại trong save cũ.
-    */
-
     const emptyInventory =
       createEmptyInventory();
 
+    Object.keys(emptyInventory).forEach(key => {
 
-    Object.keys(
-      emptyInventory
-    ).forEach(
-      key => {
+      if (
+        typeof player.inventory[key] !== "number"
+      ) {
 
-        if (
-          typeof player.inventory[key] !==
-          "number"
-        ) {
-
-          player.inventory[key] =
-            0;
-
-        }
+        player.inventory[key] = 0;
 
       }
-    );
 
+    });
 
-    /* ==========================
-       Ô ĐẤT
-    ========================== */
+    if (Array.isArray(data.plots)) {
 
-    if (
-      Array.isArray(
-        data.plots
-      )
-    ) {
+      data.plots.forEach(savedPlot => {
 
-      data.plots.forEach(
-        savedPlot => {
+        const plot =
+          document.querySelector(
+            `.plot[data-plot="${savedPlot.number}"]`
+          );
 
-          const plot =
-            document.querySelector(
-              `.plot[data-plot="${savedPlot.number}"]`
-            );
+        if (!plot) {
+          return;
+        }
 
+        if (savedPlot.seed) {
 
-          if (!plot) {
+          plot.dataset.seed =
+            savedPlot.seed;
 
-            return;
+          plot.dataset.plantedAt =
+            savedPlot.plantedAt || Date.now();
 
-          }
+          plot.dataset.fertilizerUsed =
+            savedPlot.fertilizerUsed
+              ? "true"
+              : "false";
 
-
-          if (
-            savedPlot.seed
-          ) {
-
-            plot.dataset.seed =
-              savedPlot.seed;
-
-
-            plot.dataset.plantedAt =
-              savedPlot.plantedAt ||
-              Date.now();
-
-
-            plot.dataset.fertilizerUsed =
-              savedPlot.fertilizerUsed
-                ? "true"
-                : "false";
-
-
-            updatePlant(
-              plot
-            );
-
-          }
+          updatePlant(plot);
 
         }
-      );
+
+      });
 
     }
-
 
     updatePlotsLockState();
 
@@ -852,23 +620,16 @@ function loadGame() {
       error
     );
 
-    player =
-      {
+    player = {
 
-        level: 1,
+      level: 1,
+      exp: 0,
+      coins: 1000,
+      fertilizer: 3,
+      unlockedPlots: 3,
+      inventory: createEmptyInventory()
 
-        exp: 0,
-
-        coins: 1000,
-
-        fertilizer: 3,
-
-        unlockedPlots: 3,
-
-        inventory:
-          createEmptyInventory()
-
-      };
+    };
 
     updatePlotsLockState();
 
@@ -883,20 +644,14 @@ function loadGame() {
    MỞ BẢNG HẠT GIỐNG
 ================================================== */
 
-function openSeedPanel(
-  plotNumber
-) {
+function openSeedPanel(plotNumber) {
 
   if (!seedPanel) {
-
     return;
-
   }
-
 
   currentPlot =
     Number(plotNumber);
-
 
   if (selectedPlot) {
 
@@ -905,11 +660,7 @@ function openSeedPanel(
 
   }
 
-
-  seedPanel.classList.add(
-    "show"
-  );
-
+  seedPanel.classList.add("show");
 
   seedPanel.setAttribute(
     "aria-hidden",
@@ -920,31 +671,23 @@ function openSeedPanel(
 
 
 /* ==================================================
-   ĐÓNG BẢNG HẠT GIỐNG
+   ĐÓNG BẢNG HẠT
 ================================================== */
 
 function closeSeedPanel() {
 
   if (!seedPanel) {
-
     return;
-
   }
 
-
-  seedPanel.classList.remove(
-    "show"
-  );
-
+  seedPanel.classList.remove("show");
 
   seedPanel.setAttribute(
     "aria-hidden",
     "true"
   );
 
-
-  currentPlot =
-    null;
+  currentPlot = null;
 
 }
 
@@ -953,43 +696,27 @@ function closeSeedPanel() {
    TRỒNG CÂY
 ================================================== */
 
-function plantSeed(
-  plot,
-  seedId
-) {
+function plantSeed(plot, seedId) {
 
   const seed =
     seeds[seedId];
 
-
   if (!seed) {
-
     return;
-
   }
-
 
   plot.dataset.seed =
     seedId;
 
-
   plot.dataset.plantedAt =
     Date.now();
-
 
   plot.dataset.fertilizerUsed =
     "false";
 
+  plot.classList.remove("ready");
 
-  plot.classList.remove(
-    "ready"
-  );
-
-
-  updatePlant(
-    plot
-  );
-
+  updatePlant(plot);
 
   saveGame();
 
@@ -1000,68 +727,43 @@ function plantSeed(
    CẬP NHẬT CÂY
 ================================================== */
 
-function updatePlant(
-  plot
-) {
+function updatePlant(plot) {
 
   const seedId =
     plot.dataset.seed;
 
-
   if (!seedId) {
-
     return;
-
   }
-
 
   const seed =
     seeds[seedId];
 
-
   if (!seed) {
-
     return;
-
   }
 
-
   const plantedAt =
-    Number(
-      plot.dataset.plantedAt
-    );
-
+    Number(plot.dataset.plantedAt);
 
   const growTime =
-    seed.growTime *
-    1000;
-
+    seed.growTime * 1000;
 
   const elapsed =
-    Date.now() -
-    plantedAt;
-
+    Date.now() - plantedAt;
 
   const progress =
     Math.min(
-      elapsed /
-      growTime,
+      elapsed / growTime,
       1
     );
 
+  if (progress >= 1) {
 
-  if (
-    progress >= 1
-  ) {
+    plot.classList.add("ready");
 
-    plot.classList.add(
-      "ready"
-    );
-
-
-    plot.innerHTML =
-
-      `<span class="plot-number">
+    plot.innerHTML = `
+      <span class="plot-number">
         ${plot.dataset.plot}
       </span>
 
@@ -1071,72 +773,51 @@ function updatePlant(
 
       <span class="ready-text">
         Thu hoạch
-      </span>`;
+      </span>
+    `;
 
     return;
 
   }
 
-
-  plot.classList.remove(
-    "ready"
-  );
-
+  plot.classList.remove("ready");
 
   const remaining =
     Math.max(
       0,
-      growTime -
-      elapsed
+      growTime - elapsed
     );
-
 
   const seconds =
     Math.ceil(
-      remaining /
-      1000
+      remaining / 1000
     );
-
 
   const minutes =
-    Math.floor(
-      seconds /
-      60
-    );
-
+    Math.floor(seconds / 60);
 
   const secs =
-    seconds %
-    60;
-
+    seconds % 60;
 
   let timeText;
 
-
-  if (
-    minutes > 0
-  ) {
+  if (minutes > 0) {
 
     timeText =
-      minutes +
-      "m " +
-      secs +
-      "s";
+      minutes + "m " +
+      secs + "s";
 
   }
 
   else {
 
     timeText =
-      secs +
-      "s";
+      secs + "s";
 
   }
 
-
-  plot.innerHTML =
-
-    `<span class="plot-number">
+  plot.innerHTML = `
+    <span class="plot-number">
       ${plot.dataset.plot}
     </span>
 
@@ -1146,7 +827,8 @@ function updatePlant(
 
     <span class="grow-time">
       ${timeText}
-    </span>`;
+    </span>
+  `;
 
 }
 
@@ -1157,54 +839,49 @@ function updatePlant(
 
 function updateAllPlants() {
 
-  plots.forEach(
-    plot => {
+  plots.forEach(plot => {
 
-      if (
-        plot.dataset.seed
-      ) {
+    if (plot.dataset.seed) {
 
-        updatePlant(
-          plot
-        );
-
-      }
+      updatePlant(plot);
 
     }
-  );
+
+  });
 
 }
+
+
+/* ==================================================
+   TỰ ĐỘNG CẬP NHẬT THỜI GIAN CÂY
+================================================== */
+
+setInterval(() => {
+
+  updateAllPlants();
+
+}, 1000);
 
 
 /* ==================================================
    NÚT BÓN PHÂN
 ================================================== */
 
-function showFertilizerButton(
-  plot
-) {
+function showFertilizerButton(plot) {
 
   const seedId =
     plot.dataset.seed;
 
-
   if (!seedId) {
-
     return;
-
   }
-
 
   const seed =
     seeds[seedId];
 
-
   if (!seed) {
-
     return;
-
   }
-
 
   if (
     plot.dataset.fertilizerUsed ===
@@ -1214,7 +891,6 @@ function showFertilizerButton(
     return;
 
   }
-
 
   if (
     plot.querySelector(
@@ -1226,24 +902,17 @@ function showFertilizerButton(
 
   }
 
-
   const button =
-    document.createElement(
-      "button"
-    );
-
+    document.createElement("button");
 
   button.type =
     "button";
 
-
   button.className =
     "fertilizer-button";
 
-
   button.textContent =
     "🧪 Bón phân";
-
 
   button.addEventListener(
     "click",
@@ -1251,17 +920,12 @@ function showFertilizerButton(
 
       event.stopPropagation();
 
-      useFertilizer(
-        plot
-      );
+      useFertilizer(plot);
 
     }
   );
 
-
-  plot.appendChild(
-    button
-  );
+  plot.appendChild(button);
 
 }
 
@@ -1270,24 +934,17 @@ function showFertilizerButton(
    BÓN PHÂN
 ================================================== */
 
-function useFertilizer(
-  plot
-) {
+function useFertilizer(plot) {
 
   const seedId =
     plot.dataset.seed;
 
-
   const seed =
     seeds[seedId];
 
-
   if (!seed) {
-
     return;
-
   }
-
 
   if (
     plot.dataset.fertilizerUsed ===
@@ -1302,10 +959,7 @@ function useFertilizer(
 
   }
 
-
-  if (
-    player.fertilizer <= 0
-  ) {
+  if (player.fertilizer <= 0) {
 
     alert(
       "❌ Bạn không còn phân bón."
@@ -1315,19 +969,14 @@ function useFertilizer(
 
   }
 
-
   const reducedMinutes =
     randomNumber(
       seed.fertilizerMin,
       seed.fertilizerMax
     );
 
-
   const plantedAt =
-    Number(
-      plot.dataset.plantedAt
-    );
-
+    Number(plot.dataset.plantedAt);
 
   plot.dataset.plantedAt =
     plantedAt -
@@ -1337,47 +986,33 @@ function useFertilizer(
       1000
     );
 
-
   plot.dataset.fertilizerUsed =
     "true";
 
-
   player.fertilizer--;
-
 
   const button =
     plot.querySelector(
       ".fertilizer-button"
     );
 
-
   if (button) {
-
     button.remove();
-
   }
-
 
   updateHUD();
 
-  updatePlant(
-    plot
-  );
+  updatePlant(plot);
 
   saveGame();
 
-
   alert(
-
     "🧪 Đã bón phân!\n\n" +
-
     seed.name +
     "\n" +
-
     "Giảm " +
     reducedMinutes +
     " phút."
-
   );
 
 }
@@ -1392,26 +1027,21 @@ function addToInventory(
   amount = 1
 ) {
 
-  if (
-    !player.inventory
-  ) {
+  if (!player.inventory) {
 
     player.inventory =
       createEmptyInventory();
 
   }
 
-
   if (
     typeof player.inventory[seedId] !==
     "number"
   ) {
 
-    player.inventory[seedId] =
-      0;
+    player.inventory[seedId] = 0;
 
   }
-
 
   player.inventory[seedId] +=
     amount;
@@ -1423,18 +1053,11 @@ function addToInventory(
    LẤY SỐ LƯỢNG TRONG KHO
 ================================================== */
 
-function getInventoryAmount(
-  seedId
-) {
+function getInventoryAmount(seedId) {
 
-  if (
-    !player.inventory
-  ) {
-
+  if (!player.inventory) {
     return 0;
-
   }
-
 
   return Number(
     player.inventory[seedId] || 0
@@ -1447,62 +1070,39 @@ function getInventoryAmount(
    THU HOẠCH
 ================================================== */
 
-function harvestPlot(
-  plot
-) {
+function harvestPlot(plot) {
 
   const seedId =
     plot.dataset.seed;
 
-
   const seed =
     seeds[seedId];
 
-
   if (!seed) {
-
     return;
-
   }
 
-
   if (
-    !plot.classList.contains(
-      "ready"
-    )
+    !plot.classList.contains("ready")
   ) {
 
     return;
 
   }
 
-
   const gainedExp =
-    randomNumber(
-      10,
-      300
-    );
-
-
-  /*
-     KHÔNG CỘNG COIN Ở ĐÂY.
-
-     Nông sản được đưa vào kho.
-  */
+    randomNumber(10, 300);
 
   addToInventory(
     seedId,
     1
   );
 
-
   player.exp +=
     gainedExp;
 
-
   while (
-    player.exp >=
-    7000
+    player.exp >= 7000
   ) {
 
     player.exp -=
@@ -1512,52 +1112,35 @@ function harvestPlot(
 
   }
 
-
   delete plot.dataset.seed;
 
   delete plot.dataset.plantedAt;
 
   delete plot.dataset.fertilizerUsed;
 
+  plot.classList.remove("ready");
 
-  plot.classList.remove(
-    "ready"
-  );
-
-
-  plot.innerHTML =
-
-    `<span class="plot-number">
+  plot.innerHTML = `
+    <span class="plot-number">
       ${plot.dataset.plot}
-    </span>`;
-
+    </span>
+  `;
 
   updateHUD();
 
   saveGame();
 
-
   const currentAmount =
-    getInventoryAmount(
-      seedId
-    );
-
+    getInventoryAmount(seedId);
 
   alert(
-
     "🌾 Thu hoạch thành công!\n\n" +
-
     seed.name +
-
     "\n\n+" +
-
     gainedExp +
     " EXP\n" +
-
     "🎒 Kho: " +
-
     currentAmount
-
   );
 
 }
@@ -1575,38 +1158,23 @@ function sellCrop(
   const seed =
     seeds[seedId];
 
-
   if (!seed) {
-
     return;
-
   }
-
 
   amount =
     Math.floor(
       Number(amount)
     );
 
-
-  if (
-    amount <= 0
-  ) {
-
+  if (amount <= 0) {
     return;
-
   }
 
-
   const owned =
-    getInventoryAmount(
-      seedId
-    );
+    getInventoryAmount(seedId);
 
-
-  if (
-    owned < amount
-  ) {
+  if (owned < amount) {
 
     alert(
       "❌ Không đủ " +
@@ -1618,52 +1186,33 @@ function sellCrop(
 
   }
 
-
   const price =
     sellPrices[seedId];
-
 
   const total =
     price * amount;
 
-
   player.inventory[seedId] -=
     amount;
 
-
   player.coins +=
     total;
-
 
   updateHUD();
 
   saveGame();
 
-
   alert(
-
     "🏪 Bán thành công!\n\n" +
-
     seed.icon +
     " " +
     seed.name +
-
     "\nSố lượng: " +
     amount +
-
     "\nNhận: +" +
-    total.toLocaleString(
-      "vi-VN"
-    ) +
+    total.toLocaleString("vi-VN") +
     " 🪙"
-
   );
-
-
-  /*
-     Sau này Shop thật sẽ gọi
-     renderShop() tại đây.
-  */
 
   if (
     typeof renderShop ===
@@ -1681,19 +1230,12 @@ function sellCrop(
    BÁN TOÀN BỘ 1 LOẠI
 ================================================== */
 
-function sellAllCrop(
-  seedId
-) {
+function sellAllCrop(seedId) {
 
   const amount =
-    getInventoryAmount(
-      seedId
-    );
+    getInventoryAmount(seedId);
 
-
-  if (
-    amount <= 0
-  ) {
+  if (amount <= 0) {
 
     alert(
       "🎒 Kho đang không có " +
@@ -1703,7 +1245,6 @@ function sellAllCrop(
     return;
 
   }
-
 
   sellCrop(
     seedId,
@@ -1721,29 +1262,18 @@ function getInventoryTotalValue() {
 
   let total = 0;
 
+  Object.keys(seeds).forEach(seedId => {
 
-  Object.keys(
-    seeds
-  ).forEach(
-    seedId => {
+    const amount =
+      getInventoryAmount(seedId);
 
-      const amount =
-        getInventoryAmount(
-          seedId
-        );
+    const price =
+      sellPrices[seedId];
 
+    total +=
+      amount * price;
 
-      const price =
-        sellPrices[seedId];
-
-
-      total +=
-        amount *
-        price;
-
-    }
-  );
-
+  });
 
   return total;
 
@@ -1751,79 +1281,52 @@ function getInventoryTotalValue() {
 
 
 /* ==================================================
-   MENU SHOP
+   MỞ SHOP
 ================================================== */
-
-const shopMenu =
-  document.getElementById(
-    "shopMenu"
-  );
-
 
 if (shopMenu) {
 
   shopMenu.addEventListener(
     "click",
-    () => {
+    event => {
 
-      /*
-         Giao diện Shop sẽ được
-         thêm ở bước kế tiếp.
+      event.preventDefault();
+      event.stopPropagation();
 
-         Nếu chưa có shopPanel,
-         tạm thời hiển thị thông tin.
-      */
-
-      const shopPanel =
+      const panel =
         document.getElementById(
           "shopPanel"
         );
 
+      if (!panel) {
 
-      if (shopPanel) {
-
-        shopPanel.classList.add(
-          "show"
+        alert(
+          "🏪 SHOP\n\n" +
+          "🎒 Giá trị kho hiện tại: " +
+          getInventoryTotalValue()
+            .toLocaleString("vi-VN") +
+          " 🪙"
         );
-
-        shopPanel.setAttribute(
-          "aria-hidden",
-          "false"
-        );
-
-
-        if (
-          typeof renderShop ===
-          "function"
-        ) {
-
-          renderShop();
-
-        }
 
         return;
 
       }
 
+      panel.classList.add("show");
 
-      alert(
-
-        "🏪 SHOP\n\n" +
-
-        "🎒 Giá trị kho hiện tại: " +
-
-        getInventoryTotalValue()
-          .toLocaleString(
-            "vi-VN"
-          ) +
-
-        " 🪙\n\n" +
-
-        "Giao diện Shop sẽ được " +
-
-        "thêm ở bước tiếp theo."
-
+      panel.setAttribute(
+        "aria-hidden",
+        "false"
       );
+
+      if (
+        typeof renderShop ===
+        "function"
+      ) {
+
+        renderShop();
+
+      }
 
     }
   );
@@ -1832,87 +1335,145 @@ if (shopMenu) {
 
 
 /* ==================================================
-   BẤM Ô ĐẤT
+   ĐÓNG SHOP
 ================================================== */
 
-plots.forEach(
-  plot => {
+function closeShop() {
 
-    plot.addEventListener(
-      "click",
-      () => {
-
-        const plotNumber =
-          Number(
-            plot.dataset.plot
-          );
-
-
-        /* ==========================
-           Ô KHÓA
-        ========================== */
-
-        if (
-          plot.classList.contains(
-            "locked"
-          )
-        ) {
-
-          unlockPlot(
-            plotNumber
-          );
-
-          return;
-
-        }
-
-
-        /* ==========================
-           CÓ CÂY
-        ========================== */
-
-        if (
-          plot.dataset.seed
-        ) {
-
-          if (
-            plot.classList.contains(
-              "ready"
-            )
-          ) {
-
-            harvestPlot(
-              plot
-            );
-
-          }
-
-          else {
-
-            showFertilizerButton(
-              plot
-            );
-
-          }
-
-          return;
-
-        }
-
-
-        /* ==========================
-           ĐẤT TRỐNG
-        ========================== */
-
-        openSeedPanel(
-          plotNumber
-        );
-
-      }
+  const panel =
+    document.getElementById(
+      "shopPanel"
     );
+
+  if (!panel) {
+    return;
+  }
+
+  panel.classList.remove("show");
+
+  panel.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+}
+
+
+/*
+   Dùng event delegation.
+
+   Không cần khai báo:
+   const shopClose = ...
+
+   Vì Shop có thể được render lại
+   bằng JavaScript.
+*/
+
+document.addEventListener(
+  "click",
+  event => {
+
+    const closeButton =
+      event.target.closest(
+        "#shopClose"
+      );
+
+    if (closeButton) {
+
+      event.preventDefault();
+
+      event.stopPropagation();
+
+      closeShop();
+
+      return;
+
+    }
+
+    /*
+       Bấm vùng nền bên ngoài
+       cũng đóng Shop.
+    */
+
+    const panel =
+      document.getElementById(
+        "shopPanel"
+      );
+
+    if (
+      panel &&
+      event.target === panel
+    ) {
+
+      closeShop();
+
+    }
 
   }
 );
+
+
+/* ==================================================
+   BẤM Ô ĐẤT
+================================================== */
+
+plots.forEach(plot => {
+
+  plot.addEventListener(
+    "click",
+    () => {
+
+      const plotNumber =
+        Number(plot.dataset.plot);
+
+      /* ==========================
+         Ô KHÓA
+      ========================== */
+
+      if (
+        plot.classList.contains("locked")
+      ) {
+
+        unlockPlot(plotNumber);
+
+        return;
+
+      }
+
+      /* ==========================
+         CÓ CÂY
+      ========================== */
+
+      if (plot.dataset.seed) {
+
+        if (
+          plot.classList.contains("ready")
+        ) {
+
+          harvestPlot(plot);
+
+        }
+
+        else {
+
+          showFertilizerButton(plot);
+
+        }
+
+        return;
+
+      }
+
+      /* ==========================
+         ĐẤT TRỐNG
+      ========================== */
+
+      openSeedPanel(plotNumber);
+
+    }
+  );
+
+});
 
 
 /* ==================================================
@@ -1954,100 +1515,80 @@ if (seedPanel) {
    CHỌN HẠT
 ================================================== */
 
-seedItems.forEach(
-  item => {
+seedItems.forEach(item => {
 
-    item.addEventListener(
-      "click",
-      () => {
+  item.addEventListener(
+    "click",
+    () => {
 
-        if (!currentPlot) {
+      if (!currentPlot) {
+        return;
+      }
 
-          return;
+      const seedId =
+        item.dataset.seed;
 
-        }
+      const seed =
+        seeds[seedId];
 
+      if (!seed) {
+        return;
+      }
 
-        const seedId =
-          item.dataset.seed;
+      if (
+        player.level <
+        seed.level
+      ) {
 
-
-        const seed =
-          seeds[seedId];
-
-
-        if (!seed) {
-
-          return;
-
-        }
-
-
-        if (
-          player.level <
-          seed.level
-        ) {
-
-          alert(
-
-            "🔒 Cần Lv." +
-            seed.level +
-            " để trồng " +
-            seed.name
-
-          );
-
-          return;
-
-        }
-
-
-        if (
-          player.coins <
-          seed.price
-        ) {
-
-          alert(
-            "🪙 Không đủ coin."
-          );
-
-          return;
-
-        }
-
-
-        const plot =
-          document.querySelector(
-            `.plot[data-plot="${currentPlot}"]`
-          );
-
-
-        if (!plot) {
-
-          return;
-
-        }
-
-
-        player.coins -=
-          seed.price;
-
-
-        plantSeed(
-          plot,
-          seedId
+        alert(
+          "🔒 Cần Lv." +
+          seed.level +
+          " để trồng " +
+          seed.name
         );
 
-
-        updateHUD();
-
-        closeSeedPanel();
+        return;
 
       }
-    );
 
-  }
-);
+      if (
+        player.coins <
+        seed.price
+      ) {
+
+        alert(
+          "🪙 Không đủ coin."
+        );
+
+        return;
+
+      }
+
+      const plot =
+        document.querySelector(
+          `.plot[data-plot="${currentPlot}"]`
+        );
+
+      if (!plot) {
+        return;
+      }
+
+      player.coins -=
+        seed.price;
+
+      plantSeed(
+        plot,
+        seedId
+      );
+
+      updateHUD();
+
+      closeSeedPanel();
+
+    }
+  );
+
+});
 
 
 /* ==================================================
@@ -2058,7 +1599,6 @@ const seedMenu =
   document.getElementById(
     "seedMenu"
   );
-
 
 if (seedMenu) {
 
@@ -2096,165 +1636,4 @@ loadGame();
 
 updateHUD();
 
-
-/* ==================================================
-   ĐÓNG SHOP
-================================================== */
-
-const shopPanel =
-  document.getElementById(
-    "shopPanel"
-  );
-
-
-function closeShop() {
-
-  const panel =
-    document.getElementById(
-      "shopPanel"
-    );
-
-
-  if (!panel) {
-
-    return;
-
-  }
-
-
-  panel.classList.remove(
-    "show"
-  );
-
-
-  panel.setAttribute(
-    "aria-hidden",
-    "true"
-  );
-
-}
-
-
-/*
-   Bắt sự kiện bằng delegation để
-   nút đóng vẫn hoạt động ngay cả khi
-   nội dung Shop được render lại bằng
-   JavaScript.
-*/
-
-document.addEventListener(
-  "click",
-  event => {
-
-    const closeButton =
-      event.target.closest(
-        "#shopClose"
-      );
-
-
-    if (closeButton) {
-
-      event.preventDefault();
-
-      event.stopPropagation();
-
-      closeShop();
-
-      return;
-
-    }
-
-
-    /*
-       Bấm ra vùng nền mờ
-       cũng đóng Shop.
-    */
-
-    if (
-      shopPanel &&
-      event.target ===
-      shopPanel
-    ) {
-
-      closeShop();
-
-    }
-
-  }
-);
-
-
-/*
-   Hỗ trợ chạm trên điện thoại
-   ngay cả khi trình duyệt xử lý
-   click chậm.
-*/
-
-document.addEventListener(
-  "pointerup",
-  event => {
-
-    const closeButton =
-      event.target.closest(
-        "#shopClose"
-      );
-
-
-    if (closeButton) {
-
-      event.preventDefault();
-
-      event.stopPropagation();
-
-      closeShop();
-
-    }
-
-  }
-);
-/* =========================
-   SHOP CLOSE
-========================= */
-
-/*
-  Dùng event delegation để nút × vẫn hoạt động
-  kể cả khi nội dung Shop được render lại.
-*/
-document.addEventListener("click", function (event) {
-
-  const closeButton = event.target.closest("#shopClose");
-
-  if (!closeButton) return;
-
-  event.preventDefault();
-  event.stopPropagation();
-
-  const shopPanel = document.getElementById("shopPanel");
-
-  if (!shopPanel) return;
-
-  shopPanel.classList.remove("show");
-  shopPanel.setAttribute("aria-hidden", "true");
-});
-
-
-/* =========================
-   CLICK RA NGOÀI SHOP ĐỂ ĐÓNG
-========================= */
-
-const shopPanel = document.getElementById("shopPanel");
-
-if (shopPanel) {
-
-  shopPanel.addEventListener("click", function (event) {
-
-    if (event.target === shopPanel) {
-
-      shopPanel.classList.remove("show");
-      shopPanel.setAttribute("aria-hidden", "true");
-
-    }
-
-  });
-
-}
+updateAllPlants();
