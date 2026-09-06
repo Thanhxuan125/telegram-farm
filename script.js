@@ -2231,3 +2231,69 @@ if (seedMenu) {
 loadGame();
 
 updateHUD();
+/* ==================================================
+   ĐÓNG SHOP
+================================================== */
+
+const shopPanel =
+  document.getElementById(
+    "shopPanel"
+  );
+
+const shopClose =
+  document.getElementById(
+    "shopClose"
+  );
+
+
+if (shopClose) {
+
+  shopClose.addEventListener(
+    "click",
+    () => {
+
+      if (!shopPanel) {
+        return;
+      }
+
+      shopPanel.classList.remove(
+        "show"
+      );
+
+      shopPanel.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+    }
+  );
+
+}
+
+
+if (shopPanel) {
+
+  shopPanel.addEventListener(
+    "click",
+    event => {
+
+      if (
+        event.target ===
+        shopPanel
+      ) {
+
+        shopPanel.classList.remove(
+          "show"
+        );
+
+        shopPanel.setAttribute(
+          "aria-hidden",
+          "true"
+        );
+
+      }
+
+    }
+  );
+
+}
