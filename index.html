@@ -360,50 +360,16 @@
 
 
       <button
-        class="menu-item"
-        type="button"
-        id="friendsMenu"
-      >
-
-        <span class="menu-icon">
-          👥
-        </span>
-
-        <span>
-          Bạn bè
-        </span>
-
-      </button>
-
-
-      <button
-        class="menu-item"
-        type="button"
-        id="seedMenu"
-      >
-
-        <span class="menu-icon">
-          🌱
-        </span>
-
-        <span>
-          Hạt giống
-        </span>
-
-      </button>
-
-
-      <button
-        class="menu-item"
-        type="button"
         id="shopMenu"
+        class="menu-button"
+        type="button"
       >
 
         <span class="menu-icon">
           🏪
         </span>
 
-        <span>
+        <span class="menu-text">
           Shop
         </span>
 
@@ -411,40 +377,75 @@
 
 
       <button
-        class="menu-item"
+        id="seedMenu"
+        class="menu-button"
         type="button"
-        id="taskMenu"
       >
 
         <span class="menu-icon">
-          🎯
+          🌱
         </span>
 
-        <span>
-          Nhiệm vụ
+        <span class="menu-text">
+          Hạt giống
         </span>
 
       </button>
 
 
       <button
-        class="menu-item"
+        id="inventoryMenu"
+        class="menu-button"
         type="button"
-        id="walletMenu"
       >
 
         <span class="menu-icon">
-          👛
+          🎒
         </span>
 
-        <span>
-          Ví
+        <span class="menu-text">
+          Kho
+        </span>
+
+      </button>
+
+
+      <button
+        id="fertilizerMenu"
+        class="menu-button"
+        type="button"
+      >
+
+        <span class="menu-icon">
+          🧪
+        </span>
+
+        <span class="menu-text">
+          Phân
+        </span>
+
+      </button>
+
+
+      <button
+        id="settingsMenu"
+        class="menu-button"
+        type="button"
+      >
+
+        <span class="menu-icon">
+          ⚙️
+        </span>
+
+        <span class="menu-text">
+          Cài đặt
         </span>
 
       </button>
 
 
     </nav>
+
 
 
   </main>
@@ -468,135 +469,23 @@
         id="seedClose"
         class="seed-close"
         type="button"
+        aria-label="Đóng"
+        title="Đóng"
       >
         ×
       </button>
 
 
       <h2>
-        🌱 Chọn hạt giống
+        🌱 Hạt giống
       </h2>
 
 
-      <p id="selectedPlot">
-        Đang chọn ô đất
-      </p>
+      <div
+        id="seedList"
+        class="seed-list"
+      ></div>
 
-
-      <div class="seed-list">
-
-
-        <button
-          class="seed-item"
-          type="button"
-          data-seed="wheat"
-        >
-          <span>🌾</span>
-          <b>Lúa mì</b>
-          <small>10 🪙 · Lv.1</small>
-        </button>
-
-
-        <button
-          class="seed-item"
-          type="button"
-          data-seed="corn"
-        >
-          <span>🌽</span>
-          <b>Ngô</b>
-          <small>20 🪙 · Lv.3</small>
-        </button>
-
-
-        <button
-          class="seed-item"
-          type="button"
-          data-seed="radish"
-        >
-          <span>🌱</span>
-          <b>Củ cải</b>
-          <small>35 🪙 · Lv.7</small>
-        </button>
-
-
-        <button
-          class="seed-item"
-          type="button"
-          data-seed="carrot"
-        >
-          <span>🥕</span>
-          <b>Cà rốt</b>
-          <small>50 🪙 · Lv.10</small>
-        </button>
-
-
-        <button
-          class="seed-item"
-          type="button"
-          data-seed="beet"
-        >
-          <span>🫜</span>
-          <b>Củ dền</b>
-          <small>75 🪙 · Lv.13</small>
-        </button>
-
-
-        <button
-          class="seed-item"
-          type="button"
-          data-seed="eggplant"
-        >
-          <span>🍆</span>
-          <b>Cà tím</b>
-          <small>100 🪙 · Lv.15</small>
-        </button>
-
-
-        <button
-          class="seed-item"
-          type="button"
-          data-seed="chili"
-        >
-          <span>🌶️</span>
-          <b>Ớt</b>
-          <small>180 🪙 · Lv.17</small>
-        </button>
-
-
-        <button
-          class="seed-item"
-          type="button"
-          data-seed="green_onion"
-        >
-          <span>🌿</span>
-          <b>Hành lá</b>
-          <small>250 🪙 · Lv.20</small>
-        </button>
-
-
-        <button
-          class="seed-item"
-          type="button"
-          data-seed="cabbage"
-        >
-          <span>🥬</span>
-          <b>Bắp cải</b>
-          <small>500 🪙 · Lv.23</small>
-        </button>
-
-
-        <button
-          class="seed-item"
-          type="button"
-          data-seed="pumpkin"
-        >
-          <span>🎃</span>
-          <b>Bí đỏ</b>
-          <small>1000 🪙 · Lv.25</small>
-        </button>
-
-
-      </div>
 
     </div>
 
@@ -617,10 +506,14 @@
     <div class="seed-box shop-box">
 
 
+      <!-- NÚT ĐÓNG SHOP -->
+
       <button
         id="shopClose"
         class="seed-close"
         type="button"
+        aria-label="Đóng Shop"
+        title="Đóng Shop"
       >
         ×
       </button>
@@ -658,7 +551,12 @@
 
 
 
+  <!-- =====================================
+       JAVASCRIPT
+  ====================================== -->
+
   <script src="script.js"></script>
+
 
 </body>
 
