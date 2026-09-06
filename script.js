@@ -2212,3 +2212,49 @@ document.addEventListener(
 
   }
 );
+/* =========================
+   SHOP CLOSE
+========================= */
+
+/*
+  Dùng event delegation để nút × vẫn hoạt động
+  kể cả khi nội dung Shop được render lại.
+*/
+document.addEventListener("click", function (event) {
+
+  const closeButton = event.target.closest("#shopClose");
+
+  if (!closeButton) return;
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  const shopPanel = document.getElementById("shopPanel");
+
+  if (!shopPanel) return;
+
+  shopPanel.classList.remove("show");
+  shopPanel.setAttribute("aria-hidden", "true");
+});
+
+
+/* =========================
+   CLICK RA NGOÀI SHOP ĐỂ ĐÓNG
+========================= */
+
+const shopPanel = document.getElementById("shopPanel");
+
+if (shopPanel) {
+
+  shopPanel.addEventListener("click", function (event) {
+
+    if (event.target === shopPanel) {
+
+      shopPanel.classList.remove("show");
+      shopPanel.setAttribute("aria-hidden", "true");
+
+    }
+
+  });
+
+}
