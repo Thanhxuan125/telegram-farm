@@ -843,3 +843,265 @@ button {
   }
 
 }
+/* ==============================
+   NHIỆM VỤ
+============================== */
+
+#tasksPanel .shop-box {
+  width: min(94%, 430px);
+  max-height: 84vh;
+}
+
+#tasksPanel .shop-box h2 {
+  margin-bottom: 5px;
+}
+
+#tasksPanel .shop-box > p {
+  margin: 0 0 12px;
+  color: #087dcc;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+
+/* DANH SÁCH NHIỆM VỤ */
+
+#tasksPanel .shop-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+
+/* THẺ NHIỆM VỤ */
+
+.task-item {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+
+  min-height: 70px;
+  padding: 8px;
+
+  border: 2px solid #0788df;
+  border-radius: 14px;
+
+  background: linear-gradient(
+    180deg,
+    #f4fcff 0%,
+    #e4f8ff 100%
+  );
+
+  text-align: left;
+
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, .12);
+}
+
+
+/* ICON */
+
+.task-icon {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: #0788df;
+
+  font-size: 23px;
+
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,.25);
+}
+
+
+/* NỘI DUNG */
+
+.task-content {
+  min-width: 0;
+}
+
+.task-title {
+  margin-bottom: 2px;
+
+  color: #075f91;
+
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.task-desc {
+  color: #555;
+
+  font-size: 9px;
+  font-weight: 700;
+
+  line-height: 1.35;
+}
+
+.task-reward {
+  margin-top: 3px;
+
+  color: #087dcc;
+
+  font-size: 9px;
+  font-weight: 900;
+}
+
+
+/* TRẠNG THÁI */
+
+.task-status {
+  margin-top: 3px;
+
+  color: #777;
+
+  font-size: 8px;
+  font-weight: 800;
+}
+
+
+/* NÚT NHIỆM VỤ */
+
+.task-button {
+  min-width: 72px;
+
+  padding: 7px 6px;
+
+  border: 2px solid #087dcc;
+  border-radius: 9px;
+
+  background: linear-gradient(
+    180deg,
+    #25afea 0%,
+    #087dcc 100%
+  );
+
+  color: #fff;
+
+  font-size: 9px;
+  font-weight: 900;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 2px 4px rgba(0,0,0,.2);
+}
+
+.task-button:active {
+  transform: translateY(1px);
+}
+
+.task-button:disabled {
+  border-color: #999;
+
+  background: #aaa;
+
+  color: #eee;
+
+  cursor: not-allowed;
+
+  box-shadow: none;
+}
+
+
+/* NHIỆM VỤ ĐÃ HOÀN THÀNH */
+
+.task-item.completed {
+  opacity: .72;
+
+  background:
+    linear-gradient(
+      180deg,
+      #edf7ed 0%,
+      #dcefdc 100%
+    );
+
+  border-color: #55a855;
+}
+
+.task-item.completed .task-icon {
+  background: #55a855;
+}
+
+.task-item.completed .task-button {
+  border-color: #55a855;
+  background: #55a855;
+}
+
+
+/* NHIỆM VỤ ĐANG CHỜ */
+
+.task-item.cooldown {
+  opacity: .85;
+}
+
+
+/* DÒNG GHI CHÚ */
+
+.task-note {
+  margin-top: 10px;
+  padding: 8px;
+
+  border-radius: 10px;
+
+  background: #fff8d9;
+
+  border: 1px solid #ead47a;
+
+  color: #765f00;
+
+  font-size: 9px;
+  font-weight: 700;
+
+  line-height: 1.4;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 360px) {
+
+  .task-item {
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+
+    gap: 6px;
+
+    min-height: 64px;
+
+    padding: 7px;
+  }
+
+  .task-icon {
+    width: 36px;
+    height: 36px;
+
+    font-size: 20px;
+  }
+
+  .task-title {
+    font-size: 11px;
+  }
+
+  .task-desc {
+    font-size: 8px;
+  }
+
+  .task-reward {
+    font-size: 8px;
+  }
+
+  .task-button {
+    min-width: 62px;
+
+    padding: 6px 4px;
+
+    font-size: 8px;
+  }
+}
