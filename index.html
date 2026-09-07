@@ -234,9 +234,10 @@
         <span class="menu-text">Kho</span>
       </button>
 
-      <button id="fertilizerMenu" class="menu-button" type="button">
-        <span class="menu-icon">🧪</span>
-        <span class="menu-text">Phân</span>
+      <!-- NHIỆM VỤ -->
+      <button id="tasksMenu" class="menu-button" type="button">
+        <span class="menu-icon">📋</span>
+        <span class="menu-text">Nhiệm vụ</span>
       </button>
 
       <button id="settingsMenu" class="menu-button" type="button">
@@ -318,6 +319,44 @@
 
       <div
         id="shopList"
+        class="shop-list"
+      ></div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- ==============================
+       NHIỆM VỤ
+  =============================== -->
+
+  <div
+    id="tasksPanel"
+    class="seed-panel"
+    aria-hidden="true"
+  >
+
+    <div class="shop-box">
+
+      <button
+        id="tasksClose"
+        class="seed-close"
+        type="button"
+        aria-label="Đóng Nhiệm vụ"
+      >
+        ×
+      </button>
+
+      <h2>📋 Nhiệm vụ</h2>
+
+      <p>
+        Hoàn thành nhiệm vụ để nhận phần thưởng
+      </p>
+
+      <div
+        id="tasksList"
         class="shop-list"
       ></div>
 
