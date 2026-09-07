@@ -127,6 +127,24 @@ const FERTILIZER_PRICE = 150;
 
 
 /* =====================================
+   CẤU HÌNH NHIỆM VỤ
+===================================== */
+
+const TASK_COOLDOWN_AD2 = 15 * 60 * 1000;
+
+const TASK_COOLDOWN_AD3 = 15 * 60 * 1000;
+
+const TASK_COOLDOWN_AD4 = 30 * 60 * 1000;
+
+const TASK_AD2_LIMIT = 10;
+
+const TASK_AD3_LIMIT = 20;
+
+const TASK_AD4_LIMIT = 5;
+
+
+
+/* =====================================
    PLAYER
 ===================================== */
 
@@ -143,7 +161,26 @@ let player = {
 
   inventory: {},
 
-  plots: {}
+  plots: {},
+
+  autoCareCards: 0,
+
+  tasks: {
+    date: "",
+    ad1Claimed: false,
+
+    ad2Count: 0,
+    ad2LastClaim: 0,
+
+    ad3Count: 0,
+    ad3LastClaim: 0,
+
+    ad4Count: 0,
+    ad4LastClaim: 0,
+
+    groupClaimed: false,
+    channelClaimed: false
+  }
 };
 
 
@@ -152,34 +189,53 @@ let player = {
    DOM
 ===================================== */
 
-const plots = document.querySelectorAll(".plot");
+const plots =
+  document.querySelectorAll(".plot");
 
-const seedPanel = document.getElementById("seedPanel");
+const seedPanel =
+  document.getElementById("seedPanel");
 
-const seedClose = document.getElementById("seedClose");
+const seedClose =
+  document.getElementById("seedClose");
 
-const seedList = document.getElementById("seedList");
+const seedList =
+  document.getElementById("seedList");
 
-const shopPanel = document.getElementById("shopPanel");
+const shopPanel =
+  document.getElementById("shopPanel");
 
-const shopMenu = document.getElementById("shopMenu");
+const shopMenu =
+  document.getElementById("shopMenu");
 
-const shopClose = document.getElementById("shopClose");
+const shopClose =
+  document.getElementById("shopClose");
 
-const shopList = document.getElementById("shopList");
+const shopList =
+  document.getElementById("shopList");
 
-const shopTotalValue = document.getElementById("shopTotalValue");
+const shopTotalValue =
+  document.getElementById("shopTotalValue");
 
-const seedMenu = document.getElementById("seedMenu");
-
-const fertilizerMenu =
-  document.getElementById("fertilizerMenu");
+const seedMenu =
+  document.getElementById("seedMenu");
 
 const inventoryMenu =
   document.getElementById("inventoryMenu");
 
 const settingsMenu =
   document.getElementById("settingsMenu");
+
+const tasksMenu =
+  document.getElementById("tasksMenu");
+
+const tasksPanel =
+  document.getElementById("tasksPanel");
+
+const tasksClose =
+  document.getElementById("tasksClose");
+
+const tasksList =
+  document.getElementById("tasksList");
 
 const coinValue =
   document.getElementById("coinValue");
@@ -206,25 +262,51 @@ const expText =
 ===================================== */
 
 function formatNumber(number) {
-  return Number(number || 0).toLocaleString("vi-VN");
+  return Number(number || 0)
+    .toLocaleString("vi-VN");
 }
 
 
 
 function getPlotUnlockPrice(plotNumber) {
+
   if (plotNumber <= FREE_PLOTS) {
     return 0;
   }
 
-  return 500 * Math.pow(2, plotNumber - 4);
+  return 500 *
+    Math.pow(2, plotNumber - 4);
 }
 
 
 
 function getRandomExp() {
+
   return Math.floor(
     Math.random() * 291
   ) + 10;
+}
+
+
+
+function getTodayKey() {
+
+  const now = new Date();
+
+  const year =
+    now.getFullYear();
+
+  const month =
+    String(
+      now.getMonth() + 1
+    ).padStart(2, "0");
+
+  const day =
+    String(
+      now.getDate()
+    ).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
 }
 
 
@@ -234,12 +316,16 @@ function getRandomExp() {
 ===================================== */
 
 function saveGame() {
+
   try {
+
     localStorage.setItem(
       SAVE_KEY,
       JSON.stringify(player)
     );
+
   } catch (error) {
+
     console.error(
       "Không thể lưu game:",
       error
@@ -250,33 +336,98 @@ function saveGame() {
 
 
 function loadGame() {
+
   try {
+
     const saved =
-      localStorage.getItem(SAVE_KEY);
+      localStorage.getItem(
+        SAVE_KEY
+      );
 
     if (!saved) {
       return;
     }
 
-    const data = JSON.parse(saved);
+    const data =
+      JSON.parse(saved);
 
     player = {
+
       ...player,
+
       ...data,
 
       inventory:
         data.inventory || {},
 
       plots:
-        data.plots || {}
+        data.plots || {},
+
+      tasks: {
+
+        ...player.tasks,
+
+        ...(data.tasks || {})
+      },
+
+      autoCareCards:
+        Number(
+          data.autoCareCards || 0
+        )
     };
 
   } catch (error) {
+
     console.error(
       "Không thể tải dữ liệu:",
       error
     );
   }
+}
+
+
+
+/* =====================================
+   RESET NHIỆM VỤ HÀNG NGÀY
+===================================== */
+
+function checkDailyTasks() {
+
+  const today =
+    getTodayKey();
+
+  if (
+    player.tasks.date ===
+    today
+  ) {
+    return;
+  }
+
+  player.tasks.date =
+    today;
+
+  player.tasks.ad1Claimed =
+    false;
+
+  player.tasks.ad2Count =
+    0;
+
+  player.tasks.ad2LastClaim =
+    0;
+
+  player.tasks.ad3Count =
+    0;
+
+  player.tasks.ad3LastClaim =
+    0;
+
+  player.tasks.ad4Count =
+    0;
+
+  player.tasks.ad4LastClaim =
+    0;
+
+  saveGame();
 }
 
 
@@ -288,10 +439,14 @@ function loadGame() {
 function updateHUD() {
 
   coinValue.textContent =
-    formatNumber(player.coins);
+    formatNumber(
+      player.coins
+    );
 
   fertilizerValue.textContent =
-    formatNumber(player.fertilizer);
+    formatNumber(
+      player.fertilizer
+    );
 
   levelNumber.textContent =
     player.level;
@@ -300,12 +455,16 @@ function updateHUD() {
     player.level;
 
   const currentExp =
-    player.exp % EXP_PER_LEVEL;
+    player.exp %
+    EXP_PER_LEVEL;
 
   const percent =
     Math.min(
       100,
-      (currentExp / EXP_PER_LEVEL) * 100
+      (
+        currentExp /
+        EXP_PER_LEVEL
+      ) * 100
     );
 
   expFill.style.width =
@@ -323,10 +482,11 @@ function updateHUD() {
 
 function addExp(amount) {
 
-  amount = Math.max(
-    0,
-    Number(amount) || 0
-  );
+  amount =
+    Math.max(
+      0,
+      Number(amount) || 0
+    );
 
   player.exp += amount;
 
@@ -363,10 +523,13 @@ function updatePlotsLockState() {
   plots.forEach((plot) => {
 
     const number =
-      Number(plot.dataset.plot);
+      Number(
+        plot.dataset.plot
+      );
 
     const unlocked =
-      number <= player.unlockedPlots;
+      number <=
+      player.unlockedPlots;
 
     plot.classList.toggle(
       "locked",
@@ -379,9 +542,12 @@ function updatePlotsLockState() {
     );
 
     const lock =
-      plot.querySelector(".lock");
+      plot.querySelector(
+        ".lock"
+      );
 
     if (lock) {
+
       lock.style.display =
         unlocked
           ? "none"
@@ -389,17 +555,23 @@ function updatePlotsLockState() {
     }
 
     let priceElement =
-      plot.querySelector(".plot-price");
+      plot.querySelector(
+        ".plot-price"
+      );
 
     if (!unlocked) {
 
       const price =
-        getPlotUnlockPrice(number);
+        getPlotUnlockPrice(
+          number
+        );
 
       if (!priceElement) {
 
         priceElement =
-          document.createElement("span");
+          document.createElement(
+            "span"
+          );
 
         priceElement.className =
           "plot-price";
@@ -412,7 +584,9 @@ function updatePlotsLockState() {
       priceElement.textContent =
         `🪙 ${formatNumber(price)}`;
 
-    } else if (priceElement) {
+    } else if (
+      priceElement
+    ) {
 
       priceElement.remove();
     }
@@ -431,6 +605,7 @@ function unlockPlot(plotNumber) {
     plotNumber <=
     player.unlockedPlots
   ) {
+
     return true;
   }
 
@@ -447,9 +622,14 @@ function unlockPlot(plotNumber) {
   }
 
   const price =
-    getPlotUnlockPrice(plotNumber);
+    getPlotUnlockPrice(
+      plotNumber
+    );
 
-  if (player.coins < price) {
+  if (
+    player.coins <
+    price
+  ) {
 
     alert(
       `❌ Không đủ tiền!\nCần ${formatNumber(price)} 🪙`
@@ -490,7 +670,9 @@ function openSeedPanel(plot) {
 
   selectedPlot = plot;
 
-  seedPanel.classList.add("show");
+  seedPanel.classList.add(
+    "show"
+  );
 
   seedPanel.setAttribute(
     "aria-hidden",
@@ -506,7 +688,9 @@ function closeSeedPanel() {
 
   selectedPlot = null;
 
-  seedPanel.classList.remove("show");
+  seedPanel.classList.remove(
+    "show"
+  );
 
   seedPanel.setAttribute(
     "aria-hidden",
@@ -529,7 +713,9 @@ function renderSeedList() {
       ([key, seed]) => {
 
         const item =
-          document.createElement("button");
+          document.createElement(
+            "button"
+          );
 
         item.type = "button";
 
@@ -590,7 +776,9 @@ function renderSeedList() {
           }
         );
 
-        seedList.appendChild(item);
+        seedList.appendChild(
+          item
+        );
       }
     );
 }
@@ -607,12 +795,15 @@ function plantSeed(
 ) {
 
   const number =
-    Number(plot.dataset.plot);
+    Number(
+      plot.dataset.plot
+    );
 
   if (
     number >
     player.unlockedPlots
   ) {
+
     return;
   }
 
@@ -654,9 +845,13 @@ function plantSeed(
     Date.now();
 
   player.plots[number] = {
+
     seedKey,
+
     plantedAt,
+
     fertilizerUsed: false,
+
     fertilizerReduction: 0
   };
 
@@ -678,19 +873,27 @@ function plantSeed(
 function updatePlotVisual(plot) {
 
   const number =
-    Number(plot.dataset.plot);
+    Number(
+      plot.dataset.plot
+    );
 
   const data =
     player.plots[number];
 
   const oldCrop =
-    plot.querySelector(".crop-image");
+    plot.querySelector(
+      ".crop-image"
+    );
 
   const oldName =
-    plot.querySelector(".crop-name");
+    plot.querySelector(
+      ".crop-name"
+    );
 
   const oldTime =
-    plot.querySelector(".grow-time");
+    plot.querySelector(
+      ".grow-time"
+    );
 
   if (oldCrop) {
     oldCrop.remove();
@@ -716,7 +919,9 @@ function updatePlotVisual(plot) {
   }
 
   const crop =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
 
   crop.className =
     "crop-image";
@@ -736,11 +941,15 @@ function updatePlotVisual(plot) {
   crop.style.fontSize =
     "clamp(20px, 7vw, 40px)";
 
-  plot.appendChild(crop);
+  plot.appendChild(
+    crop
+  );
 
 
   const name =
-    document.createElement("span");
+    document.createElement(
+      "span"
+    );
 
   name.className =
     "crop-name";
@@ -748,16 +957,22 @@ function updatePlotVisual(plot) {
   name.textContent =
     seed.name;
 
-  plot.appendChild(name);
+  plot.appendChild(
+    name
+  );
 
 
   const time =
-    document.createElement("span");
+    document.createElement(
+      "span"
+    );
 
   time.className =
     "grow-time";
 
-  plot.appendChild(time);
+  plot.appendChild(
+    time
+  );
 
   updateSinglePlant(
     plot,
@@ -786,7 +1001,8 @@ function updateSinglePlant(
   }
 
   const reduction =
-    data.fertilizerReduction || 0;
+    data.fertilizerReduction ||
+    0;
 
   const totalTime =
     Math.max(
@@ -796,13 +1012,16 @@ function updateSinglePlant(
     );
 
   const elapsed =
-    (Date.now() -
-      data.plantedAt) / 1000;
+    (
+      Date.now() -
+      data.plantedAt
+    ) / 1000;
 
   const remaining =
     Math.max(
       0,
-      totalTime - elapsed
+      totalTime -
+      elapsed
     );
 
   if (
@@ -854,7 +1073,9 @@ function updateAllPlants() {
   plots.forEach((plot) => {
 
     const number =
-      Number(plot.dataset.plot);
+      Number(
+        plot.dataset.plot
+      );
 
     const data =
       player.plots[number];
@@ -869,7 +1090,11 @@ function updateAllPlants() {
       );
 
     if (!timeElement) {
-      updatePlotVisual(plot);
+
+      updatePlotVisual(
+        plot
+      );
+
       return;
     }
 
@@ -890,7 +1115,9 @@ function updateAllPlants() {
 function harvestPlot(plot) {
 
   const number =
-    Number(plot.dataset.plot);
+    Number(
+      plot.dataset.plot
+    );
 
   const data =
     player.plots[number];
@@ -910,12 +1137,17 @@ function harvestPlot(plot) {
     Math.max(
       1,
       seed.growTime -
-      (data.fertilizerReduction || 0) * 60
+      (
+        data.fertilizerReduction ||
+        0
+      ) * 60
     );
 
   const elapsed =
-    (Date.now() -
-      data.plantedAt) / 1000;
+    (
+      Date.now() -
+      data.plantedAt
+    ) / 1000;
 
   if (
     elapsed <
@@ -930,19 +1162,30 @@ function harvestPlot(plot) {
   }
 
   if (
-    !player.inventory[data.seedKey]
+    !player.inventory[
+      data.seedKey
+    ]
   ) {
-    player.inventory[data.seedKey] = 0;
+
+    player.inventory[
+      data.seedKey
+    ] = 0;
   }
 
-  player.inventory[data.seedKey] += 1;
+  player.inventory[
+    data.seedKey
+  ] += 1;
 
   const gainedExp =
     getRandomExp();
 
-  addExp(gainedExp);
+  addExp(
+    gainedExp
+  );
 
-  delete player.plots[number];
+  delete player.plots[
+    number
+  ];
 
   plot.dataset.ready =
     "false";
@@ -995,25 +1238,28 @@ function getFertilizerReduction(seed) {
     pumpkin: [22, 30]
   };
 
+  const seedKey =
+    Object.keys(seeds)
+      .find(
+        key =>
+          seeds[key] === seed
+      );
+
   const range =
-    ranges[
-      Object.keys(seeds)
-        .find(
-          key => seeds[key] === seed
-        )
-    ];
+    ranges[seedKey];
 
   if (!range) {
     return 5;
   }
 
-  return (
-    Math.floor(
-      Math.random() *
-      (range[1] - range[0] + 1)
-    ) +
-    range[0]
-  );
+  return Math.floor(
+    Math.random() *
+    (
+      range[1] -
+      range[0] +
+      1
+    )
+  ) + range[0];
 }
 
 
@@ -1021,7 +1267,9 @@ function getFertilizerReduction(seed) {
 function useFertilizer(plot) {
 
   const number =
-    Number(plot.dataset.plot);
+    Number(
+      plot.dataset.plot
+    );
 
   const data =
     player.plots[number];
@@ -1065,7 +1313,9 @@ function useFertilizer(plot) {
   }
 
   const reduction =
-    getFertilizerReduction(seed);
+    getFertilizerReduction(
+      seed
+    );
 
   player.fertilizer -= 1;
 
@@ -1177,7 +1427,9 @@ function renderShop() {
         seeds[key];
 
       const item =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
       item.className =
         "shop-item";
@@ -1214,7 +1466,9 @@ function renderShop() {
         </button>
       `;
 
-      shopList.appendChild(item);
+      shopList.appendChild(
+        item
+      );
     }
   );
 
@@ -1241,7 +1495,8 @@ function renderShop() {
 function sellOne(key) {
 
   const amount =
-    player.inventory[key] || 0;
+    player.inventory[key] ||
+    0;
 
   if (amount <= 0) {
     return;
@@ -1266,7 +1521,8 @@ function sellOne(key) {
 function sellAll(key) {
 
   const amount =
-    player.inventory[key] || 0;
+    player.inventory[key] ||
+    0;
 
   if (amount <= 0) {
     return;
@@ -1290,6 +1546,889 @@ function sellAll(key) {
 
 
 /* =====================================
+   NHIỆM VỤ - HỖ TRỢ
+===================================== */
+
+function getRemainingCooldown(lastClaim, cooldown) {
+
+  if (!lastClaim) {
+    return 0;
+  }
+
+  return Math.max(
+    0,
+    cooldown -
+    (
+      Date.now() -
+      lastClaim
+    )
+  );
+}
+
+
+
+function formatCooldown(milliseconds) {
+
+  const totalSeconds =
+    Math.ceil(
+      milliseconds / 1000
+    );
+
+  const minutes =
+    Math.floor(
+      totalSeconds / 60
+    );
+
+  const seconds =
+    totalSeconds % 60;
+
+  return `${minutes}:${String(seconds).padStart(2, "0")}`;
+}
+
+
+
+/* =====================================
+   NHIỆM VỤ - RENDER
+===================================== */
+
+function renderTasks() {
+
+  if (!tasksList) {
+    return;
+  }
+
+  checkDailyTasks();
+
+  tasksList.innerHTML = "";
+
+  const tasks = [
+
+    {
+      id: "ad1",
+
+      icon: "📺",
+
+      title: "Điểm danh hằng ngày",
+
+      description:
+        "Xem quảng cáo để nhận phần thưởng hôm nay.",
+
+      reward:
+        "🎁 +100 🪙",
+
+      status:
+        player.tasks.ad1Claimed
+          ? "✅ Đã nhận hôm nay"
+          : "🎬 Có thể nhận",
+
+      button:
+        player.tasks.ad1Claimed
+          ? "Đã nhận"
+          : "Xem quảng cáo",
+
+      disabled:
+        player.tasks.ad1Claimed
+    },
+
+
+    {
+      id: "ad2",
+
+      icon: "🧪",
+
+      title: "Nhận phân bón",
+
+      description:
+        "Xem quảng cáo để nhận ngẫu nhiên 1–3 phân bón.",
+
+      reward:
+        "🎁 +1–3 🧪",
+
+      status:
+        getAd2Status(),
+
+      button:
+        getAd2ButtonText(),
+
+      disabled:
+        isAd2Disabled()
+    },
+
+
+    {
+      id: "ad3",
+
+      icon: "🪙",
+
+      title: "Nhận Coin",
+
+      description:
+        "Xem quảng cáo để nhận ngẫu nhiên 50–150 coin.",
+
+      reward:
+        "🎁 +50–150 🪙",
+
+      status:
+        getAd3Status(),
+
+      button:
+        getAd3ButtonText(),
+
+      disabled:
+        isAd3Disabled()
+    },
+
+
+    {
+      id: "ad4",
+
+      icon: "🛡️",
+
+      title: "Thẻ tự động chăm sóc",
+
+      description:
+        "Xem quảng cáo để nhận 1 thẻ tự động chăm sóc cây 3 giờ.",
+
+      reward:
+        "🎁 +1 thẻ Auto-care 3 giờ",
+
+      status:
+        getAd4Status(),
+
+      button:
+        getAd4ButtonText(),
+
+      disabled:
+        isAd4Disabled()
+    },
+
+
+    {
+      id: "group",
+
+      icon: "👥",
+
+      title: "Tham gia nhóm",
+
+      description:
+        "Tham gia nhóm chat của Nông Trại Xanh.",
+
+      reward:
+        "🎁 +500 🪙",
+
+      status:
+        player.tasks.groupClaimed
+          ? "✅ Đã nhận"
+          : "🔒 Chờ Bot xác minh",
+
+      button:
+        player.tasks.groupClaimed
+          ? "Đã nhận"
+          : "Chưa mở",
+
+      disabled:
+        true
+    },
+
+
+    {
+      id: "channel",
+
+      icon: "📢",
+
+      title: "Tham gia kênh thông báo",
+
+      description:
+        "Tham gia kênh thông báo của Nông Trại Xanh.",
+
+      reward:
+        "🎁 +500 🪙",
+
+      status:
+        player.tasks.channelClaimed
+          ? "✅ Đã nhận"
+          : "🔒 Chờ Bot xác minh",
+
+      button:
+        player.tasks.channelClaimed
+          ? "Đã nhận"
+          : "Chưa mở",
+
+      disabled:
+        true
+    }
+
+  ];
+
+
+  tasks.forEach(
+    (task) => {
+
+      const item =
+        document.createElement(
+          "div"
+        );
+
+      item.className =
+        "task-item";
+
+      if (
+        task.disabled &&
+        (
+          task.id === "ad1" ||
+          task.id === "group" ||
+          task.id === "channel"
+        )
+      ) {
+
+        item.classList.add(
+          "completed"
+        );
+      }
+
+      if (
+        task.id === "ad2" &&
+        getRemainingCooldown(
+          player.tasks.ad2LastClaim,
+          TASK_COOLDOWN_AD2
+        ) > 0
+      ) {
+
+        item.classList.add(
+          "cooldown"
+        );
+      }
+
+      if (
+        task.id === "ad3" &&
+        getRemainingCooldown(
+          player.tasks.ad3LastClaim,
+          TASK_COOLDOWN_AD3
+        ) > 0
+      ) {
+
+        item.classList.add(
+          "cooldown"
+        );
+      }
+
+      if (
+        task.id === "ad4" &&
+        getRemainingCooldown(
+          player.tasks.ad4LastClaim,
+          TASK_COOLDOWN_AD4
+        ) > 0
+      ) {
+
+        item.classList.add(
+          "cooldown"
+        );
+      }
+
+
+      item.innerHTML = `
+
+        <div class="task-icon">
+          ${task.icon}
+        </div>
+
+        <div class="task-content">
+
+          <div class="task-title">
+            ${task.title}
+          </div>
+
+          <div class="task-desc">
+            ${task.description}
+          </div>
+
+          <div class="task-reward">
+            ${task.reward}
+          </div>
+
+          <div class="task-status">
+            ${task.status}
+          </div>
+
+        </div>
+
+        <button
+          class="task-button"
+          type="button"
+          data-task="${task.id}"
+          ${task.disabled ? "disabled" : ""}
+        >
+          ${task.button}
+        </button>
+
+      `;
+
+      tasksList.appendChild(
+        item
+      );
+    }
+  );
+
+
+  const note =
+    document.createElement(
+      "div"
+    );
+
+  note.className =
+    "task-note";
+
+  note.innerHTML = `
+    ℹ️ Giới hạn nhiệm vụ được tính theo ngày.
+    Cooldown được lưu lại khi bạn thoát game.
+    <br><br>
+    🛡️ Thẻ Auto-care hiện được lưu vào tài khoản.
+    Chức năng tự chăm sóc sẽ được kết nối khi hệ thống chăm sóc cây được xây dựng.
+    <br><br>
+    🔒 Nhiệm vụ nhóm và kênh sẽ chỉ nhận thưởng
+    sau khi Bot Telegram xác minh thành công.
+  `;
+
+  tasksList.appendChild(
+    note
+  );
+}
+
+
+
+/* =====================================
+   NHIỆM VỤ - TRẠNG THÁI AD 2
+===================================== */
+
+function isAd2Disabled() {
+
+  if (
+    player.tasks.ad2Count >=
+    TASK_AD2_LIMIT
+  ) {
+    return true;
+  }
+
+  return (
+    getRemainingCooldown(
+      player.tasks.ad2LastClaim,
+      TASK_COOLDOWN_AD2
+    ) > 0
+  );
+}
+
+
+
+function getAd2Status() {
+
+  if (
+    player.tasks.ad2Count >=
+    TASK_AD2_LIMIT
+  ) {
+
+    return `✅ Đã đủ ${TASK_AD2_LIMIT}/${TASK_AD2_LIMIT} lượt hôm nay`;
+  }
+
+  const cooldown =
+    getRemainingCooldown(
+      player.tasks.ad2LastClaim,
+      TASK_COOLDOWN_AD2
+    );
+
+  if (cooldown > 0) {
+
+    return `⏳ Còn ${formatCooldown(cooldown)}`;
+  }
+
+  return `Đã dùng ${player.tasks.ad2Count}/${TASK_AD2_LIMIT} lượt hôm nay`;
+}
+
+
+
+function getAd2ButtonText() {
+
+  if (
+    player.tasks.ad2Count >=
+    TASK_AD2_LIMIT
+  ) {
+
+    return "Hết lượt";
+  }
+
+  const cooldown =
+    getRemainingCooldown(
+      player.tasks.ad2LastClaim,
+      TASK_COOLDOWN_AD2
+    );
+
+  if (cooldown > 0) {
+
+    return formatCooldown(
+      cooldown
+    );
+  }
+
+  return "Xem quảng cáo";
+}
+
+
+
+/* =====================================
+   NHIỆM VỤ - TRẠNG THÁI AD 3
+===================================== */
+
+function isAd3Disabled() {
+
+  if (
+    player.tasks.ad3Count >=
+    TASK_AD3_LIMIT
+  ) {
+    return true;
+  }
+
+  return (
+    getRemainingCooldown(
+      player.tasks.ad3LastClaim,
+      TASK_COOLDOWN_AD3
+    ) > 0
+  );
+}
+
+
+
+function getAd3Status() {
+
+  if (
+    player.tasks.ad3Count >=
+    TASK_AD3_LIMIT
+  ) {
+
+    return `✅ Đã đủ ${TASK_AD3_LIMIT}/${TASK_AD3_LIMIT} lượt hôm nay`;
+  }
+
+  const cooldown =
+    getRemainingCooldown(
+      player.tasks.ad3LastClaim,
+      TASK_COOLDOWN_AD3
+    );
+
+  if (cooldown > 0) {
+
+    return `⏳ Còn ${formatCooldown(cooldown)}`;
+  }
+
+  return `Đã dùng ${player.tasks.ad3Count}/${TASK_AD3_LIMIT} lượt hôm nay`;
+}
+
+
+
+function getAd3ButtonText() {
+
+  if (
+    player.tasks.ad3Count >=
+    TASK_AD3_LIMIT
+  ) {
+
+    return "Hết lượt";
+  }
+
+  const cooldown =
+    getRemainingCooldown(
+      player.tasks.ad3LastClaim,
+      TASK_COOLDOWN_AD3
+    );
+
+  if (cooldown > 0) {
+
+    return formatCooldown(
+      cooldown
+    );
+  }
+
+  return "Xem quảng cáo";
+}
+
+
+
+/* =====================================
+   NHIỆM VỤ - TRẠNG THÁI AD 4
+===================================== */
+
+function isAd4Disabled() {
+
+  if (
+    player.tasks.ad4Count >=
+    TASK_AD4_LIMIT
+  ) {
+    return true;
+  }
+
+  return (
+    getRemainingCooldown(
+      player.tasks.ad4LastClaim,
+      TASK_COOLDOWN_AD4
+    ) > 0
+  );
+}
+
+
+
+function getAd4Status() {
+
+  if (
+    player.tasks.ad4Count >=
+    TASK_AD4_LIMIT
+  ) {
+
+    return `✅ Đã đủ ${TASK_AD4_LIMIT}/${TASK_AD4_LIMIT} lượt hôm nay`;
+  }
+
+  const cooldown =
+    getRemainingCooldown(
+      player.tasks.ad4LastClaim,
+      TASK_COOLDOWN_AD4
+    );
+
+  if (cooldown > 0) {
+
+    return `⏳ Còn ${formatCooldown(cooldown)}`;
+  }
+
+  return `Đã dùng ${player.tasks.ad4Count}/${TASK_AD4_LIMIT} lượt hôm nay`;
+}
+
+
+
+function getAd4ButtonText() {
+
+  if (
+    player.tasks.ad4Count >=
+    TASK_AD4_LIMIT
+  ) {
+
+    return "Hết lượt";
+  }
+
+  const cooldown =
+    getRemainingCooldown(
+      player.tasks.ad4LastClaim,
+      TASK_COOLDOWN_AD4
+    );
+
+  if (cooldown > 0) {
+
+    return formatCooldown(
+      cooldown
+    );
+  }
+
+  return "Xem quảng cáo";
+}
+
+
+
+/* =====================================
+   NHIỆM VỤ - GIẢ LẬP QUẢNG CÁO
+===================================== */
+
+function simulateAd(callback) {
+
+  alert(
+    "🎬 Quảng cáo mô phỏng\n\n"
+    + "Sau này bước này sẽ được thay bằng hệ thống quảng cáo thật."
+  );
+
+  callback();
+}
+
+
+
+/* =====================================
+   NHIỆM VỤ 1
+   100 COIN / NGÀY
+===================================== */
+
+function claimAd1() {
+
+  checkDailyTasks();
+
+  if (
+    player.tasks.ad1Claimed
+  ) {
+
+    alert(
+      "⚠️ Bạn đã nhận phần thưởng hôm nay."
+    );
+
+    return;
+  }
+
+  simulateAd(
+    () => {
+
+      player.coins += 100;
+
+      player.tasks.ad1Claimed =
+        true;
+
+      updateHUD();
+
+      saveGame();
+
+      renderTasks();
+
+      alert(
+        "🎉 Nhận thành công!\n+100 🪙"
+      );
+    }
+  );
+}
+
+
+
+/* =====================================
+   NHIỆM VỤ 2
+   1–3 PHÂN / 10 LẦN / NGÀY
+===================================== */
+
+function claimAd2() {
+
+  checkDailyTasks();
+
+  if (
+    player.tasks.ad2Count >=
+    TASK_AD2_LIMIT
+  ) {
+
+    alert(
+      "⚠️ Bạn đã hết 10 lượt hôm nay."
+    );
+
+    return;
+  }
+
+  const cooldown =
+    getRemainingCooldown(
+      player.tasks.ad2LastClaim,
+      TASK_COOLDOWN_AD2
+    );
+
+  if (cooldown > 0) {
+
+    alert(
+      `⏳ Bạn cần chờ ${formatCooldown(cooldown)}.`
+    );
+
+    return;
+  }
+
+  simulateAd(
+    () => {
+
+      const reward =
+        Math.floor(
+          Math.random() * 3
+        ) + 1;
+
+      player.fertilizer +=
+        reward;
+
+      player.tasks.ad2Count +=
+        1;
+
+      player.tasks.ad2LastClaim =
+        Date.now();
+
+      updateHUD();
+
+      saveGame();
+
+      renderTasks();
+
+      alert(
+        `🎉 Nhận thành công!\n+${reward} 🧪`
+      );
+    }
+  );
+}
+
+
+
+/* =====================================
+   NHIỆM VỤ 3
+   50–150 COIN / 20 LẦN / NGÀY
+===================================== */
+
+function claimAd3() {
+
+  checkDailyTasks();
+
+  if (
+    player.tasks.ad3Count >=
+    TASK_AD3_LIMIT
+  ) {
+
+    alert(
+      "⚠️ Bạn đã hết 20 lượt hôm nay."
+    );
+
+    return;
+  }
+
+  const cooldown =
+    getRemainingCooldown(
+      player.tasks.ad3LastClaim,
+      TASK_COOLDOWN_AD3
+    );
+
+  if (cooldown > 0) {
+
+    alert(
+      `⏳ Bạn cần chờ ${formatCooldown(cooldown)}.`
+    );
+
+    return;
+  }
+
+  simulateAd(
+    () => {
+
+      const reward =
+        Math.floor(
+          Math.random() * 101
+        ) + 50;
+
+      player.coins +=
+        reward;
+
+      player.tasks.ad3Count +=
+        1;
+
+      player.tasks.ad3LastClaim =
+        Date.now();
+
+      updateHUD();
+
+      saveGame();
+
+      renderTasks();
+
+      alert(
+        `🎉 Nhận thành công!\n+${formatNumber(reward)} 🪙`
+      );
+    }
+  );
+}
+
+
+
+/* =====================================
+   NHIỆM VỤ 4
+   AUTO-CARE 3 GIỜ
+===================================== */
+
+function claimAd4() {
+
+  checkDailyTasks();
+
+  if (
+    player.tasks.ad4Count >=
+    TASK_AD4_LIMIT
+  ) {
+
+    alert(
+      "⚠️ Bạn đã hết 5 lượt hôm nay."
+    );
+
+    return;
+  }
+
+  const cooldown =
+    getRemainingCooldown(
+      player.tasks.ad4LastClaim,
+      TASK_COOLDOWN_AD4
+    );
+
+  if (cooldown > 0) {
+
+    alert(
+      `⏳ Bạn cần chờ ${formatCooldown(cooldown)}.`
+    );
+
+    return;
+  }
+
+  simulateAd(
+    () => {
+
+      player.autoCareCards +=
+        1;
+
+      player.tasks.ad4Count +=
+        1;
+
+      player.tasks.ad4LastClaim =
+        Date.now();
+
+      saveGame();
+
+      renderTasks();
+
+      alert(
+        "🎉 Nhận thành công!\n"
+        + "+1 thẻ tự động chăm sóc 3 giờ 🛡️"
+      );
+    }
+  );
+}
+
+
+
+/* =====================================
+   CLICK NHIỆM VỤ
+===================================== */
+
+function handleTaskClick(taskId) {
+
+  switch (taskId) {
+
+    case "ad1":
+      claimAd1();
+      break;
+
+    case "ad2":
+      claimAd2();
+      break;
+
+    case "ad3":
+      claimAd3();
+      break;
+
+    case "ad4":
+      claimAd4();
+      break;
+
+    case "group":
+
+      alert(
+        "🔒 Nhiệm vụ này sẽ được Bot Telegram xác minh khi hệ thống Bot được kết nối."
+      );
+
+      break;
+
+    case "channel":
+
+      alert(
+        "🔒 Nhiệm vụ này sẽ được Bot Telegram xác minh khi hệ thống Bot được kết nối."
+      );
+
+      break;
+  }
+}
+
+
+
+/* =====================================
    CLICK Ô ĐẤT
 ===================================== */
 
@@ -1300,51 +2439,60 @@ plots.forEach((plot) => {
     () => {
 
       const number =
-        Number(plot.dataset.plot);
+        Number(
+          plot.dataset.plot
+        );
 
       if (
         number >
         player.unlockedPlots
       ) {
 
-        unlockPlot(number);
+        unlockPlot(
+          number
+        );
 
         return;
       }
-
 
       const data =
         player.plots[number];
 
       if (!data) {
 
-        openSeedPanel(plot);
+        openSeedPanel(
+          plot
+        );
 
         return;
       }
-
 
       if (
         plot.dataset.ready ===
         "true"
       ) {
 
-        harvestPlot(plot);
+        harvestPlot(
+          plot
+        );
 
         return;
       }
 
-
       const fertilizerQuestion =
         confirm(
-          "🌱 Cây đang lớn.\n\nBấm OK để dùng 1 phân bón.\nBấm Hủy để đóng."
+          "🌱 Cây đang lớn.\n\n"
+          + "Bấm OK để dùng 1 phân bón.\n"
+          + "Bấm Hủy để đóng."
         );
 
       if (
         fertilizerQuestion
       ) {
 
-        useFertilizer(plot);
+        useFertilizer(
+          plot
+        );
       }
 
     }
@@ -1398,6 +2546,7 @@ seedPanel.addEventListener(
       event.target ===
       seedPanel
     ) {
+
       closeSeedPanel();
     }
 
@@ -1436,6 +2585,7 @@ shopPanel.addEventListener(
       event.target ===
       shopPanel
     ) {
+
       closeShop();
     }
 
@@ -1482,15 +2632,104 @@ inventoryMenu.addEventListener(
 
 
 /* =====================================
-   MENU PHÂN
+   MENU NHIỆM VỤ
 ===================================== */
 
-fertilizerMenu.addEventListener(
+tasksMenu.addEventListener(
   "click",
   () => {
 
-    alert(
-      `🧪 Bạn đang có ${formatNumber(player.fertilizer)} phân bón.`
+    checkDailyTasks();
+
+    renderTasks();
+
+    tasksPanel.classList.add(
+      "show"
+    );
+
+    tasksPanel.setAttribute(
+      "aria-hidden",
+      "false"
+    );
+  }
+);
+
+
+
+/* =====================================
+   ĐÓNG NHIỆM VỤ
+===================================== */
+
+tasksClose.addEventListener(
+  "click",
+  () => {
+
+    tasksPanel.classList.remove(
+      "show"
+    );
+
+    tasksPanel.setAttribute(
+      "aria-hidden",
+      "true"
+    );
+  }
+);
+
+
+
+/* =====================================
+   CLICK NGOÀI BẢNG NHIỆM VỤ
+===================================== */
+
+tasksPanel.addEventListener(
+  "click",
+  (event) => {
+
+    if (
+      event.target ===
+      tasksPanel
+    ) {
+
+      tasksPanel.classList.remove(
+        "show"
+      );
+
+      tasksPanel.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+    }
+  }
+);
+
+
+
+/* =====================================
+   CLICK NÚT NHIỆM VỤ
+===================================== */
+
+tasksList.addEventListener(
+  "click",
+  (event) => {
+
+    const button =
+      event.target.closest(
+        "[data-task]"
+      );
+
+    if (!button) {
+      return;
+    }
+
+    const taskId =
+      button.dataset.task;
+
+    if (!taskId) {
+      return;
+    }
+
+    handleTaskClick(
+      taskId
     );
   }
 );
@@ -1529,6 +2768,18 @@ document.addEventListener(
       closeSeedPanel();
 
       closeShop();
+
+      if (tasksPanel) {
+
+        tasksPanel.classList.remove(
+          "show"
+        );
+
+        tasksPanel.setAttribute(
+          "aria-hidden",
+          "true"
+        );
+      }
     }
 
   }
@@ -1544,6 +2795,8 @@ function initGame() {
 
   loadGame();
 
+  checkDailyTasks();
+
   updateHUD();
 
   updatePlotsLockState();
@@ -1552,7 +2805,9 @@ function initGame() {
     (plot) => {
 
       const number =
-        Number(plot.dataset.plot);
+        Number(
+          plot.dataset.plot
+        );
 
       if (
         player.plots[number]
@@ -1566,6 +2821,11 @@ function initGame() {
   );
 
   renderShop();
+
+  if (tasksPanel) {
+
+    renderTasks();
+  }
 
   updateAllPlants();
 }
@@ -1582,5 +2842,28 @@ initGame();
 
 setInterval(
   updateAllPlants,
+  1000
+);
+
+
+
+/* =====================================
+   CẬP NHẬT NHIỆM VỤ MỖI GIÂY
+===================================== */
+
+setInterval(
+  () => {
+
+    if (
+      tasksPanel &&
+      tasksPanel.classList.contains(
+        "show"
+      )
+    ) {
+
+      renderTasks();
+    }
+
+  },
   1000
 );
