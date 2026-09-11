@@ -1,576 +1,244 @@
 "use strict";
 
-require("dotenv").config();
-
-const express = require("express");
-const cors = require("cors");
-const crypto = require("crypto");
-const { createClient } = require("@supabase/supabase-js");
-
-const app = express();
-
-const PORT = process.env.PORT || 10000;
-
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_SERVICE_ROLE_KEY =
-  process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-const TELEGRAM_BOT_TOKEN =
-  process.env.TELEGRAM_BOT_TOKEN;
-
-if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-  console.error("❌ Thiếu SUPABASE_URL hoặc SUPABASE_SERVICE_ROLE_KEY");
-  process.exit(1);
-}
-
-if (!TELEGRAM_BOT_TOKEN) {
-  console.error("❌ Thiếu TELEGRAM_BOT_TOKEN");
-  process.exit(1);
-}
-
 /*
 |--------------------------------------------------------------------------
-| Supabase
+| NÔNG TRẠI XANH - FRONTEND
 |--------------------------------------------------------------------------
-| Service Role Key CHỈ được dùng ở backend.
-| Tuyệt đối không đưa key này vào script.js/frontend.
+| Frontend KHÔNG chứa:
+| - Supabase key
+| - Telegram Bot Token
+| - logic quyết định Coin / EXP / giá / thời gian trồng
+|
+| Tất cả dữ liệu quan trọng được server Render quyết định.
 |--------------------------------------------------------------------------
 */
 
-const supabase = createClient(
-  SUPABASE_URL,
-  SUPABASE_SERVICE_ROLE_KEY,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  }
-);
-
-/*
-|--------------------------------------------------------------------------
-| CORS
-|--------------------------------------------------------------------------
-*/
-
-const allowedOrigins = new Set([
-  "https://telegram-farm-nine.vercel.app",
-  "http://localhost:3000",
-  "http://localhost:5173",
-]);
-
-app.use(
-  cors({
-    origin(origin, callback) {
-      // Cho phép request không có Origin như health check/server tools.
-      if (!origin) {
-        return callback(null, true);
-      }
-
-      if (allowedOrigins.has(origin)) {
-        return callback(null, true);
-      }
-
-      return callback(new Error("CORS blocked"));
-    },
-  })
-);
-
-app.use(
-  express.json({
-    limit: "20kb",
-  })
-);
-
-/*
-|--------------------------------------------------------------------------
-| Server-side game configuration
-|--------------------------------------------------------------------------
-| Client KHÔNG được quyết định giá/thời gian/EXP.
-|--------------------------------------------------------------------------
-*/
-
-const SEEDS = {
-  wheat: {
-    name: "Lúa mì",
-    level: 1,
-    buyPrice: 10,
-    sellPrice: 12,
-    growMinutes: 20,
-  },
-
-  corn: {
-    name: "Bắp",
-    level: 3,
-    buyPrice: 20,
-    sellPrice: 25,
-    growMinutes: 60,
-  },
-
-  radish: {
-    name: "Củ cải",
-    level: 7,
-    buyPrice: 35,
-    sellPrice: 40,
-    growMinutes: 90,
-  },
-
-  carrot: {
-    name: "Cà rốt",
-    level: 10,
-    buyPrice: 50,
-    sellPrice: 75,
-    growMinutes: 150,
-  },
-
-  beet: {
-    name: "Củ dền",
-    level: 13,
-    buyPrice: 75,
-    sellPrice: 88,
-    growMinutes: 280,
-  },
-
-  eggplant: {
-    name: "Cà tím",
-    level: 15,
-    buyPrice: 100,
-    sellPrice: 125,
-    growMinutes: 450,
-  },
-
-  chili: {
-    name: "Ớt",
-    level: 17,
-    buyPrice: 180,
-    sellPrice: 210,
-    growMinutes: 650,
-  },
-
-  greenOnion: {
-    name: "Hành lá",
-    level: 20,
-    buyPrice: 250,
-    sellPrice: 350,
-    growMinutes: 870,
-  },
-
-  cabbage: {
-    name: "Bắp cải",
-    level: 23,
-    buyPrice: 500,
-    sellPrice: 750,
-    growMinutes: 950,
-  },
-
-  pumpkin: {
-    name: "Bí đỏ",
-    level: 25,
-    buyPrice: 1000,
-    sellPrice: 1250,
-    growMinutes: 1200,
-  },
-};
+const BACKEND_URL = "https://telegram-farm-backend.onrender.com";
 
 const TOTAL_PLOTS = 20;
 const FREE_PLOTS = 3;
 const EXP_PER_LEVEL = 7000;
 
+const SEEDS = {
+  wheat: {
+    name: "Lúa mì",
+    icon: "🌾",
+    level: 1,
+    buyPrice: 10,
+    sellPrice: 12,
+    growMinutes: 20
+  },
+
+  corn: {
+    name: "Bắp",
+    icon: "🌽",
+    level: 3,
+    buyPrice: 20,
+    sellPrice: 25,
+    growMinutes: 60
+  },
+
+  radish: {
+    name: "Củ cải",
+    icon: "🥕",
+    level: 7,
+    buyPrice: 35,
+    sellPrice: 40,
+    growMinutes: 90
+  },
+
+  carrot: {
+    name: "Cà rốt",
+    icon: "🥕",
+    level: 10,
+    buyPrice: 50,
+    sellPrice: 75,
+    growMinutes: 150
+  },
+
+  beet: {
+    name: "Củ dền",
+    icon: "🫜",
+    level: 13,
+    buyPrice: 75,
+    sellPrice: 88,
+    growMinutes: 280
+  },
+
+  eggplant: {
+    name: "Cà tím",
+    icon: "🍆",
+    level: 15,
+    buyPrice: 100,
+    sellPrice: 125,
+    growMinutes: 450
+  },
+
+  chili: {
+    name: "Ớt",
+    icon: "🌶️",
+    level: 17,
+    buyPrice: 180,
+    sellPrice: 210,
+    growMinutes: 650
+  },
+
+  greenOnion: {
+    name: "Hành lá",
+    icon: "🌱",
+    level: 20,
+    buyPrice: 250,
+    sellPrice: 350,
+    growMinutes: 870
+  },
+
+  cabbage: {
+    name: "Bắp cải",
+    icon: "🥬",
+    level: 23,
+    buyPrice: 500,
+    sellPrice: 750,
+    growMinutes: 950
+  },
+
+  pumpkin: {
+    name: "Bí đỏ",
+    icon: "🎃",
+    level: 25,
+    buyPrice: 1000,
+    sellPrice: 1250,
+    growMinutes: 1200
+  }
+};
+
 /*
 |--------------------------------------------------------------------------
-| Helpers
+| GAME STATE
 |--------------------------------------------------------------------------
 */
 
-function nowIso() {
-  return new Date().toISOString();
-}
+let gameState = {
+  player: null,
+  plots: [],
+  inventory: []
+};
 
-function getPlotUnlockPrice(plotNumber) {
-  if (plotNumber <= FREE_PLOTS) {
-    return 0;
+let telegram = null;
+let initData = "";
+let selectedPlot = null;
+let countdownTimer = null;
+let isLoading = false;
+
+/*
+|--------------------------------------------------------------------------
+| DOM
+|--------------------------------------------------------------------------
+*/
+
+const levelNumber = document.getElementById("levelNumber");
+const levelValue = document.getElementById("levelValue");
+const expFill = document.getElementById("expFill");
+const expText = document.getElementById("expText");
+const coinValue = document.getElementById("coinValue");
+const fertilizerValue = document.getElementById("fertilizerValue");
+
+const seedPanel = document.getElementById("seedPanel");
+const seedList = document.getElementById("seedList");
+const seedClose = document.getElementById("seedClose");
+
+const shopPanel = document.getElementById("shopPanel");
+const shopList = document.getElementById("shopList");
+const shopClose = document.getElementById("shopClose");
+const shopTotalValue = document.getElementById("shopTotalValue");
+
+const tasksPanel = document.getElementById("tasksPanel");
+const tasksList = document.getElementById("tasksList");
+const tasksClose = document.getElementById("tasksClose");
+
+const shopMenu = document.getElementById("shopMenu");
+const seedMenu = document.getElementById("seedMenu");
+const inventoryMenu = document.getElementById("inventoryMenu");
+const tasksMenu = document.getElementById("tasksMenu");
+const settingsMenu = document.getElementById("settingsMenu");
+
+/*
+|--------------------------------------------------------------------------
+| TELEGRAM
+|--------------------------------------------------------------------------
+*/
+
+function initTelegram() {
+  if (window.Telegram && window.Telegram.WebApp) {
+    telegram = window.Telegram.WebApp;
+
+    telegram.ready();
+    telegram.expand();
+
+    try {
+      telegram.setHeaderColor("#0788df");
+      telegram.setBackgroundColor("#0788df");
+    } catch (error) {
+      console.warn("Telegram UI setup:", error);
+    }
+
+    initData = telegram.initData || "";
+
+    if (!initData) {
+      console.warn(
+        "Không có Telegram initData. Hãy mở Mini App bên trong Telegram."
+      );
+    }
+
+    return true;
   }
 
-  // Ô 4 = 500
-  // Ô 5 = 1000
-  // Ô 6 = 2000...
-  return 500 * Math.pow(2, plotNumber - 4);
+  console.warn("Telegram WebApp SDK chưa được tải.");
+  return false;
 }
 
-function getRandomExp() {
-  // EXP server tự tạo.
-  // Không nhận EXP từ client.
-  return crypto.randomInt(20, 51);
-}
+/*
+|--------------------------------------------------------------------------
+| API
+|--------------------------------------------------------------------------
+*/
 
-function getFertilizerReductionMinutes(seedKey) {
-  /*
-   * Theo thiết kế hiện tại:
-   * phân bón giảm ngẫu nhiên 5–30 phút.
-   *
-   * Có thể tinh chỉnh công thức theo level hạt sau này.
-   */
-  const seed = SEEDS[seedKey];
-
-  if (!seed) {
-    return 0;
+async function apiRequest(endpoint, body = {}) {
+  if (!initData) {
+    throw new Error(
+      "Không có Telegram initData. Hãy mở game từ Telegram."
+    );
   }
 
-  const min = 5;
-  const max = Math.min(30, 5 + Math.floor(seed.level / 2));
+  const response = await fetch(
+    `${BACKEND_URL}${endpoint}`,
+    {
+      method: "POST",
 
-  return crypto.randomInt(min, max + 1);
-}
+      headers: {
+        "Content-Type": "application/json"
+      },
 
-function addExp(player, amount) {
-  let level = Number(player.level || 1);
-  let exp = Number(player.exp || 0);
-
-  exp += amount;
-
-  while (exp >= EXP_PER_LEVEL) {
-    exp -= EXP_PER_LEVEL;
-    level += 1;
-  }
-
-  return {
-    level,
-    exp,
-  };
-}
-
-function isValidPlotNumber(plotNumber) {
-  return (
-    Number.isInteger(plotNumber) &&
-    plotNumber >= 1 &&
-    plotNumber <= TOTAL_PLOTS
+      body: JSON.stringify({
+        initData,
+        ...body
+      })
+    }
   );
-}
 
-/*
-|--------------------------------------------------------------------------
-| Telegram initData verification
-|--------------------------------------------------------------------------
-*/
-
-function verifyTelegramInitData(initData) {
-  if (!initData || typeof initData !== "string") {
-    throw new Error("Thiếu Telegram initData");
-  }
-
-  const params = new URLSearchParams(initData);
-
-  const receivedHash = params.get("hash");
-
-  if (!receivedHash) {
-    throw new Error("Telegram initData không có hash");
-  }
-
-  params.delete("hash");
-
-  const dataCheckString = Array.from(params.entries())
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([key, value]) => `${key}=${value}`)
-    .join("\n");
-
-  const secretKey = crypto
-    .createHmac("sha256", "WebAppData")
-    .update(TELEGRAM_BOT_TOKEN)
-    .digest();
-
-  const calculatedHash = crypto
-    .createHmac("sha256", secretKey)
-    .update(dataCheckString)
-    .digest("hex");
-
-  const receivedBuffer = Buffer.from(receivedHash, "hex");
-  const calculatedBuffer = Buffer.from(calculatedHash, "hex");
-
-  if (
-    receivedBuffer.length !== calculatedBuffer.length ||
-    !crypto.timingSafeEqual(
-      receivedBuffer,
-      calculatedBuffer
-    )
-  ) {
-    throw new Error("Telegram initData không hợp lệ");
-  }
-
-  const authDate = Number(params.get("auth_date"));
-
-  if (!Number.isFinite(authDate)) {
-    throw new Error("Telegram auth_date không hợp lệ");
-  }
-
-  const now = Math.floor(Date.now() / 1000);
-
-  // Cho phép initData tối đa 24 giờ.
-  if (authDate > now + 60) {
-    throw new Error("Telegram auth_date nằm trong tương lai");
-  }
-
-  if (now - authDate > 24 * 60 * 60) {
-    throw new Error("Telegram initData đã hết hạn");
-  }
-
-  const userString = params.get("user");
-
-  if (!userString) {
-    throw new Error("Telegram initData không có user");
-  }
-
-  let telegramUser;
+  let data;
 
   try {
-    telegramUser = JSON.parse(userString);
+    data = await response.json();
   } catch {
-    throw new Error("Telegram user JSON không hợp lệ");
-  }
-
-  if (
-    !telegramUser ||
-    telegramUser.id === undefined ||
-    telegramUser.id === null
-  ) {
-    throw new Error("Không xác định được Telegram user");
-  }
-
-  return telegramUser;
-}
-
-/*
-|--------------------------------------------------------------------------
-| Player
-|--------------------------------------------------------------------------
-*/
-
-async function getOrCreatePlayer(telegramUser) {
-  const telegramId = String(telegramUser.id);
-
-  const { data: existingPlayer, error: selectError } =
-    await supabase
-      .from("players")
-      .select("*")
-      .eq("telegram_id", telegramId)
-      .maybeSingle();
-
-  if (selectError) {
     throw new Error(
-      `Không đọc được player: ${selectError.message}`
+      `Server trả về dữ liệu không hợp lệ (${response.status})`
     );
   }
 
-  if (existingPlayer) {
-    const { data: updatedPlayer, error: updateError } =
-      await supabase
-        .from("players")
-        .update({
-          username: telegramUser.username || null,
-          first_name: telegramUser.first_name || null,
-          last_name: telegramUser.last_name || null,
-          updated_at: nowIso(),
-        })
-        .eq("id", existingPlayer.id)
-        .select("*")
-        .single();
-
-    if (updateError) {
-      throw new Error(
-        `Không cập nhật player: ${updateError.message}`
-      );
-    }
-
-    return updatedPlayer;
-  }
-
-  const { data: newPlayer, error: insertError } =
-    await supabase
-      .from("players")
-      .insert({
-        telegram_id: telegramId,
-        username: telegramUser.username || null,
-        first_name: telegramUser.first_name || null,
-        last_name: telegramUser.last_name || null,
-        level: 1,
-        exp: 0,
-        coins: 1000,
-        fertilizer: 3,
-        auto_care_cards: 0,
-      })
-      .select("*")
-      .single();
-
-  if (!insertError) {
-    return newPlayer;
-  }
-
-  // Nếu có request đồng thời tạo cùng Telegram ID,
-  // thử đọc lại player.
-  const { data: retryPlayer, error: retryError } =
-    await supabase
-      .from("players")
-      .select("*")
-      .eq("telegram_id", telegramId)
-      .maybeSingle();
-
-  if (retryError || !retryPlayer) {
+  if (!response.ok || data.ok === false) {
     throw new Error(
-      `Không tạo được player: ${insertError.message}`
-    );
-  }
-
-  return retryPlayer;
-}
-
-/*
-|--------------------------------------------------------------------------
-| Plots
-|--------------------------------------------------------------------------
-*/
-
-async function ensurePlayerPlots(playerId) {
-  const { data: existingPlots, error } =
-    await supabase
-      .from("plots")
-      .select("plot_number")
-      .eq("player_id", playerId)
-      .order("plot_number", { ascending: true });
-
-  if (error) {
-    throw new Error(
-      `Không đọc được plots: ${error.message}`
-    );
-  }
-
-  const existingNumbers = new Set(
-    (existingPlots || []).map((plot) =>
-      Number(plot.plot_number)
-    )
-  );
-
-  const missingPlots = [];
-
-  for (let i = 1; i <= TOTAL_PLOTS; i++) {
-    if (!existingNumbers.has(i)) {
-      missingPlots.push({
-        player_id: playerId,
-        plot_number: i,
-        unlocked: i <= FREE_PLOTS,
-        crop_type: null,
-        planted_at: null,
-        harvest_at: null,
-        fertilizer_used: false,
-      });
-    }
-  }
-
-  if (missingPlots.length > 0) {
-    const { error: insertError } =
-      await supabase
-        .from("plots")
-        .insert(missingPlots);
-
-    if (insertError) {
-      throw new Error(
-        `Không tạo được plots: ${insertError.message}`
-      );
-    }
-  }
-
-  const { data: plots, error: finalError } =
-    await supabase
-      .from("plots")
-      .select("*")
-      .eq("player_id", playerId)
-      .order("plot_number", { ascending: true });
-
-  if (finalError) {
-    throw new Error(
-      `Không đọc được plots sau khi tạo: ${finalError.message}`
-    );
-  }
-
-  return plots || [];
-}
-
-/*
-|--------------------------------------------------------------------------
-| Inventory
-|--------------------------------------------------------------------------
-*/
-
-async function getPlayerInventory(playerId) {
-  const { data, error } = await supabase
-    .from("player_inventory")
-    .select("*")
-    .eq("player_id", playerId)
-    .order("seed_key", { ascending: true });
-
-  if (error) {
-    throw new Error(
-      `Không đọc được inventory: ${error.message}`
-    );
-  }
-
-  return data || [];
-}
-
-async function addInventory(playerId, seedKey, amount) {
-  if (!Number.isInteger(amount) || amount <= 0) {
-    throw new Error("Số lượng inventory không hợp lệ");
-  }
-
-  const { data: existing, error: selectError } =
-    await supabase
-      .from("player_inventory")
-      .select("*")
-      .eq("player_id", playerId)
-      .eq("seed_key", seedKey)
-      .maybeSingle();
-
-  if (selectError) {
-    throw new Error(
-      `Không đọc được inventory: ${selectError.message}`
-    );
-  }
-
-  if (existing) {
-    const newAmount =
-      Number(existing.amount) + amount;
-
-    const { data, error } = await supabase
-      .from("player_inventory")
-      .update({
-        amount: newAmount,
-        updated_at: nowIso(),
-      })
-      .eq("id", existing.id)
-      .select("*")
-      .single();
-
-    if (error) {
-      throw new Error(
-        `Không cập nhật inventory: ${error.message}`
-      );
-    }
-
-    return data;
-  }
-
-  const { data, error } = await supabase
-    .from("player_inventory")
-    .insert({
-      player_id: playerId,
-      seed_key: seedKey,
-      amount,
-    })
-    .select("*")
-    .single();
-
-  if (error) {
-    throw new Error(
-      `Không tạo inventory: ${error.message}`
+      data.error ||
+      `Request thất bại (${response.status})`
     );
   }
 
@@ -579,175 +247,584 @@ async function addInventory(playerId, seedKey, amount) {
 
 /*
 |--------------------------------------------------------------------------
-| Authentication middleware
+| AUTH
 |--------------------------------------------------------------------------
 */
 
-async function requireTelegram(req, res, next) {
+async function authenticateTelegram() {
+  showLoading("Đang kết nối máy chủ...");
+
   try {
-    const initData =
-      req.body && req.body.initData;
+    const data = await apiRequest(
+      "/api/auth/telegram"
+    );
 
-    const telegramUser =
-      verifyTelegramInitData(initData);
+    gameState.player = data.player;
+    gameState.plots = data.plots || [];
+    gameState.inventory = data.inventory || [];
 
-    const player =
-      await getOrCreatePlayer(telegramUser);
+    renderAll();
 
-    const plots =
-      await ensurePlayerPlots(player.id);
+    hideLoading();
 
-    req.telegramUser = telegramUser;
-    req.player = player;
-    req.playerId = player.id;
-    req.plots = plots;
+    console.log(
+      "Telegram authentication thành công."
+    );
 
-    next();
+    return true;
   } catch (error) {
-    console.error("Authentication error:", error.message);
+    hideLoading();
 
-    return res.status(401).json({
-      ok: false,
-      error: error.message || "Unauthorized",
-    });
+    console.error(
+      "Telegram authentication error:",
+      error
+    );
+
+    showMessage(
+      error.message ||
+      "Không thể kết nối máy chủ.",
+      "error"
+    );
+
+    return false;
   }
 }
 
 /*
 |--------------------------------------------------------------------------
-| Health
+| LOAD GAME STATE
 |--------------------------------------------------------------------------
 */
 
-app.get("/health", (req, res) => {
-  res.json({
-    ok: true,
-    service: "telegram-farm-backend",
-    time: nowIso(),
-  });
-});
-
-app.get("/health/supabase", async (req, res) => {
+async function loadGameState() {
   try {
-    const { error } = await supabase
-      .from("players")
-      .select("id")
-      .limit(1);
+    const data = await apiRequest(
+      "/api/game/state"
+    );
 
-    if (error) {
-      throw error;
-    }
+    gameState.player = data.player;
+    gameState.plots = data.plots || [];
+    gameState.inventory = data.inventory || [];
 
-    res.json({
-      ok: true,
-      service: "telegram-farm-backend",
-      supabase: true,
-    });
+    renderAll();
+
+    return true;
   } catch (error) {
-    console.error("Supabase health error:", error);
+    console.error(
+      "Load game state error:",
+      error
+    );
 
-    res.status(500).json({
-      ok: false,
-      service: "telegram-farm-backend",
-      supabase: false,
-      error: error.message,
+    showMessage(
+      error.message ||
+      "Không thể tải dữ liệu game.",
+      "error"
+    );
+
+    return false;
+  }
+}
+
+/*
+|--------------------------------------------------------------------------
+| RENDER PLAYER
+|--------------------------------------------------------------------------
+*/
+
+function renderPlayer() {
+  const player = gameState.player;
+
+  if (!player) {
+    return;
+  }
+
+  const level = Number(player.level || 1);
+  const exp = Number(player.exp || 0);
+  const coins = Number(player.coins || 0);
+  const fertilizer = Number(player.fertilizer || 0);
+
+  if (levelNumber) {
+    levelNumber.textContent = level;
+  }
+
+  if (levelValue) {
+    levelValue.textContent = level;
+  }
+
+  if (coinValue) {
+    coinValue.textContent =
+      formatNumber(coins);
+  }
+
+  if (fertilizerValue) {
+    fertilizerValue.textContent =
+      formatNumber(fertilizer);
+  }
+
+  const expPercent =
+    Math.max(
+      0,
+      Math.min(
+        100,
+        (exp / EXP_PER_LEVEL) * 100
+      )
+    );
+
+  if (expFill) {
+    expFill.style.width =
+      `${expPercent}%`;
+  }
+
+  if (expText) {
+    expText.textContent =
+      `${formatNumber(exp)} / ${formatNumber(EXP_PER_LEVEL)} EXP`;
+  }
+}
+
+/*
+|--------------------------------------------------------------------------
+| RENDER PLOTS
+|--------------------------------------------------------------------------
+*/
+
+function renderPlots() {
+  const plotElements =
+    document.querySelectorAll(
+      ".plot[data-plot]"
+    );
+
+  plotElements.forEach((element) => {
+    const plotNumber =
+      Number(
+        element.dataset.plot
+      );
+
+    const plot =
+      gameState.plots.find(
+        item =>
+          Number(item.plot_number) ===
+          plotNumber
+      );
+
+    if (!plot) {
+      return;
+    }
+
+    element.classList.toggle(
+      "unlocked",
+      Boolean(plot.unlocked)
+    );
+
+    element.classList.toggle(
+      "locked",
+      !plot.unlocked
+    );
+
+    /*
+    | Xóa trạng thái cây cũ
+    */
+
+    element
+      .querySelectorAll(
+        ".crop-image,.crop-name,.grow-time,.plot-price,.fertilizer-button,.harvest-button"
+      )
+      .forEach(item => item.remove());
+
+    /*
+    | LOCKED
+    */
+
+    if (!plot.unlocked) {
+      renderLockedPlot(
+        element,
+        plotNumber
+      );
+
+      return;
+    }
+
+    /*
+    | EMPTY
+    */
+
+    if (!plot.crop_type) {
+      return;
+    }
+
+    /*
+    | CROP
+    */
+
+    renderCrop(
+      element,
+      plot
+    );
+  });
+}
+
+/*
+|--------------------------------------------------------------------------
+| LOCKED PLOT
+|--------------------------------------------------------------------------
+*/
+
+function renderLockedPlot(
+  element,
+  plotNumber
+) {
+  let price = 0;
+
+  if (plotNumber > FREE_PLOTS) {
+    price =
+      500 *
+      Math.pow(
+        2,
+        plotNumber - 4
+      );
+  }
+
+  let priceElement =
+    document.createElement("span");
+
+  priceElement.className =
+    "plot-price";
+
+  priceElement.textContent =
+    `${formatNumber(price)} 🪙`;
+
+  element.appendChild(
+    priceElement
+  );
+}
+
+/*
+|--------------------------------------------------------------------------
+| CROP
+|--------------------------------------------------------------------------
+*/
+
+function renderCrop(
+  element,
+  plot
+) {
+  const seed =
+    SEEDS[plot.crop_type];
+
+  if (!seed) {
+    return;
+  }
+
+  /*
+  | Icon cây
+  */
+
+  const cropImage =
+    document.createElement("div");
+
+  cropImage.className =
+    "crop-image";
+
+  cropImage.style.display =
+    "flex";
+
+  cropImage.style.alignItems =
+    "center";
+
+  cropImage.style.justifyContent =
+    "center";
+
+  cropImage.style.fontSize =
+    "clamp(20px, 8vw, 42px)";
+
+  cropImage.textContent =
+    seed.icon;
+
+  element.appendChild(
+    cropImage
+  );
+
+  /*
+  | Tên cây
+  */
+
+  const cropName =
+    document.createElement("span");
+
+  cropName.className =
+    "crop-name";
+
+  cropName.textContent =
+    seed.name;
+
+  element.appendChild(
+    cropName
+  );
+
+  /*
+  | Countdown
+  */
+
+  const growTime =
+    document.createElement("span");
+
+  growTime.className =
+    "grow-time";
+
+  growTime.dataset.harvestAt =
+    plot.harvest_at;
+
+  growTime.textContent =
+    getCountdownText(
+      plot.harvest_at
+    );
+
+  element.appendChild(
+    growTime
+  );
+}
+
+/*
+|--------------------------------------------------------------------------
+| COUNTDOWN
+|--------------------------------------------------------------------------
+*/
+
+function startCountdown() {
+  if (countdownTimer) {
+    clearInterval(
+      countdownTimer
+    );
+  }
+
+  updateCountdowns();
+
+  countdownTimer =
+    setInterval(
+      updateCountdowns,
+      1000
+    );
+}
+
+function updateCountdowns() {
+  const timers =
+    document.querySelectorAll(
+      ".grow-time"
+    );
+
+  let hasReadyCrop = false;
+
+  timers.forEach((timer) => {
+    const harvestAt =
+      timer.dataset.harvestAt;
+
+    const remaining =
+      getRemainingMs(
+        harvestAt
+      );
+
+    if (remaining <= 0) {
+      timer.textContent =
+        "✅ Chín";
+
+      hasReadyCrop = true;
+    } else {
+      timer.textContent =
+        formatDuration(
+          remaining
+        );
+    }
+  });
+
+  /*
+  | Khi cây chín, chỉ render lại giao diện.
+  | Không tự thu hoạch.
+  */
+
+  if (hasReadyCrop) {
+    document
+      .querySelectorAll(
+        ".plot[data-plot]"
+      )
+      .forEach(plotElement => {
+        plotElement.classList.add(
+          "ready"
+        );
+      });
+  }
+}
+
+function getRemainingMs(
+  harvestAt
+) {
+  if (!harvestAt) {
+    return 0;
+  }
+
+  return (
+    new Date(harvestAt).getTime() -
+    Date.now()
+  );
+}
+
+function getCountdownText(
+  harvestAt
+) {
+  const remaining =
+    getRemainingMs(
+      harvestAt
+    );
+
+  if (remaining <= 0) {
+    return "✅ Chín";
+  }
+
+  return formatDuration(
+    remaining
+  );
+}
+
+function formatDuration(
+  milliseconds
+) {
+  let totalSeconds =
+    Math.max(
+      0,
+      Math.floor(
+        milliseconds / 1000
+      )
+    );
+
+  const days =
+    Math.floor(
+      totalSeconds / 86400
+    );
+
+  totalSeconds %= 86400;
+
+  const hours =
+    Math.floor(
+      totalSeconds / 3600
+    );
+
+  totalSeconds %= 3600;
+
+  const minutes =
+    Math.floor(
+      totalSeconds / 60
+    );
+
+  const seconds =
+    totalSeconds % 60;
+
+  if (days > 0) {
+    return `${days}d ${hours}h`;
+  }
+
+  if (hours > 0) {
+    return `${hours}h ${minutes}m`;
+  }
+
+  if (minutes > 0) {
+    return `${minutes}m ${seconds}s`;
+  }
+
+  return `${seconds}s`;
+}
+
+/*
+|--------------------------------------------------------------------------
+| PLOT CLICK
+|--------------------------------------------------------------------------
+*/
+
+function setupPlotEvents() {
+  document
+    .querySelectorAll(
+      ".plot[data-plot]"
+    )
+    .forEach((plotElement) => {
+      plotElement.addEventListener(
+        "click",
+        () => {
+          const plotNumber =
+            Number(
+              plotElement.dataset.plot
+            );
+
+          handlePlotClick(
+            plotNumber
+          );
+        }
+      );
     });
+}
+
+async function handlePlotClick(
+  plotNumber
+) {
+  if (isLoading) {
+    return;
   }
-});
 
-/*
-|--------------------------------------------------------------------------
-| Telegram authentication
-|--------------------------------------------------------------------------
-*/
+  const plot =
+    gameState.plots.find(
+      item =>
+        Number(item.plot_number) ===
+        plotNumber
+    );
 
-app.post(
-  "/api/auth/telegram",
-  async (req, res) => {
-    try {
-      const { initData } = req.body || {};
-
-      const telegramUser =
-        verifyTelegramInitData(initData);
-
-      const player =
-        await getOrCreatePlayer(telegramUser);
-
-      const plots =
-        await ensurePlayerPlots(player.id);
-
-      const inventory =
-        await getPlayerInventory(player.id);
-
-      return res.json({
-        ok: true,
-
-        player,
-
-        plots,
-
-        inventory,
-      });
-    } catch (error) {
-      console.error(
-        "Telegram auth error:",
-        error.message
-      );
-
-      return res.status(401).json({
-        ok: false,
-        error:
-          error.message ||
-          "Telegram authentication failed",
-      });
-    }
+  if (!plot) {
+    return;
   }
-);
 
-/*
-|--------------------------------------------------------------------------
-| GAME STATE
-|--------------------------------------------------------------------------
-*/
+  /*
+  | Locked
+  */
 
-app.post(
-  "/api/game/state",
-  requireTelegram,
-  async (req, res) => {
-    try {
-      const inventory =
-        await getPlayerInventory(req.playerId);
+  if (!plot.unlocked) {
+    await unlockPlot(
+      plotNumber
+    );
 
-      const { data: freshPlayer, error } =
-        await supabase
-          .from("players")
-          .select("*")
-          .eq("id", req.playerId)
-          .single();
-
-      if (error) {
-        throw error;
-      }
-
-      return res.json({
-        ok: true,
-        player: freshPlayer,
-        plots: req.plots,
-        inventory,
-      });
-    } catch (error) {
-      console.error(
-        "State error:",
-        error.message
-      );
-
-      return res.status(500).json({
-        ok: false,
-        error: "Không lấy được game state",
-      });
-    }
+    return;
   }
-);
+
+  /*
+  | Empty
+  */
+
+  if (!plot.crop_type) {
+    openSeedPanel(
+      plotNumber
+    );
+
+    return;
+  }
+
+  /*
+  | Crop ready
+  */
+
+  if (
+    getRemainingMs(
+      plot.harvest_at
+    ) <= 0
+  ) {
+    await harvestPlot(
+      plotNumber
+    );
+
+    return;
+  }
+
+  /*
+  | Crop growing
+  */
+
+  showPlotActions(
+    plot
+  );
+}
 
 /*
 |--------------------------------------------------------------------------
@@ -755,136 +832,186 @@ app.post(
 |--------------------------------------------------------------------------
 */
 
-app.post(
-  "/api/game/unlock-plot",
-  requireTelegram,
-  async (req, res) => {
-    try {
-      const plotNumber =
-        Number(req.body.plotNumber);
+async function unlockPlot(
+  plotNumber
+) {
+  const price =
+    plotNumber <= FREE_PLOTS
+      ? 0
+      : 500 *
+        Math.pow(
+          2,
+          plotNumber - 4
+        );
 
-      if (!isValidPlotNumber(plotNumber)) {
-        return res.status(400).json({
-          ok: false,
-          error: "plotNumber không hợp lệ",
-        });
-      }
+  const confirmed =
+    window.confirm(
+      `Mở ô đất ${plotNumber} với giá ${formatNumber(price)} Coin?`
+    );
 
-      const plot = req.plots.find(
-        (item) =>
-          Number(item.plot_number) === plotNumber
-      );
-
-      if (!plot) {
-        return res.status(404).json({
-          ok: false,
-          error: "Không tìm thấy ô đất",
-        });
-      }
-
-      if (plot.unlocked) {
-        return res.status(400).json({
-          ok: false,
-          error: "Ô đất đã được mở khóa",
-        });
-      }
-
-      // Chỉ cho mở tuần tự.
-      if (plotNumber > FREE_PLOTS) {
-        const previousPlot =
-          req.plots.find(
-            (item) =>
-              Number(item.plot_number) ===
-              plotNumber - 1
-          );
-
-        if (
-          previousPlot &&
-          !previousPlot.unlocked
-        ) {
-          return res.status(400).json({
-            ok: false,
-            error:
-              "Phải mở khóa ô đất trước đó",
-          });
-        }
-      }
-
-      const price =
-        getPlotUnlockPrice(plotNumber);
-
-      const coins =
-        Number(req.player.coins || 0);
-
-      if (coins < price) {
-        return res.status(400).json({
-          ok: false,
-          error: "Không đủ Coin",
-          requiredCoins: price,
-          coins,
-        });
-      }
-
-      const newCoins = coins - price;
-
-      const { data: updatedPlayer, error: playerError } =
-        await supabase
-          .from("players")
-          .update({
-            coins: newCoins,
-            updated_at: nowIso(),
-          })
-          .eq("id", req.playerId)
-          .eq("coins", coins)
-          .select("*")
-          .maybeSingle();
-
-      if (playerError) {
-        throw playerError;
-      }
-
-      if (!updatedPlayer) {
-        return res.status(409).json({
-          ok: false,
-          error:
-            "Dữ liệu Coin vừa thay đổi. Vui lòng thử lại.",
-        });
-      }
-
-      const { data: updatedPlot, error: plotError } =
-        await supabase
-          .from("plots")
-          .update({
-            unlocked: true,
-            updated_at: nowIso(),
-          })
-          .eq("id", plot.id)
-          .eq("unlocked", false)
-          .select("*")
-          .single();
-
-      if (plotError) {
-        throw plotError;
-      }
-
-      return res.json({
-        ok: true,
-        player: updatedPlayer,
-        plot: updatedPlot,
-      });
-    } catch (error) {
-      console.error(
-        "Unlock plot error:",
-        error.message
-      );
-
-      return res.status(500).json({
-        ok: false,
-        error: "Không thể mở khóa ô đất",
-      });
-    }
+  if (!confirmed) {
+    return;
   }
-);
+
+  setLoading(true);
+
+  try {
+    const data =
+      await apiRequest(
+        "/api/game/unlock-plot",
+        {
+          plotNumber
+        }
+      );
+
+    if (data.player) {
+      gameState.player =
+        data.player;
+    }
+
+    const index =
+      gameState.plots.findIndex(
+        item =>
+          Number(item.plot_number) ===
+          plotNumber
+      );
+
+    if (
+      index !== -1 &&
+      data.plot
+    ) {
+      gameState.plots[index] =
+        data.plot;
+    }
+
+    renderAll();
+
+    showMessage(
+      `Đã mở khóa ô đất ${plotNumber}!`,
+      "success"
+    );
+  } catch (error) {
+    console.error(
+      "Unlock error:",
+      error
+    );
+
+    showMessage(
+      error.message,
+      "error"
+    );
+  } finally {
+    setLoading(false);
+  }
+}
+
+/*
+|--------------------------------------------------------------------------
+| SEED PANEL
+|--------------------------------------------------------------------------
+*/
+
+function openSeedPanel(
+  plotNumber
+) {
+  selectedPlot =
+    plotNumber;
+
+  renderSeedList();
+
+  showPanel(
+    seedPanel
+  );
+}
+
+function closeSeedPanel() {
+  hidePanel(
+    seedPanel
+  );
+
+  selectedPlot =
+    null;
+}
+
+function renderSeedList() {
+  if (!seedList) {
+    return;
+  }
+
+  seedList.innerHTML = "";
+
+  const playerLevel =
+    Number(
+      gameState.player?.level || 1
+    );
+
+  Object.entries(
+    SEEDS
+  ).forEach(
+    ([key, seed]) => {
+      const inventoryItem =
+        gameState.inventory.find(
+          item =>
+            item.seed_key === key
+        );
+
+      const amount =
+        Number(
+          inventoryItem?.amount || 0
+        );
+
+      const item =
+        document.createElement(
+          "button"
+        );
+
+      item.type =
+        "button";
+
+      item.className =
+        "seed-item";
+
+      const locked =
+        playerLevel <
+        seed.level;
+
+      item.disabled =
+        locked ||
+        amount <= 0;
+
+      item.innerHTML = `
+        <span class="seed-icon">
+          ${seed.icon}
+        </span>
+
+        <span class="seed-name">
+          ${escapeHtml(seed.name)}
+        </span>
+
+        <span class="seed-price">
+          ${locked
+            ? `🔒 Lv.${seed.level}`
+            : `Có: ${amount}`}
+        </span>
+      `;
+
+      if (!locked && amount > 0) {
+        item.addEventListener(
+          "click",
+          () => {
+            plantSeed(
+              key
+            );
+          }
+        );
+      }
+
+      seedList.appendChild(
+        item
+      );
+    }
+  );
+}
 
 /*
 |--------------------------------------------------------------------------
@@ -892,308 +1019,226 @@ app.post(
 |--------------------------------------------------------------------------
 */
 
-app.post(
-  "/api/game/plant",
-  requireTelegram,
-  async (req, res) => {
-    try {
-      const plotNumber =
-        Number(req.body.plotNumber);
+async function plantSeed(
+  seedKey
+) {
+  if (
+    selectedPlot === null
+  ) {
+    return;
+  }
 
-      const seedKey =
-        String(req.body.seedKey || "");
+  const seed =
+    SEEDS[seedKey];
 
-      if (!isValidPlotNumber(plotNumber)) {
-        return res.status(400).json({
-          ok: false,
-          error: "plotNumber không hợp lệ",
-        });
-      }
+  if (!seed) {
+    return;
+  }
 
-      const seed = SEEDS[seedKey];
+  setLoading(true);
 
-      if (!seed) {
-        return res.status(400).json({
-          ok: false,
-          error: "Loại hạt không hợp lệ",
-        });
-      }
+  try {
+    const data =
+      await apiRequest(
+        "/api/game/plant",
+        {
+          plotNumber:
+            selectedPlot,
 
-      const plot = req.plots.find(
-        (item) =>
-          Number(item.plot_number) === plotNumber
+          seedKey
+        }
       );
 
-      if (!plot) {
-        return res.status(404).json({
-          ok: false,
-          error: "Không tìm thấy ô đất",
-        });
-      }
-
-      if (!plot.unlocked) {
-        return res.status(400).json({
-          ok: false,
-          error: "Ô đất chưa mở khóa",
-        });
-      }
-
-      if (plot.crop_type) {
-        return res.status(400).json({
-          ok: false,
-          error: "Ô đất đang có cây",
-        });
-      }
-
-      const playerLevel =
-        Number(req.player.level || 1);
-
-      if (playerLevel < seed.level) {
-        return res.status(400).json({
-          ok: false,
-          error: "Chưa đủ level để trồng hạt này",
-          requiredLevel: seed.level,
-          level: playerLevel,
-        });
-      }
-
-      const inventory =
-        await supabase
-          .from("player_inventory")
-          .select("*")
-          .eq("player_id", req.playerId)
-          .eq("seed_key", seedKey)
-          .maybeSingle();
-
-      if (inventory.error) {
-        throw inventory.error;
-      }
-
-      const currentAmount =
-        inventory.data
-          ? Number(inventory.data.amount)
-          : 0;
-
-      if (currentAmount <= 0) {
-        return res.status(400).json({
-          ok: false,
-          error: "Không có hạt giống",
-        });
-      }
-
-      const plantedAt =
-        new Date();
-
-      const harvestAt =
-        new Date(
-          plantedAt.getTime() +
-            seed.growMinutes * 60 * 1000
+    if (data.plot) {
+      const index =
+        gameState.plots.findIndex(
+          item =>
+            Number(
+              item.plot_number
+            ) ===
+            selectedPlot
         );
 
-      const { data: updatedPlot, error: plotError } =
-        await supabase
-          .from("plots")
-          .update({
-            crop_type: seedKey,
-            planted_at:
-              plantedAt.toISOString(),
-            harvest_at:
-              harvestAt.toISOString(),
-            fertilizer_used: false,
-            updated_at: nowIso(),
-          })
-          .eq("id", plot.id)
-          .is("crop_type", null)
-          .select("*")
-          .single();
-
-      if (plotError) {
-        throw plotError;
+      if (index !== -1) {
+        gameState.plots[index] =
+          data.plot;
       }
-
-      const newAmount =
-        currentAmount - 1;
-
-      const { data: updatedInventory, error: invError } =
-        await supabase
-          .from("player_inventory")
-          .update({
-            amount: newAmount,
-            updated_at: nowIso(),
-          })
-          .eq("id", inventory.data.id)
-          .eq("amount", currentAmount)
-          .select("*")
-          .maybeSingle();
-
-      if (invError) {
-        throw invError;
-      }
-
-      if (!updatedInventory) {
-        return res.status(409).json({
-          ok: false,
-          error:
-            "Kho vừa thay đổi. Vui lòng thử lại.",
-        });
-      }
-
-      return res.json({
-        ok: true,
-        plot: updatedPlot,
-        inventory: updatedInventory,
-      });
-    } catch (error) {
-      console.error(
-        "Plant error:",
-        error.message
-      );
-
-      return res.status(500).json({
-        ok: false,
-        error: "Không thể trồng cây",
-      });
     }
+
+    if (
+      data.inventory
+    ) {
+      gameState.inventory =
+        data.inventory;
+    }
+
+    if (
+      data.player
+    ) {
+      gameState.player =
+        data.player;
+    }
+
+    /*
+    | Backend hiện tại có thể trả
+    | inventoryUpdated thay vì inventory.
+    | Nếu có thì cập nhật luôn.
+    */
+
+    if (
+      data.inventoryUpdated
+    ) {
+      updateInventoryItem(
+        data.inventoryUpdated
+      );
+    }
+
+    closeSeedPanel();
+
+    renderAll();
+
+    showMessage(
+      `Đã trồng ${seed.name}!`,
+      "success"
+    );
+  } catch (error) {
+    console.error(
+      "Plant error:",
+      error
+    );
+
+    showMessage(
+      error.message,
+      "error"
+    );
+  } finally {
+    setLoading(false);
   }
-);
+}
 
 /*
 |--------------------------------------------------------------------------
-| FERTILIZER
+| FERTILIZER / CROP ACTION
 |--------------------------------------------------------------------------
 */
 
-app.post(
-  "/api/game/fertilize",
-  requireTelegram,
-  async (req, res) => {
-    try {
-      const plotNumber =
-        Number(req.body.plotNumber);
+function showPlotActions(
+  plot
+) {
+  const seed =
+    SEEDS[
+      plot.crop_type
+    ];
 
-      if (!isValidPlotNumber(plotNumber)) {
-        return res.status(400).json({
-          ok: false,
-          error: "plotNumber không hợp lệ",
-        });
-      }
-
-      const plot = req.plots.find(
-        (item) =>
-          Number(item.plot_number) === plotNumber
-      );
-
-      if (!plot) {
-        return res.status(404).json({
-          ok: false,
-          error: "Không tìm thấy ô đất",
-        });
-      }
-
-      if (!plot.unlocked || !plot.crop_type) {
-        return res.status(400).json({
-          ok: false,
-          error:
-            "Ô đất chưa có cây để bón phân",
-        });
-      }
-
-      if (plot.fertilizer_used) {
-        return res.status(400).json({
-          ok: false,
-          error:
-            "Cây này đã dùng phân bón",
-        });
-      }
-
-      const fertilizer =
-        Number(req.player.fertilizer || 0);
-
-      if (fertilizer <= 0) {
-        return res.status(400).json({
-          ok: false,
-          error: "Không còn phân bón",
-        });
-      }
-
-      const reductionMinutes =
-        getFertilizerReductionMinutes(
-          plot.crop_type
-        );
-
-      const currentHarvest =
-        new Date(plot.harvest_at);
-
-      const newHarvest =
-        new Date(
-          currentHarvest.getTime() -
-            reductionMinutes * 60 * 1000
-        );
-
-      const newFertilizer =
-        fertilizer - 1;
-
-      const { data: updatedPlayer, error: playerError } =
-        await supabase
-          .from("players")
-          .update({
-            fertilizer: newFertilizer,
-            updated_at: nowIso(),
-          })
-          .eq("id", req.playerId)
-          .eq("fertilizer", fertilizer)
-          .select("*")
-          .maybeSingle();
-
-      if (playerError) {
-        throw playerError;
-      }
-
-      if (!updatedPlayer) {
-        return res.status(409).json({
-          ok: false,
-          error:
-            "Phân bón vừa thay đổi. Vui lòng thử lại.",
-        });
-      }
-
-      const { data: updatedPlot, error: plotError } =
-        await supabase
-          .from("plots")
-          .update({
-            harvest_at:
-              newHarvest.toISOString(),
-            fertilizer_used: true,
-            updated_at: nowIso(),
-          })
-          .eq("id", plot.id)
-          .eq("fertilizer_used", false)
-          .select("*")
-          .single();
-
-      if (plotError) {
-        throw plotError;
-      }
-
-      return res.json({
-        ok: true,
-        player: updatedPlayer,
-        plot: updatedPlot,
-        reductionMinutes,
-      });
-    } catch (error) {
-      console.error(
-        "Fertilizer error:",
-        error.message
-      );
-
-      return res.status(500).json({
-        ok: false,
-        error: "Không thể bón phân",
-      });
-    }
+  if (!seed) {
+    return;
   }
-);
+
+  const remaining =
+    getRemainingMs(
+      plot.harvest_at
+    );
+
+  if (remaining <= 0) {
+    harvestPlot(
+      Number(plot.plot_number)
+    );
+
+    return;
+  }
+
+  const fertilizer =
+    Number(
+      gameState.player?.fertilizer || 0
+    );
+
+  const message =
+    `🌱 ${seed.name}\n\n` +
+    `⏳ Còn: ${formatDuration(remaining)}\n\n` +
+    `🧪 Phân bón: ${fertilizer}`;
+
+  const useFertilizer =
+    fertilizer > 0 &&
+    window.confirm(
+      `${message}\n\nBấm OK để dùng 1 phân bón.`
+    );
+
+  if (useFertilizer) {
+    fertilizePlot(
+      Number(plot.plot_number)
+    );
+  }
+}
+
+async function fertilizePlot(
+  plotNumber
+) {
+  setLoading(true);
+
+  try {
+    const data =
+      await apiRequest(
+        "/api/game/fertilize",
+        {
+          plotNumber
+        }
+      );
+
+    if (data.player) {
+      gameState.player =
+        data.player;
+    }
+
+    if (data.plot) {
+      const index =
+        gameState.plots.findIndex(
+          item =>
+            Number(
+              item.plot_number
+            ) ===
+            plotNumber
+        );
+
+      if (index !== -1) {
+        gameState.plots[index] =
+          data.plot;
+      }
+    }
+
+    renderAll();
+
+    const reduction =
+      data.reductionMinutes;
+
+    if (
+      Number.isFinite(
+        Number(reduction)
+      )
+    ) {
+      showMessage(
+        `🧪 Đã dùng phân bón, giảm ${reduction} phút!`,
+        "success"
+      );
+    } else {
+      showMessage(
+        "🧪 Đã dùng phân bón!",
+        "success"
+      );
+    }
+  } catch (error) {
+    console.error(
+      "Fertilizer error:",
+      error
+    );
+
+    showMessage(
+      error.message,
+      "error"
+    );
+  } finally {
+    setLoading(false);
+  }
+}
 
 /*
 |--------------------------------------------------------------------------
@@ -1201,168 +1246,227 @@ app.post(
 |--------------------------------------------------------------------------
 */
 
-app.post(
-  "/api/game/harvest",
-  requireTelegram,
-  async (req, res) => {
-    try {
-      const plotNumber =
-        Number(req.body.plotNumber);
+async function harvestPlot(
+  plotNumber
+) {
+  const plot =
+    gameState.plots.find(
+      item =>
+        Number(item.plot_number) ===
+        plotNumber
+    );
 
-      if (!isValidPlotNumber(plotNumber)) {
-        return res.status(400).json({
-          ok: false,
-          error: "plotNumber không hợp lệ",
-        });
-      }
-
-      const plot = req.plots.find(
-        (item) =>
-          Number(item.plot_number) === plotNumber
-      );
-
-      if (!plot) {
-        return res.status(404).json({
-          ok: false,
-          error: "Không tìm thấy ô đất",
-        });
-      }
-
-      if (!plot.crop_type) {
-        return res.status(400).json({
-          ok: false,
-          error: "Ô đất chưa trồng cây",
-        });
-      }
-
-      if (!plot.harvest_at) {
-        return res.status(400).json({
-          ok: false,
-          error:
-            "Không có thời gian thu hoạch",
-        });
-      }
-
-      const harvestTime =
-        new Date(plot.harvest_at).getTime();
-
-      if (Date.now() < harvestTime) {
-        return res.status(400).json({
-          ok: false,
-          error: "Cây chưa chín",
-          harvestAt: plot.harvest_at,
-        });
-      }
-
-      const seedKey =
-        plot.crop_type;
-
-      const seed =
-        SEEDS[seedKey];
-
-      if (!seed) {
-        return res.status(400).json({
-          ok: false,
-          error: "Loại cây không hợp lệ",
-        });
-      }
-
-      /*
-       * Ở bản hiện tại:
-       * 1 lần trồng → 1 nông sản.
-       * Có thể nâng cấp sản lượng sau.
-       */
-      const harvestAmount = 1;
-
-      const expGain =
-        getRandomExp();
-
-      const nextStats =
-        addExp(
-          req.player,
-          expGain
-        );
-
-      const { data: updatedPlot, error: plotError } =
-        await supabase
-          .from("plots")
-          .update({
-            crop_type: null,
-            planted_at: null,
-            harvest_at: null,
-            fertilizer_used: false,
-            updated_at: nowIso(),
-          })
-          .eq("id", plot.id)
-          .eq("crop_type", seedKey)
-          .eq("harvest_at", plot.harvest_at)
-          .select("*")
-          .maybeSingle();
-
-      if (plotError) {
-        throw plotError;
-      }
-
-      if (!updatedPlot) {
-        return res.status(409).json({
-          ok: false,
-          error:
-            "Cây vừa được thu hoạch hoặc dữ liệu đã thay đổi.",
-        });
-      }
-
-      const inventory =
-        await addInventory(
-          req.playerId,
-          seedKey,
-          harvestAmount
-        );
-
-      const { data: updatedPlayer, error: playerError } =
-        await supabase
-          .from("players")
-          .update({
-            level: nextStats.level,
-            exp: nextStats.exp,
-            updated_at: nowIso(),
-          })
-          .eq("id", req.playerId)
-          .select("*")
-          .single();
-
-      if (playerError) {
-        throw playerError;
-      }
-
-      return res.json({
-        ok: true,
-
-        player: updatedPlayer,
-
-        plot: updatedPlot,
-
-        inventory,
-
-        harvested: {
-          seedKey,
-          amount: harvestAmount,
-        },
-
-        expGain,
-      });
-    } catch (error) {
-      console.error(
-        "Harvest error:",
-        error.message
-      );
-
-      return res.status(500).json({
-        ok: false,
-        error: "Không thể thu hoạch",
-      });
-    }
+  if (!plot) {
+    return;
   }
-);
+
+  if (!plot.crop_type) {
+    return;
+  }
+
+  if (
+    getRemainingMs(
+      plot.harvest_at
+    ) > 0
+  ) {
+    showMessage(
+      "Cây chưa chín.",
+      "error"
+    );
+
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const data =
+      await apiRequest(
+        "/api/game/harvest",
+        {
+          plotNumber
+        }
+      );
+
+    if (data.player) {
+      gameState.player =
+        data.player;
+    }
+
+    if (data.plot) {
+      const index =
+        gameState.plots.findIndex(
+          item =>
+            Number(
+              item.plot_number
+            ) ===
+            plotNumber
+        );
+
+      if (index !== -1) {
+        gameState.plots[index] =
+          data.plot;
+      }
+    }
+
+    if (data.inventory) {
+      gameState.inventory =
+        data.inventory;
+    }
+
+    if (data.inventoryUpdated) {
+      updateInventoryItem(
+        data.inventoryUpdated
+      );
+    }
+
+    renderAll();
+
+    const exp =
+      Number(
+        data.expGained || 0
+      );
+
+    if (exp > 0) {
+      showMessage(
+        `🌾 Thu hoạch thành công! +${exp} EXP`,
+        "success"
+      );
+    } else {
+      showMessage(
+        "🌾 Thu hoạch thành công!",
+        "success"
+      );
+    }
+  } catch (error) {
+    console.error(
+      "Harvest error:",
+      error
+    );
+
+    showMessage(
+      error.message,
+      "error"
+    );
+  } finally {
+    setLoading(false);
+  }
+}
+
+/*
+|--------------------------------------------------------------------------
+| SHOP
+|--------------------------------------------------------------------------
+*/
+
+function openShop() {
+  renderShop();
+
+  showPanel(
+    shopPanel
+  );
+}
+
+function closeShop() {
+  hidePanel(
+    shopPanel
+  );
+}
+
+function renderShop() {
+  if (!shopList) {
+    return;
+  }
+
+  shopList.innerHTML = "";
+
+  let totalValue = 0;
+
+  Object.entries(
+    SEEDS
+  ).forEach(
+    ([key, seed]) => {
+      const inventoryItem =
+        gameState.inventory.find(
+          item =>
+            item.seed_key === key
+        );
+
+      const amount =
+        Number(
+          inventoryItem?.amount || 0
+        );
+
+      const value =
+        amount *
+        seed.sellPrice;
+
+      totalValue += value;
+
+      const item =
+        document.createElement(
+          "div"
+        );
+
+      item.className =
+        "shop-item";
+
+      item.innerHTML = `
+        <div class="shop-item-icon">
+          ${seed.icon}
+        </div>
+
+        <div>
+          <div class="shop-item-name">
+            ${escapeHtml(seed.name)}
+          </div>
+
+          <div class="shop-item-count">
+            Có: ${amount}
+          </div>
+
+          <div class="shop-item-value">
+            Giá bán: ${seed.sellPrice} 🪙
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="shop-sell-button"
+          data-sell-seed="${escapeAttribute(key)}"
+          ${amount <= 0 ? "disabled" : ""}
+        >
+          Bán 1
+        </button>
+      `;
+
+      const button =
+        item.querySelector(
+          "[data-sell-seed]"
+        );
+
+      if (button) {
+        button.addEventListener(
+          "click",
+          () => {
+            sellSeed(
+              key
+            );
+          }
+        );
+      }
+
+      shopList.appendChild(
+        item
+      );
+    }
+  );
+
+  if (shopTotalValue) {
+    shopTotalValue.textContent =
+      `Tổng giá trị kho: ${formatNumber(totalValue)} 🪙`;
+  }
+}
 
 /*
 |--------------------------------------------------------------------------
@@ -1370,196 +1474,612 @@ app.post(
 |--------------------------------------------------------------------------
 */
 
-app.post(
-  "/api/game/sell",
-  requireTelegram,
-  async (req, res) => {
-    try {
-      const seedKey =
-        String(req.body.seedKey || "");
+async function sellSeed(
+  seedKey
+) {
+  const seed =
+    SEEDS[seedKey];
 
-      const amount =
-        Number(req.body.amount);
+  if (!seed) {
+    return;
+  }
 
-      if (!SEEDS[seedKey]) {
-        return res.status(400).json({
-          ok: false,
-          error: "Loại nông sản không hợp lệ",
-        });
-      }
+  const inventoryItem =
+    gameState.inventory.find(
+      item =>
+        item.seed_key ===
+        seedKey
+    );
 
-      if (
-        !Number.isInteger(amount) ||
-        amount <= 0
-      ) {
-        return res.status(400).json({
-          ok: false,
-          error: "Số lượng bán không hợp lệ",
-        });
-      }
+  const amount =
+    Number(
+      inventoryItem?.amount || 0
+    );
 
-      const { data: inventory, error: invError } =
-        await supabase
-          .from("player_inventory")
-          .select("*")
-          .eq("player_id", req.playerId)
-          .eq("seed_key", seedKey)
-          .maybeSingle();
+  if (amount <= 0) {
+    showMessage(
+      "Bạn không có nông sản này.",
+      "error"
+    );
 
-      if (invError) {
-        throw invError;
-      }
+    return;
+  }
 
-      if (
-        !inventory ||
-        Number(inventory.amount) < amount
-      ) {
-        return res.status(400).json({
-          ok: false,
-          error: "Không đủ nông sản",
-        });
-      }
+  setLoading(true);
 
-      const sellPrice =
-        SEEDS[seedKey].sellPrice;
-
-      const totalCoins =
-        sellPrice * amount;
-
-      const currentAmount =
-        Number(inventory.amount);
-
-      const newAmount =
-        currentAmount - amount;
-
-      const { data: updatedInventory, error: updateInvError } =
-        await supabase
-          .from("player_inventory")
-          .update({
-            amount: newAmount,
-            updated_at: nowIso(),
-          })
-          .eq("id", inventory.id)
-          .eq("amount", currentAmount)
-          .select("*")
-          .maybeSingle();
-
-      if (updateInvError) {
-        throw updateInvError;
-      }
-
-      if (!updatedInventory) {
-        return res.status(409).json({
-          ok: false,
-          error:
-            "Kho vừa thay đổi. Vui lòng thử lại.",
-        });
-      }
-
-      const currentCoins =
-        Number(req.player.coins || 0);
-
-      const newCoins =
-        currentCoins + totalCoins;
-
-      const { data: updatedPlayer, error: playerError } =
-        await supabase
-          .from("players")
-          .update({
-            coins: newCoins,
-            updated_at: nowIso(),
-          })
-          .eq("id", req.playerId)
-          .eq("coins", currentCoins)
-          .select("*")
-          .maybeSingle();
-
-      if (playerError) {
-        throw playerError;
-      }
-
-      if (!updatedPlayer) {
-        return res.status(409).json({
-          ok: false,
-          error:
-            "Coin vừa thay đổi. Vui lòng thử lại.",
-        });
-      }
-
-      return res.json({
-        ok: true,
-
-        player: updatedPlayer,
-
-        inventory: updatedInventory,
-
-        sold: {
+  try {
+    const data =
+      await apiRequest(
+        "/api/game/sell",
+        {
           seedKey,
-          amount,
-          priceEach: sellPrice,
-          totalCoins,
-        },
-      });
-    } catch (error) {
-      console.error(
-        "Sell error:",
-        error.message
+          amount: 1
+        }
       );
 
-      return res.status(500).json({
-        ok: false,
-        error: "Không thể bán nông sản",
-      });
+    if (data.player) {
+      gameState.player =
+        data.player;
+    }
+
+    if (data.inventory) {
+      gameState.inventory =
+        data.inventory;
+    }
+
+    if (data.inventoryUpdated) {
+      updateInventoryItem(
+        data.inventoryUpdated
+      );
+    }
+
+    renderAll();
+
+    renderShop();
+
+    const coins =
+      Number(
+        data.coinsGained ||
+        data.totalCoinsGained ||
+        seed.sellPrice
+      );
+
+    showMessage(
+      `💰 Đã bán ${seed.name} +${formatNumber(coins)} Coin`,
+      "success"
+    );
+  } catch (error) {
+    console.error(
+      "Sell error:",
+      error
+    );
+
+    showMessage(
+      error.message,
+      "error"
+    );
+  } finally {
+    setLoading(false);
+  }
+}
+
+/*
+|--------------------------------------------------------------------------
+| INVENTORY
+|--------------------------------------------------------------------------
+*/
+
+function openInventory() {
+  renderShop();
+
+  showPanel(
+    shopPanel
+  );
+}
+
+/*
+|--------------------------------------------------------------------------
+| TASKS
+|--------------------------------------------------------------------------
+|
+| Phần xác minh nhiệm vụ thật sự sẽ do backend xử lý.
+| Frontend KHÔNG tự cộng thưởng.
+|
+|--------------------------------------------------------------------------
+*/
+
+function openTasks() {
+  renderTasks();
+
+  showPanel(
+    tasksPanel
+  );
+}
+
+function renderTasks() {
+  if (!tasksList) {
+    return;
+  }
+
+  tasksList.innerHTML = "";
+
+  const tasks = [
+    {
+      id: "join_channel",
+      icon: "📢",
+      title: "Tham gia kênh Telegram",
+      desc: "Tham gia kênh để nhận thưởng một lần.",
+      reward: "500 🪙"
+    },
+
+    {
+      id: "invite_friend",
+      icon: "👥",
+      title: "Mời bạn bè",
+      desc: "Mời bạn bè tham gia Nông Trại Xanh.",
+      reward: "1000 🪙"
+    }
+  ];
+
+  tasks.forEach(
+    task => {
+      const item =
+        document.createElement(
+          "div"
+        );
+
+      item.className =
+        "task-item";
+
+      item.innerHTML = `
+        <div class="task-icon">
+          ${task.icon}
+        </div>
+
+        <div class="task-content">
+          <div class="task-title">
+            ${escapeHtml(task.title)}
+          </div>
+
+          <div class="task-desc">
+            ${escapeHtml(task.desc)}
+          </div>
+
+          <div class="task-reward">
+            🎁 ${escapeHtml(task.reward)}
+          </div>
+
+          <div class="task-status">
+            Chưa xác minh
+          </div>
+        </div>
+
+        <button
+          class="task-button"
+          type="button"
+          data-task-id="${escapeAttribute(task.id)}"
+        >
+          Kiểm tra
+        </button>
+      `;
+
+      const button =
+        item.querySelector(
+          ".task-button"
+        );
+
+      if (button) {
+        button.addEventListener(
+          "click",
+          () => {
+            checkTask(
+              task.id,
+              item,
+              button
+            );
+          }
+        );
+      }
+
+      tasksList.appendChild(
+        item
+      );
+    }
+  );
+}
+
+/*
+|--------------------------------------------------------------------------
+| TASK CHECK
+|--------------------------------------------------------------------------
+|
+| Hiện backend của bạn CHƯA có endpoint task.
+| Vì vậy không được tự cộng Coin ở frontend.
+|
+|--------------------------------------------------------------------------
+*/
+
+async function checkTask(
+  taskId,
+  item,
+  button
+) {
+  /*
+  | Chưa bật endpoint server.
+  |
+  | Không tự thưởng tại client.
+  */
+
+  showMessage(
+    "Hệ thống xác minh nhiệm vụ sẽ được nối với backend ở bước tiếp theo.",
+    "info"
+  );
+}
+
+/*
+|--------------------------------------------------------------------------
+| PANELS
+|--------------------------------------------------------------------------
+*/
+
+function showPanel(
+  panel
+) {
+  if (!panel) {
+    return;
+  }
+
+  panel.classList.add(
+    "show"
+  );
+
+  panel.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+}
+
+function hidePanel(
+  panel
+) {
+  if (!panel) {
+    return;
+  }
+
+  panel.classList.remove(
+    "show"
+  );
+
+  panel.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+}
+
+/*
+|--------------------------------------------------------------------------
+| MENU
+|--------------------------------------------------------------------------
+*/
+
+function setupMenuEvents() {
+  if (shopMenu) {
+    shopMenu.addEventListener(
+      "click",
+      openShop
+    );
+  }
+
+  if (seedMenu) {
+    seedMenu.addEventListener(
+      "click",
+      () => {
+        /*
+        | Nếu chưa chọn ô đất,
+        | hiển thị thông báo.
+        */
+
+        if (
+          selectedPlot === null
+        ) {
+          showMessage(
+            "Hãy chọn một ô đất đã mở khóa trước.",
+            "info"
+          );
+
+          return;
+        }
+
+        openSeedPanel(
+          selectedPlot
+        );
+      }
+    );
+  }
+
+  if (inventoryMenu) {
+    inventoryMenu.addEventListener(
+      "click",
+      openInventory
+    );
+  }
+
+  if (tasksMenu) {
+    tasksMenu.addEventListener(
+      "click",
+      openTasks
+    );
+  }
+
+  if (settingsMenu) {
+    settingsMenu.addEventListener(
+      "click",
+      () => {
+        showMessage(
+          "Cài đặt sẽ được thêm sau.",
+          "info"
+        );
+      }
+    );
+  }
+}
+
+/*
+|--------------------------------------------------------------------------
+| CLOSE BUTTONS
+|--------------------------------------------------------------------------
+*/
+
+function setupCloseEvents() {
+  if (seedClose) {
+    seedClose.addEventListener(
+      "click",
+      closeSeedPanel
+    );
+  }
+
+  if (shopClose) {
+    shopClose.addEventListener(
+      "click",
+      closeShop
+    );
+  }
+
+  if (tasksClose) {
+    tasksClose.addEventListener(
+      "click",
+      () => {
+        hidePanel(
+          tasksPanel
+        );
+      }
+    );
+  }
+
+  /*
+  | Click nền để đóng
+  */
+
+  [
+    seedPanel,
+    shopPanel,
+    tasksPanel
+  ].forEach(
+    panel => {
+      if (!panel) {
+        return;
+      }
+
+      panel.addEventListener(
+        "click",
+        event => {
+          if (
+            event.target ===
+            panel
+          ) {
+            hidePanel(
+              panel
+            );
+          }
+        }
+      );
+    }
+  );
+}
+
+/*
+|--------------------------------------------------------------------------
+| RENDER ALL
+|--------------------------------------------------------------------------
+*/
+
+function renderAll() {
+  renderPlayer();
+  renderPlots();
+  renderSeedList();
+  renderShop();
+  startCountdown();
+}
+
+/*
+|--------------------------------------------------------------------------
+| INVENTORY UPDATE
+|--------------------------------------------------------------------------
+*/
+
+function updateInventoryItem(
+  updatedItem
+) {
+  if (!updatedItem) {
+    return;
+  }
+
+  const index =
+    gameState.inventory.findIndex(
+      item =>
+        Number(item.id) ===
+        Number(updatedItem.id)
+    );
+
+  if (index === -1) {
+    gameState.inventory.push(
+      updatedItem
+    );
+
+    return;
+  }
+
+  gameState.inventory[index] =
+    updatedItem;
+}
+
+/*
+|--------------------------------------------------------------------------
+| UTILITIES
+|--------------------------------------------------------------------------
+*/
+
+function formatNumber(
+  value
+) {
+  const number =
+    Number(value || 0);
+
+  return new Intl.NumberFormat(
+    "vi-VN"
+  ).format(number);
+}
+
+function escapeHtml(
+  value
+) {
+  return String(value)
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+}
+
+function escapeAttribute(
+  value
+) {
+  return escapeHtml(
+    value
+  );
+}
+
+/*
+|--------------------------------------------------------------------------
+| LOADING
+|--------------------------------------------------------------------------
+*/
+
+function setLoading(
+  value
+) {
+  isLoading =
+    Boolean(value);
+
+  document.body.style.pointerEvents =
+    isLoading
+      ? "none"
+      : "";
+
+  if (telegram) {
+    try {
+      if (isLoading) {
+        telegram.MainButton
+          ?.showProgress();
+      } else {
+        telegram.MainButton
+          ?.hideProgress();
+      }
+    } catch {
+      // ignore
     }
   }
-);
+}
+
+function showLoading(
+  message
+) {
+  setLoading(true);
+
+  console.log(
+    message
+  );
+}
+
+function hideLoading() {
+  setLoading(false);
+}
 
 /*
 |--------------------------------------------------------------------------
-| 404
+| MESSAGE
 |--------------------------------------------------------------------------
 */
 
-app.use((req, res) => {
-  res.status(404).json({
-    ok: false,
-    error: "API endpoint không tồn tại",
-  });
-});
-
-/*
-|--------------------------------------------------------------------------
-| Error handler
-|--------------------------------------------------------------------------
-*/
-
-app.use((error, req, res, next) => {
-  console.error(
-    "Server error:",
-    error.message
+function showMessage(
+  message,
+  type = "info"
+) {
+  console.log(
+    `[${type}]`,
+    message
   );
 
-  if (error.message === "CORS blocked") {
-    return res.status(403).json({
-      ok: false,
-      error: "CORS blocked",
-    });
+  /*
+  | Telegram popup
+  */
+
+  if (
+    telegram &&
+    typeof telegram.showAlert ===
+      "function"
+  ) {
+    try {
+      telegram.showAlert(
+        String(message)
+      );
+
+      return;
+    } catch {
+      // fallback
+    }
   }
 
-  res.status(500).json({
-    ok: false,
-    error: "Internal server error",
-  });
-});
+  /*
+  | Browser fallback
+  */
+
+  window.alert(
+    String(message)
+  );
+}
 
 /*
 |--------------------------------------------------------------------------
-| Start
+| VISIBILITY / RELOAD
 |--------------------------------------------------------------------------
 */
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(
-    `🌱 Telegram Farm backend đang chạy tại port ${PORT}`
-  );
-});
+document.addEventListener(
+  "visibilitychange",
+ 
