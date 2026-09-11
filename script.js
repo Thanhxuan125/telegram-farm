@@ -168,32 +168,211 @@ const settingsMenu = document.getElementById("settingsMenu");
 */
 
 function initTelegram() {
-  if (window.Telegram && window.Telegram.WebApp) {
-    telegram = window.Telegram.WebApp;
+  console.log("🔎 Đang kiểm tra Telegram WebApp...");
 
+  /*
+  | Kiểm tra Telegram WebApp SDK
+  */
+
+  if (
+    !window.Telegram ||
+    !window.Telegram.WebApp
+  ) {
+    console.error(
+      "❌ Telegram WebApp SDK chưa được tải."
+    );
+
+    window.alert(
+      "❌ KHÔNG TÌM THẤY TELEGRAM WEBAPP\n\n" +
+      "Telegram SDK chưa được tải."
+    );
+
+    return false;
+  }
+
+  /*
+  | Lấy WebApp object
+  */
+
+  telegram =
+    window.Telegram.WebApp;
+
+  /*
+  | Telegram WebApp khởi tạo
+  */
+
+  try {
     telegram.ready();
     telegram.expand();
+  } catch (error) {
+    console.warn(
+      "Telegram ready/expand error:",
+      error
+    );
+  }
 
-    try {
-      telegram.setHeaderColor("#0788df");
-      telegram.setBackgroundColor("#0788df");
-    } catch (error) {
-      console.warn("Telegram UI setup:", error);
-    }
+  /*
+  | Màu giao diện Telegram
+  */
 
-    initData = telegram.initData || "";
+  try {
+    telegram.setHeaderColor(
+      "#0788df"
+    );
 
-    if (!initData) {
-      console.warn(
-        "Không có Telegram initData. Hãy mở Mini App bên trong Telegram."
-      );
-    }
+    telegram.setBackgroundColor(
+      "#0788df"
+    );
+  } catch (error) {
+    console.warn(
+      "Telegram UI setup:",
+      error
+    );
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | LẤY INIT DATA
+  |--------------------------------------------------------------------------
+  |
+  | initData là dữ liệu Telegram ký để
+  | backend xác minh người chơi.
+  |
+  | KHÔNG sử dụng initDataUnsafe để
+  | xác thực người chơi.
+  |
+  */
+
+  initData =
+    telegram.initData || "";
+
+  /*
+  | Một số thông tin diagnostic.
+  | initData thật KHÔNG được hiển thị ra
+  | popup để tránh người dùng vô tình chia sẻ.
+  */
+
+  const initDataLength =
+    String(initData).length;
+
+  const unsafeUser =
+    telegram.initDataUnsafe?.user;
+
+  const userId =
+    unsafeUser?.id ||
+    "Không có";
+
+  const platform =
+    telegram.platform ||
+    "Không xác định";
+
+  const version =
+    telegram.version ||
+    "Không xác định";
+
+  /*
+  | Console diagnostic
+  */
+
+  console.log(
+    "Telegram WebApp:",
+    telegram
+  );
+
+  console.log(
+    "Telegram initData:",
+    telegram.initData
+  );
+
+  console.log(
+    "Telegram initDataUnsafe:",
+    telegram.initDataUnsafe
+  );
+
+  console.log(
+    "Telegram platform:",
+    platform
+  );
+
+  console.log(
+    "Telegram version:",
+    version
+  );
+
+  console.log(
+    "Telegram initData length:",
+    initDataLength
+  );
+
+  /*
+  |--------------------------------------------------------------------------
+  | INITDATA TRỐNG
+  |--------------------------------------------------------------------------
+  */
+
+  if (!initData) {
+    console.error(
+      "❌ Telegram không cung cấp initData."
+    );
+
+    window.alert(
+      "❌ TELEGRAM INITDATA = TRỐNG\n\n" +
+      "Telegram SDK: CÓ\n" +
+      "initData: KHÔNG CÓ\n" +
+      "User ID: " +
+      userId +
+      "\n" +
+      "Platform: " +
+      platform +
+      "\n" +
+      "Version: " +
+      version +
+      "\n\n" +
+      "=> Cần kiểm tra cách Mini App đang được Telegram mở."
+    );
+
+    /*
+    | Trả true để startGame tiếp tục,
+    | nhưng apiRequest sẽ chặn request
+    | vì initData vẫn đang rỗng.
+    */
 
     return true;
   }
 
-  console.warn("Telegram WebApp SDK chưa được tải.");
-  return false;
+  /*
+  |--------------------------------------------------------------------------
+  | INITDATA ĐÃ CÓ
+  |--------------------------------------------------------------------------
+  */
+
+  console.log(
+    "✅ Telegram initData đã nhận."
+  );
+
+  console.log(
+    "📏 Độ dài initData:",
+    initDataLength
+  );
+
+  window.alert(
+    "✅ TELEGRAM INITDATA ĐÃ NHẬN\n\n" +
+    "SDK: CÓ\n" +
+    "initData: CÓ\n" +
+    "Độ dài: " +
+    initDataLength +
+    "\n" +
+    "User ID: " +
+    userId +
+    "\n" +
+    "Platform: " +
+    platform +
+    "\n" +
+    "Version: " +
+    version
+  );
+
+  return true;
 }
 
 /*
@@ -255,13 +434,19 @@ async function authenticateTelegram() {
   showLoading("Đang kết nối máy chủ...");
 
   try {
-    const data = await apiRequest(
-      "/api/auth/telegram"
-    );
+    const data =
+      await apiRequest(
+        "/api/auth/telegram"
+      );
 
-    gameState.player = data.player;
-    gameState.plots = data.plots || [];
-    gameState.inventory = data.inventory || [];
+    gameState.player =
+      data.player;
+
+    gameState.plots =
+      data.plots || [];
+
+    gameState.inventory =
+      data.inventory || [];
 
     renderAll();
 
@@ -298,13 +483,19 @@ async function authenticateTelegram() {
 
 async function loadGameState() {
   try {
-    const data = await apiRequest(
-      "/api/game/state"
-    );
+    const data =
+      await apiRequest(
+        "/api/game/state"
+      );
 
-    gameState.player = data.player;
-    gameState.plots = data.plots || [];
-    gameState.inventory = data.inventory || [];
+    gameState.player =
+      data.player;
+
+    gameState.plots =
+      data.plots || [];
+
+    gameState.inventory =
+      data.inventory || [];
 
     renderAll();
 
@@ -332,23 +523,41 @@ async function loadGameState() {
 */
 
 function renderPlayer() {
-  const player = gameState.player;
+  const player =
+    gameState.player;
 
   if (!player) {
     return;
   }
 
-  const level = Number(player.level || 1);
-  const exp = Number(player.exp || 0);
-  const coins = Number(player.coins || 0);
-  const fertilizer = Number(player.fertilizer || 0);
+  const level =
+    Number(
+      player.level || 1
+    );
+
+  const exp =
+    Number(
+      player.exp || 0
+    );
+
+  const coins =
+    Number(
+      player.coins || 0
+    );
+
+  const fertilizer =
+    Number(
+      player.fertilizer || 0
+    );
 
   if (levelNumber) {
-    levelNumber.textContent = level;
+    levelNumber.textContent =
+      level;
   }
 
   if (levelValue) {
-    levelValue.textContent = level;
+    levelValue.textContent =
+      level;
   }
 
   if (coinValue) {
@@ -393,73 +602,78 @@ function renderPlots() {
       ".plot[data-plot]"
     );
 
-  plotElements.forEach((element) => {
-    const plotNumber =
-      Number(
-        element.dataset.plot
+  plotElements.forEach(
+    (element) => {
+      const plotNumber =
+        Number(
+          element.dataset.plot
+        );
+
+      const plot =
+        gameState.plots.find(
+          item =>
+            Number(item.plot_number) ===
+            plotNumber
+        );
+
+      if (!plot) {
+        return;
+      }
+
+      element.classList.toggle(
+        "unlocked",
+        Boolean(plot.unlocked)
       );
 
-    const plot =
-      gameState.plots.find(
-        item =>
-          Number(item.plot_number) ===
+      element.classList.toggle(
+        "locked",
+        !plot.unlocked
+      );
+
+      /*
+      | Xóa trạng thái cây cũ
+      */
+
+      element
+        .querySelectorAll(
+          ".crop-image,.crop-name,.grow-time,.plot-price,.fertilizer-button,.harvest-button"
+        )
+        .forEach(
+          item =>
+            item.remove()
+        );
+
+      /*
+      | LOCKED
+      */
+
+      if (!plot.unlocked) {
+        renderLockedPlot(
+          element,
           plotNumber
-      );
+        );
 
-    if (!plot) {
-      return;
-    }
+        return;
+      }
 
-    element.classList.toggle(
-      "unlocked",
-      Boolean(plot.unlocked)
-    );
+      /*
+      | EMPTY
+      */
 
-    element.classList.toggle(
-      "locked",
-      !plot.unlocked
-    );
+      if (!plot.crop_type) {
+        return;
+      }
 
-    /*
-    | Xóa trạng thái cây cũ
-    */
+      /*
+      | CROP
+      */
 
-    element
-      .querySelectorAll(
-        ".crop-image,.crop-name,.grow-time,.plot-price,.fertilizer-button,.harvest-button"
-      )
-      .forEach(item => item.remove());
-
-    /*
-    | LOCKED
-    */
-
-    if (!plot.unlocked) {
-      renderLockedPlot(
+      renderCrop(
         element,
-        plotNumber
+        plot
       );
-
-      return;
     }
-
-    /*
-    | EMPTY
-    */
-
-    if (!plot.crop_type) {
-      return;
-    }
-
-    /*
-    | CROP
-    */
-
-    renderCrop(
-      element,
-      plot
-    );
-  });
+  );
 }
 
 /*
@@ -483,8 +697,10 @@ function renderLockedPlot(
       );
   }
 
-  let priceElement =
-    document.createElement("span");
+  const priceElement =
+    document.createElement(
+      "span"
+    );
 
   priceElement.className =
     "plot-price";
@@ -508,7 +724,9 @@ function renderCrop(
   plot
 ) {
   const seed =
-    SEEDS[plot.crop_type];
+    SEEDS[
+      plot.crop_type
+    ];
 
   if (!seed) {
     return;
@@ -519,7 +737,9 @@ function renderCrop(
   */
 
   const cropImage =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
 
   cropImage.className =
     "crop-image";
@@ -548,7 +768,9 @@ function renderCrop(
   */
 
   const cropName =
-    document.createElement("span");
+    document.createElement(
+      "span"
+    );
 
   cropName.className =
     "crop-name";
@@ -565,7 +787,9 @@ function renderCrop(
   */
 
   const growTime =
-    document.createElement("span");
+    document.createElement(
+      "span"
+    );
 
   growTime.className =
     "grow-time";
@@ -613,27 +837,29 @@ function updateCountdowns() {
 
   let hasReadyCrop = false;
 
-  timers.forEach((timer) => {
-    const harvestAt =
-      timer.dataset.harvestAt;
+  timers.forEach(
+    (timer) => {
+      const harvestAt =
+        timer.dataset.harvestAt;
 
-    const remaining =
-      getRemainingMs(
-        harvestAt
-      );
-
-    if (remaining <= 0) {
-      timer.textContent =
-        "✅ Chín";
-
-      hasReadyCrop = true;
-    } else {
-      timer.textContent =
-        formatDuration(
-          remaining
+      const remaining =
+        getRemainingMs(
+          harvestAt
         );
+
+      if (remaining <= 0) {
+        timer.textContent =
+          "✅ Chín";
+
+        hasReadyCrop = true;
+      } else {
+        timer.textContent =
+          formatDuration(
+            remaining
+          );
+      }
     }
-  });
+  );
 
   /*
   | Khi cây chín, chỉ render lại giao diện.
@@ -645,11 +871,13 @@ function updateCountdowns() {
       .querySelectorAll(
         ".plot[data-plot]"
       )
-      .forEach(plotElement => {
-        plotElement.classList.add(
-          "ready"
-        );
-      });
+      .forEach(
+        plotElement => {
+          plotElement.classList.add(
+            "ready"
+          );
+        }
+      );
   }
 }
 
@@ -661,7 +889,9 @@ function getRemainingMs(
   }
 
   return (
-    new Date(harvestAt).getTime() -
+    new Date(
+      harvestAt
+    ).getTime() -
     Date.now()
   );
 }
@@ -742,21 +972,23 @@ function setupPlotEvents() {
     .querySelectorAll(
       ".plot[data-plot]"
     )
-    .forEach((plotElement) => {
-      plotElement.addEventListener(
-        "click",
-        () => {
-          const plotNumber =
-            Number(
-              plotElement.dataset.plot
-            );
+    .forEach(
+      (plotElement) => {
+        plotElement.addEventListener(
+          "click",
+          () => {
+            const plotNumber =
+              Number(
+                plotElement.dataset.plot
+              );
 
-          handlePlotClick(
-            plotNumber
-          );
-        }
-      );
-    });
+            handlePlotClick(
+              plotNumber
+            );
+          }
+        );
+      }
+    );
 }
 
 async function handlePlotClick(
@@ -995,7 +1227,10 @@ function renderSeedList() {
         </span>
       `;
 
-      if (!locked && amount > 0) {
+      if (
+        !locked &&
+        amount > 0
+      ) {
         item.addEventListener(
           "click",
           () => {
@@ -1078,12 +1313,6 @@ async function plantSeed(
       gameState.player =
         data.player;
     }
-
-    /*
-    | Backend hiện tại có thể trả
-    | inventoryUpdated thay vì inventory.
-    | Nếu có thì cập nhật luôn.
-    */
 
     if (
       data.inventoryUpdated
@@ -2160,4 +2389,3 @@ if (
 } else {
   startGame();
 }
- 
