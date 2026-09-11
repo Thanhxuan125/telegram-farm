@@ -5,7 +5,7 @@
 ===================================== */
 
 const BACKEND_URL =
-  "DAN_URL_RENDER_BACKEND_CUA_BAN_VAO_DAY";
+  "https://telegram-farm-backend.onrender.com";
 
 let serverPlayer = null;
 let serverPlots = [];
