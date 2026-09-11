@@ -2225,11 +2225,6 @@ function setLoading(
   isLoading =
     Boolean(value);
 
-  document.body.style.pointerEvents =
-    isLoading
-      ? "none"
-      : "";
-
   if (telegram) {
     try {
       if (isLoading) {
