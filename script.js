@@ -3071,14 +3071,13 @@ document.addEventListener(
 
 
 /* =====================================
-   KHỞI ĐỘNG
+   KHỞI ĐỘNG DUY NHẤT
 ===================================== */
 
 async function initGame() {
 
   /*
-    Vẫn load game local trước
-    để không phá dữ liệu hiện tại.
+    Load dữ liệu local trước.
   */
 
   loadGame();
@@ -3125,15 +3124,18 @@ async function initGame() {
   await authenticateTelegram();
 
   showServerData();
-
 }
 
+
+/* =====================================
+   CHẠY GAME
+===================================== */
 
 initGame();
 
 
 /* =====================================
-   CẬP NHẬT THỜI GIAN
+   CẬP NHẬT THỜI GIAN CÂY MỖI GIÂY
 ===================================== */
 
 setInterval(
