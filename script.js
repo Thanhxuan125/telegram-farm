@@ -2082,4 +2082,82 @@ function showMessage(
 
 document.addEventListener(
   "visibilitychange",
+  () => {
+    if (
+      document.visibilityState ===
+      "visible"
+    ) {
+      if (
+        telegram &&
+        initData
+      ) {
+        loadGameState();
+      }
+    }
+  }
+);
+
+/*
+|--------------------------------------------------------------------------
+| START GAME
+|--------------------------------------------------------------------------
+*/
+
+async function startGame() {
+  console.log(
+    "🌱 NÔNG TRẠI XANH đang khởi động..."
+  );
+
+  /*
+  | Khởi tạo Telegram WebApp
+  */
+
+  initTelegram();
+
+  /*
+  | Gắn sự kiện ô đất
+  */
+
+  setupPlotEvents();
+
+  /*
+  | Gắn sự kiện menu
+  */
+
+  setupMenuEvents();
+
+  /*
+  | Gắn nút đóng panel
+  */
+
+  setupCloseEvents();
+
+  /*
+  | Đăng nhập Telegram + tải dữ liệu
+  */
+
+  await authenticateTelegram();
+
+  console.log(
+    "🌱 NÔNG TRẠI XANH đã khởi động."
+  );
+}
+
+/*
+|--------------------------------------------------------------------------
+| DOM READY
+|--------------------------------------------------------------------------
+*/
+
+if (
+  document.readyState ===
+  "loading"
+) {
+  document.addEventListener(
+    "DOMContentLoaded",
+    startGame
+  );
+} else {
+  startGame();
+}
  
