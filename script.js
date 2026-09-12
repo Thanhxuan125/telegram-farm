@@ -269,8 +269,15 @@ function initTelegram() {
     console.log("initData length:", initData.length);
 
     if (telegram.initDataUnsafe && telegram.initDataUnsafe.user) {
-      console.log("Telegram user ID:", telegram.initDataUnsafe.user.id);
-      console.log("Telegram username:", telegram.initDataUnsafe.user.username);
+      console.log(
+        "Telegram user ID:",
+        telegram.initDataUnsafe.user.id
+      );
+
+      console.log(
+        "Telegram username:",
+        telegram.initDataUnsafe.user.username
+      );
     }
 
     console.log("Platform:", telegram.platform);
@@ -353,18 +360,23 @@ async function apiRequest(
 
   let lastError = null;
 
-  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+  for (
+    let attempt = 0;
+    attempt <= MAX_RETRIES;
+    attempt++
+  ) {
     try {
-      const response = await fetchWithTimeout(
-        `${BACKEND_URL}${endpoint}`,
-        {
-          method,
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(requestBody)
-        }
-      );
+      const response =
+        await fetchWithTimeout(
+          `${BACKEND_URL}${endpoint}`,
+          {
+            method,
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(requestBody)
+          }
+        );
 
       let data = null;
 
@@ -382,19 +394,27 @@ async function apiRequest(
           data?.message ||
           `Request thất bại (${response.status})`;
 
-        const error = new Error(message);
-        error.status = response.status;
-        error.data = data;
+        const error =
+          new Error(message);
 
-        /*
-         * Retry những lỗi server tạm thời.
-         */
+        error.status =
+          response.status;
+
+        error.data =
+          data;
+
         if (
           attempt < MAX_RETRIES &&
-          [502, 503, 504].includes(response.status)
+          [502, 503, 504].includes(
+            response.status
+          )
         ) {
           lastError = error;
-          await sleep(800 * (attempt + 1));
+
+          await sleep(
+            800 * (attempt + 1)
+          );
+
           continue;
         }
 
@@ -402,12 +422,18 @@ async function apiRequest(
       }
 
       return data;
+
     } catch (error) {
       lastError = error;
 
-      if (error.name === "AbortError") {
+      if (
+        error.name === "AbortError"
+      ) {
         if (attempt < MAX_RETRIES) {
-          await sleep(800 * (attempt + 1));
+          await sleep(
+            800 * (attempt + 1)
+          );
+
           continue;
         }
 
@@ -416,14 +442,14 @@ async function apiRequest(
         );
       }
 
-      /*
-       * Lỗi mạng.
-       */
       if (
         !error.status &&
         attempt < MAX_RETRIES
       ) {
-        await sleep(800 * (attempt + 1));
+        await sleep(
+          800 * (attempt + 1)
+        );
+
         continue;
       }
 
@@ -431,7 +457,10 @@ async function apiRequest(
     }
   }
 
-  throw lastError || new Error("Request thất bại.");
+  throw (
+    lastError ||
+    new Error("Request thất bại.")
+  );
 }
 
 
@@ -447,34 +476,54 @@ async function authenticateTelegram() {
   isAuthenticating = true;
 
   try {
-    showLoading("Đang xác thực Telegram...");
-
-    const result = await apiRequest(
-      "/api/auth/telegram"
+    showLoading(
+      "Đang xác thực Telegram..."
     );
 
-    if (!result || !result.player) {
+    const result =
+      await apiRequest(
+        "/api/auth/telegram"
+      );
+
+    if (
+      !result ||
+      !result.player
+    ) {
       throw new Error(
         "Backend không trả về thông tin người chơi."
       );
     }
 
-    gameState.player = result.player;
+    gameState.player =
+      result.player;
 
-    gameState.plots = Array.isArray(result.plots)
-      ? result.plots
-      : [];
+    gameState.plots =
+      Array.isArray(
+        result.plots
+      )
+        ? result.plots
+        : [];
 
-    gameState.inventory = Array.isArray(result.inventory)
-      ? result.inventory
-      : [];
+    gameState.inventory =
+      Array.isArray(
+        result.inventory
+      )
+        ? result.inventory
+        : [];
 
-    console.log("✅ Telegram authentication thành công.");
-    console.log("Player:", gameState.player);
+    console.log(
+      "✅ Telegram authentication thành công."
+    );
+
+    console.log(
+      "Player:",
+      gameState.player
+    );
 
     renderAll();
 
     return true;
+
   } catch (error) {
     console.error(
       "authenticateTelegram error:",
@@ -488,8 +537,11 @@ async function authenticateTelegram() {
     );
 
     return false;
+
   } finally {
-    isAuthenticating = false;
+    isAuthenticating =
+      false;
+
     hideLoading();
   }
 }
@@ -499,11 +551,14 @@ async function authenticateTelegram() {
    LOAD GAME STATE
 ========================================================= */
 
-async function loadGameState(showError = true) {
+async function loadGameState(
+  showError = true
+) {
   try {
-    const result = await apiRequest(
-      "/api/game/state"
-    );
+    const result =
+      await apiRequest(
+        "/api/game/state"
+      );
 
     if (!result) {
       throw new Error(
@@ -512,20 +567,28 @@ async function loadGameState(showError = true) {
     }
 
     if (result.player) {
-      gameState.player = result.player;
+      gameState.player =
+        result.player;
     }
 
-    gameState.plots = Array.isArray(result.plots)
-      ? result.plots
-      : [];
+    gameState.plots =
+      Array.isArray(
+        result.plots
+      )
+        ? result.plots
+        : [];
 
-    gameState.inventory = Array.isArray(result.inventory)
-      ? result.inventory
-      : [];
+    gameState.inventory =
+      Array.isArray(
+        result.inventory
+      )
+        ? result.inventory
+        : [];
 
     renderAll();
 
     return true;
+
   } catch (error) {
     console.error(
       "loadGameState error:",
@@ -550,51 +613,71 @@ async function loadGameState(showError = true) {
 ========================================================= */
 
 function renderPlayer() {
-  const player = gameState.player;
+  const player =
+    gameState.player;
 
   if (!player) {
     return;
   }
 
-  const level = Number(player.level) || 1;
-  const exp = Number(player.exp) || 0;
-  const coins = Number(player.coins) || 0;
-  const fertilizer = Number(player.fertilizer) || 0;
+  const level =
+    Number(player.level) || 1;
+
+  const exp =
+    Number(player.exp) || 0;
+
+  const coins =
+    Number(player.coins) || 0;
+
+  const fertilizer =
+    Number(player.fertilizer) || 0;
 
   if (levelNumber) {
-    levelNumber.textContent = level;
+    levelNumber.textContent =
+      level;
   }
 
   if (levelValue) {
-    levelValue.textContent = `Lv.${level}`;
+    levelValue.textContent =
+      `Lv.${level}`;
   }
 
   if (coinValue) {
-    coinValue.textContent = formatNumber(coins);
+    coinValue.textContent =
+      formatNumber(coins);
   }
 
   if (fertilizerValue) {
-    fertilizerValue.textContent = formatNumber(
-      fertilizer
-    );
+    fertilizerValue.textContent =
+      formatNumber(fertilizer);
   }
 
   const expInLevel =
-    Math.max(0, exp % EXP_PER_LEVEL);
+    Math.max(
+      0,
+      exp % EXP_PER_LEVEL
+    );
 
   const percentage =
     Math.min(
       100,
-      (expInLevel / EXP_PER_LEVEL) * 100
+      (expInLevel /
+        EXP_PER_LEVEL) *
+        100
     );
 
   if (expFill) {
-    expFill.style.width = `${percentage}%`;
+    expFill.style.width =
+      `${percentage}%`;
   }
 
   if (expText) {
     expText.textContent =
-      `${formatNumber(expInLevel)} / ${formatNumber(EXP_PER_LEVEL)}`;
+      `${formatNumber(
+        expInLevel
+      )} / ${formatNumber(
+        EXP_PER_LEVEL
+      )}`;
   }
 }
 
@@ -617,7 +700,8 @@ function isUnlocked(plot) {
 
 
 function normalizePlotNumber(value) {
-  const number = Number(value);
+  const number =
+    Number(value);
 
   if (!Number.isInteger(number)) {
     return null;
@@ -635,7 +719,10 @@ function normalizePlotNumber(value) {
 
 
 function getPlot(plotNumber) {
-  const number = normalizePlotNumber(plotNumber);
+  const number =
+    normalizePlotNumber(
+      plotNumber
+    );
 
   if (!number) {
     return null;
@@ -644,26 +731,38 @@ function getPlot(plotNumber) {
   return (
     gameState.plots.find(
       plot =>
-        Number(plot.plot_number) === number
+        Number(
+          plot.plot_number
+        ) === number
     ) || null
   );
 }
 
 
-function getUnlockPrice(plotNumber) {
-  const number = normalizePlotNumber(plotNumber);
+function getUnlockPrice(
+  plotNumber
+) {
+  const number =
+    normalizePlotNumber(
+      plotNumber
+    );
 
   if (!number) {
     return 0;
   }
 
-  if (number <= FREE_PLOTS) {
+  if (
+    number <= FREE_PLOTS
+  ) {
     return 0;
   }
 
   return (
     500 *
-    Math.pow(2, number - 4)
+    Math.pow(
+      2,
+      number - 4
+    )
   );
 }
 
@@ -686,73 +785,68 @@ function renderPlots() {
     return;
   }
 
-  plotElements.forEach(plotElement => {
-    const plotNumber =
-      normalizePlotNumber(
-        plotElement.dataset.plot
+  plotElements.forEach(
+    plotElement => {
+      const plotNumber =
+        normalizePlotNumber(
+          plotElement.dataset.plot
+        );
+
+      if (!plotNumber) {
+        return;
+      }
+
+      const serverPlot =
+        getPlot(plotNumber);
+
+      const unlocked =
+        serverPlot
+          ? isUnlocked(serverPlot)
+          : false;
+
+      plotElement.classList.toggle(
+        "unlocked",
+        unlocked
       );
 
-    if (!plotNumber) {
-      return;
-    }
+      plotElement.classList.toggle(
+        "locked",
+        !unlocked
+      );
 
-    const serverPlot =
-      getPlot(plotNumber);
+      plotElement
+        .querySelectorAll(
+          ".crop-image, .crop-name, .grow-time, .plot-price, .fertilizer-button, .harvest-button"
+        )
+        .forEach(
+          element => {
+            element.remove();
+          }
+        );
 
-    /*
-     * Nếu backend chưa trả plot,
-     * mặc định không cho client tự mở.
-     */
-    const unlocked =
-      serverPlot
-        ? isUnlocked(serverPlot)
-        : false;
+      if (!unlocked) {
+        renderLockedPlot(
+          plotElement,
+          plotNumber
+        );
 
-    plotElement.classList.toggle(
-      "unlocked",
-      unlocked
-    );
+        return;
+      }
 
-    plotElement.classList.toggle(
-      "locked",
-      !unlocked
-    );
+      const cropType =
+        serverPlot?.crop_type ||
+        null;
 
-    /*
-     * Xóa visual cũ.
-     */
-    plotElement
-      .querySelectorAll(
-        ".crop-image, .crop-name, .grow-time, .plot-price, .fertilizer-button, .harvest-button"
-      )
-      .forEach(element => {
-        element.remove();
-      });
+      if (!cropType) {
+        return;
+      }
 
-    if (!unlocked) {
-      renderLockedPlot(
+      renderCrop(
         plotElement,
-        plotNumber
+        serverPlot
       );
-
-      return;
     }
-
-    /*
-     * Đất đã mở.
-     */
-    const cropType =
-      serverPlot?.crop_type || null;
-
-    if (!cropType) {
-      return;
-    }
-
-    renderCrop(
-      plotElement,
-      serverPlot
-    );
-  });
+  );
 }
 
 
@@ -765,26 +859,36 @@ function renderLockedPlot(
   plotNumber
 ) {
   let lockElement =
-    plotElement.querySelector(".lock");
+    plotElement.querySelector(
+      ".lock"
+    );
 
   if (!lockElement) {
     lockElement =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
-    lockElement.className = "lock";
+    lockElement.className =
+      "lock";
 
     plotElement.appendChild(
       lockElement
     );
   }
 
-  lockElement.textContent = "🔒";
+  lockElement.textContent =
+    "🔒";
 
   const price =
-    getUnlockPrice(plotNumber);
+    getUnlockPrice(
+      plotNumber
+    );
 
   const priceElement =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
 
   priceElement.className =
     "plot-price";
@@ -794,7 +898,9 @@ function renderLockedPlot(
       "MỞ MIỄN PHÍ";
   } else {
     priceElement.textContent =
-      `💰 ${formatNumber(price)}`;
+      `💰 ${formatNumber(
+        price
+      )}`;
   }
 
   plotElement.appendChild(
@@ -812,7 +918,9 @@ function renderCrop(
   plot
 ) {
   const cropType =
-    String(plot.crop_type || "");
+    String(
+      plot.crop_type || ""
+    );
 
   const seed =
     SEEDS[cropType];
@@ -827,7 +935,9 @@ function renderCrop(
   }
 
   const cropImage =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
 
   cropImage.className =
     "crop-image";
@@ -848,7 +958,9 @@ function renderCrop(
   );
 
   const cropName =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
 
   cropName.className =
     "crop-name";
@@ -864,7 +976,9 @@ function renderCrop(
   );
 
   const growTime =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
 
   growTime.className =
     "grow-time";
@@ -907,38 +1021,44 @@ function updateCountdowns() {
     .querySelectorAll(
       ".grow-time[data-harvest-at]"
     )
-    .forEach(element => {
-      const harvestAt =
-        element.dataset.harvestAt;
+    .forEach(
+      element => {
+        const harvestAt =
+          element.dataset.harvestAt;
 
-      if (!harvestAt) {
-        element.textContent = "";
-        return;
+        if (!harvestAt) {
+          element.textContent =
+            "";
+
+          return;
+        }
+
+        const remaining =
+          getRemainingMs(
+            harvestAt
+          );
+
+        if (
+          remaining <= 0
+        ) {
+          element.textContent =
+            "✅ Sẵn sàng";
+
+          element.classList.add(
+            "ready"
+          );
+        } else {
+          element.textContent =
+            `⏱ ${getCountdownText(
+              remaining
+            )}`;
+
+          element.classList.remove(
+            "ready"
+          );
+        }
       }
-
-      const remaining =
-        getRemainingMs(
-          harvestAt
-        );
-
-      if (remaining <= 0) {
-        element.textContent =
-          "✅ Sẵn sàng";
-
-        element.classList.add(
-          "ready"
-        );
-      } else {
-        element.textContent =
-          `⏱ ${getCountdownText(
-            remaining
-          )}`;
-
-        element.classList.remove(
-          "ready"
-        );
-      }
-    });
+    );
 }
 
 
@@ -978,41 +1098,57 @@ function getCountdownText(
 
   const days =
     Math.floor(
-      totalSeconds / 86400
+      totalSeconds /
+        86400
     );
 
   const hours =
     Math.floor(
-      (totalSeconds % 86400) /
+      (totalSeconds %
+        86400) /
         3600
     );
 
   const minutes =
     Math.floor(
-      (totalSeconds % 3600) /
+      (totalSeconds %
+        3600) /
         60
     );
 
   const seconds =
-    totalSeconds % 60;
+    totalSeconds %
+    60;
 
   if (days > 0) {
     return `${days}d ${String(
       hours
-    ).padStart(2, "0")}h`;
+    ).padStart(
+      2,
+      "0"
+    )}h`;
   }
 
   if (hours > 0) {
     return `${hours}h ${String(
       minutes
-    ).padStart(2, "0")}m`;
+    ).padStart(
+      2,
+      "0"
+    )}m`;
   }
 
   return `${String(
     minutes
-  ).padStart(2, "0")}:${String(
+  ).padStart(
+    2,
+    "0"
+  )}:${String(
     seconds
-  ).padStart(2, "0")}`;
+  ).padStart(
+    2,
+    "0"
+  )}`;
 }
 
 
@@ -1041,19 +1177,17 @@ function setupPlotEvents() {
   plotElements.forEach(
     plotElement => {
       if (
-        plotElement.dataset.clickReady ===
+        plotElement.dataset
+          .clickReady ===
         "true"
       ) {
         return;
       }
 
-      plotElement.dataset.clickReady =
+      plotElement.dataset
+        .clickReady =
         "true";
 
-      /*
-       * Đảm bảo click/touch không bị
-       * các phần tử con visual chặn.
-       */
       plotElement.style.pointerEvents =
         "auto";
 
@@ -1124,10 +1258,6 @@ async function handlePlotClick(
     plot
   );
 
-  /*
-   * Nếu state chưa có plot,
-   * tải lại từ server.
-   */
   if (!plot) {
     const loaded =
       await loadGameState();
@@ -1153,9 +1283,6 @@ async function handlePlotClick(
     );
   }
 
-  /*
-   * Ô khóa.
-   */
   if (!isUnlocked(plot)) {
     await unlockPlot(
       plotNumber
@@ -1164,9 +1291,6 @@ async function handlePlotClick(
     return;
   }
 
-  /*
-   * Ô trống.
-   */
   if (!plot.crop_type) {
     selectedPlot =
       plotNumber;
@@ -1178,10 +1302,9 @@ async function handlePlotClick(
     return;
   }
 
-  /*
-   * Có cây.
-   */
-  if (isCropReady(plot)) {
+  if (
+    isCropReady(plot)
+  ) {
     await harvestPlot(
       plotNumber
     );
@@ -1189,9 +1312,6 @@ async function handlePlotClick(
     return;
   }
 
-  /*
-   * Cây đang lớn.
-   */
   showPlotActions(
     plotNumber
   );
@@ -1203,7 +1323,10 @@ async function handlePlotClick(
 ========================================================= */
 
 function isCropReady(plot) {
-  if (!plot || !plot.crop_type) {
+  if (
+    !plot ||
+    !plot.crop_type
+  ) {
     return false;
   }
 
@@ -1239,7 +1362,9 @@ async function unlockPlot(
   }
 
   const coins =
-    Number(player.coins) || 0;
+    Number(
+      player.coins
+    ) || 0;
 
   if (price > 0) {
     if (coins < price) {
@@ -1263,6 +1388,7 @@ async function unlockPlot(
     if (!confirmed) {
       return;
     }
+
   } else {
     const confirmed =
       window.confirm(
@@ -1293,12 +1419,18 @@ async function unlockPlot(
         result.player;
     }
 
-    if (Array.isArray(result.plots)) {
+    if (
+      Array.isArray(
+        result.plots
+      )
+    ) {
       gameState.plots =
         result.plots;
     } else {
       const localPlot =
-        getPlot(plotNumber);
+        getPlot(
+          plotNumber
+        );
 
       if (localPlot) {
         localPlot.unlocked =
@@ -1312,6 +1444,7 @@ async function unlockPlot(
       `🎉 Đã mở ô đất ${plotNumber}!`,
       "success"
     );
+
   } catch (error) {
     console.error(
       "unlockPlot error:",
@@ -1323,6 +1456,7 @@ async function unlockPlot(
         "Không thể mở ô đất.",
       "error"
     );
+
   } finally {
     setLoading(false);
   }
@@ -1416,9 +1550,6 @@ function renderSeedList() {
         playerLevel >=
         seed.level;
 
-      const available =
-        amount > 0;
-
       const item =
         document.createElement(
           "div"
@@ -1433,43 +1564,234 @@ function renderSeedList() {
         );
       }
 
-      const button =
+      /* -----------------------------------------
+         THÔNG TIN HẠT
+      ----------------------------------------- */
+
+      const info =
+        document.createElement(
+          "div"
+        );
+
+      info.className =
+        "seed-info";
+
+      info.innerHTML = `
+        <div class="seed-icon">
+          ${seed.emoji}
+        </div>
+
+        <div class="seed-details">
+          <strong>
+            ${escapeHtml(
+              seed.name
+            )}
+          </strong>
+
+          <small>
+            🔓 Lv.${seed.level}
+          </small>
+
+          <small>
+            🌱 Có: ${formatNumber(
+              amount
+            )}
+          </small>
+
+          <small>
+            💰 ${formatNumber(
+              seed.buyPrice
+            )} xu
+          </small>
+
+          <small>
+            ⏱️ ${formatGrowTime(
+              seed.growSeconds
+            )}
+          </small>
+        </div>
+      `;
+
+      item.appendChild(
+        info
+      );
+
+
+      /* -----------------------------------------
+         KHU VỰC NÚT
+      ----------------------------------------- */
+
+      const actions =
+        document.createElement(
+          "div"
+        );
+
+      actions.className =
+        "seed-actions";
+
+
+      /* -----------------------------------------
+         NÚT MUA 1
+      ----------------------------------------- */
+
+      const buyOneButton =
         document.createElement(
           "button"
         );
 
-      button.type = "button";
+      buyOneButton.type =
+        "button";
 
-      button.className =
-        "seed-button";
+      buyOneButton.className =
+        "seed-buy-button";
 
-      button.disabled =
-        !unlocked ||
-        !available;
+      buyOneButton.textContent =
+        "Mua 1";
 
-      button.innerHTML = `
-        <span class="seed-icon">${seed.emoji}</span>
-        <span class="seed-info">
-          <strong>${escapeHtml(
-            seed.name
-          )}</strong>
-          <small>Lv.${seed.level}</small>
-          <small>Có: ${formatNumber(
-            amount
-          )}</small>
-        </span>
-      `;
+      buyOneButton.disabled =
+        !unlocked;
 
-      button.addEventListener(
+      buyOneButton.title =
+        unlocked
+          ? `Mua 1 ${seed.name}`
+          : `Cần Lv.${seed.level}`;
+
+      buyOneButton.addEventListener(
         "click",
         async event => {
           event.preventDefault();
           event.stopPropagation();
 
-          if (
-            !unlocked ||
-            !available
-          ) {
+          if (!unlocked) {
+            showMessage(
+              `Cần đạt Lv.${seed.level} để mua ${seed.name}.`,
+              "error"
+            );
+
+            return;
+          }
+
+          await buySeed(
+            seedKey,
+            1
+          );
+        }
+      );
+
+      actions.appendChild(
+        buyOneButton
+      );
+
+
+      /* -----------------------------------------
+         NÚT MUA 10
+      ----------------------------------------- */
+
+      const buyTenButton =
+        document.createElement(
+          "button"
+        );
+
+      buyTenButton.type =
+        "button";
+
+      buyTenButton.className =
+        "seed-buy-button";
+
+      buyTenButton.textContent =
+        "Mua 10";
+
+      buyTenButton.disabled =
+        !unlocked;
+
+      buyTenButton.title =
+        unlocked
+          ? `Mua 10 ${seed.name}`
+          : `Cần Lv.${seed.level}`;
+
+      buyTenButton.addEventListener(
+        "click",
+        async event => {
+          event.preventDefault();
+          event.stopPropagation();
+
+          if (!unlocked) {
+            showMessage(
+              `Cần đạt Lv.${seed.level} để mua ${seed.name}.`,
+              "error"
+            );
+
+            return;
+          }
+
+          await buySeed(
+            seedKey,
+            10
+          );
+        }
+      );
+
+      actions.appendChild(
+        buyTenButton
+      );
+
+
+      /* -----------------------------------------
+         NÚT TRỒNG
+      ----------------------------------------- */
+
+      const plantButton =
+        document.createElement(
+          "button"
+        );
+
+      plantButton.type =
+        "button";
+
+      plantButton.className =
+        "seed-plant-button";
+
+      plantButton.textContent =
+        "Trồng";
+
+      plantButton.disabled =
+        !unlocked ||
+        amount <= 0;
+
+      if (!unlocked) {
+        plantButton.title =
+          `Cần Lv.${seed.level}`;
+      } else if (
+        amount <= 0
+      ) {
+        plantButton.title =
+          "Bạn chưa có hạt này";
+      } else {
+        plantButton.title =
+          `Trồng ${seed.name}`;
+      }
+
+      plantButton.addEventListener(
+        "click",
+        async event => {
+          event.preventDefault();
+          event.stopPropagation();
+
+          if (!unlocked) {
+            showMessage(
+              `Cần đạt Lv.${seed.level} để trồng ${seed.name}.`,
+              "error"
+            );
+
+            return;
+          }
+
+          if (amount <= 0) {
+            showMessage(
+              `Bạn chưa có ${seed.name}. Hãy mua hạt trước.`,
+              "error"
+            );
+
             return;
           }
 
@@ -1479,15 +1801,86 @@ function renderSeedList() {
         }
       );
 
-      item.appendChild(
-        button
+      actions.appendChild(
+        plantButton
       );
+
+      item.appendChild(
+        actions
+      );
+
+
+      /* -----------------------------------------
+         THÔNG BÁO KHÓA
+      ----------------------------------------- */
+
+      if (!unlocked) {
+        const lockedMessage =
+          document.createElement(
+            "div"
+          );
+
+        lockedMessage.className =
+          "seed-locked";
+
+        lockedMessage.textContent =
+          `🔒 Cần Lv.${seed.level}`;
+
+        item.appendChild(
+          lockedMessage
+        );
+      }
 
       seedList.appendChild(
         item
       );
     }
   );
+}
+
+
+/* =========================================================
+   FORMAT GROW TIME
+========================================================= */
+
+function formatGrowTime(
+  seconds
+) {
+  const totalSeconds =
+    Number(seconds) || 0;
+
+  if (
+    totalSeconds <= 0
+  ) {
+    return "0 phút";
+  }
+
+  const minutes =
+    Math.floor(
+      totalSeconds / 60
+    );
+
+  if (
+    minutes < 60
+  ) {
+    return `${minutes} phút`;
+  }
+
+  const hours =
+    Math.floor(
+      minutes / 60
+    );
+
+  const remainingMinutes =
+    minutes % 60;
+
+  if (
+    remainingMinutes === 0
+  ) {
+    return `${hours} giờ`;
+  }
+
+  return `${hours} giờ ${remainingMinutes} phút`;
 }
 
 
@@ -1586,20 +1979,24 @@ async function plantSeed(
         result.player;
     }
 
-    if (Array.isArray(result.plots)) {
+    if (
+      Array.isArray(
+        result.plots
+      )
+    ) {
       gameState.plots =
         result.plots;
     }
 
-    if (Array.isArray(result.inventory)) {
+    if (
+      Array.isArray(
+        result.inventory
+      )
+    ) {
       gameState.inventory =
         result.inventory;
     }
 
-    /*
-     * Một số backend có thể trả
-     * plot riêng.
-     */
     if (result.plot) {
       replacePlot(
         result.plot
@@ -1614,6 +2011,7 @@ async function plantSeed(
       `🌱 Đã trồng ${seed.name}!`,
       "success"
     );
+
   } catch (error) {
     console.error(
       "plantSeed error:",
@@ -1625,6 +2023,7 @@ async function plantSeed(
         "Không thể trồng cây.",
       "error"
     );
+
   } finally {
     setLoading(false);
   }
@@ -1649,7 +2048,9 @@ function showPlotActions(
     return;
   }
 
-  if (isCropReady(plot)) {
+  if (
+    isCropReady(plot)
+  ) {
     harvestPlot(
       plotNumber
     );
@@ -1718,7 +2119,11 @@ async function fertilizePlot(
         result.player;
     }
 
-    if (Array.isArray(result.plots)) {
+    if (
+      Array.isArray(
+        result.plots
+      )
+    ) {
       gameState.plots =
         result.plots;
     }
@@ -1747,6 +2152,7 @@ async function fertilizePlot(
         "success"
       );
     }
+
   } catch (error) {
     console.error(
       "fertilizePlot error:",
@@ -1758,6 +2164,7 @@ async function fertilizePlot(
         "Không thể dùng phân bón.",
       "error"
     );
+
   } finally {
     setLoading(false);
   }
@@ -1815,12 +2222,20 @@ async function harvestPlot(
         result.player;
     }
 
-    if (Array.isArray(result.plots)) {
+    if (
+      Array.isArray(
+        result.plots
+      )
+    ) {
       gameState.plots =
         result.plots;
     }
 
-    if (Array.isArray(result.inventory)) {
+    if (
+      Array.isArray(
+        result.inventory
+      )
+    ) {
       gameState.inventory =
         result.inventory;
     }
@@ -1854,6 +2269,7 @@ async function harvestPlot(
         "success"
       );
     }
+
   } catch (error) {
     console.error(
       "harvestPlot error:",
@@ -1865,6 +2281,7 @@ async function harvestPlot(
         "Không thể thu hoạch.",
       "error"
     );
+
   } finally {
     setLoading(false);
   }
@@ -1896,9 +2313,11 @@ function renderShop() {
     return;
   }
 
-  shopList.innerHTML = "";
+  shopList.innerHTML =
+    "";
 
-  let totalValue = 0;
+  let totalValue =
+    0;
 
   const inventory =
     Array.isArray(
@@ -1907,10 +2326,6 @@ function renderShop() {
       ? gameState.inventory
       : [];
 
-  /*
-   * Chỉ hiển thị những loại hạt
-   * mà người chơi đang có.
-   */
   Object.entries(
     SEEDS
   ).forEach(
@@ -1928,7 +2343,8 @@ function renderShop() {
         amount *
         seed.sellPrice;
 
-      totalValue += value;
+      totalValue +=
+        value;
 
       const item =
         document.createElement(
@@ -1940,17 +2356,30 @@ function renderShop() {
 
       item.innerHTML = `
         <div class="shop-item-info">
-          <span class="shop-icon">${seed.emoji}</span>
+          <span class="shop-icon">
+            ${seed.emoji}
+          </span>
+
           <div>
-            <strong>${escapeHtml(
-              seed.name
-            )}</strong>
-            <small>Số lượng: ${formatNumber(
-              amount
-            )}</small>
-            <small>Giá bán: ${formatNumber(
-              seed.sellPrice
-            )} xu</small>
+            <strong>
+              ${escapeHtml(
+                seed.name
+              )}
+            </strong>
+
+            <small>
+              Số lượng:
+              ${formatNumber(
+                amount
+              )}
+            </small>
+
+            <small>
+              Giá bán:
+              ${formatNumber(
+                seed.sellPrice
+              )} xu
+            </small>
           </div>
         </div>
 
@@ -1981,9 +2410,6 @@ function renderShop() {
     }
   );
 
-  /*
-   * Nếu không có inventory.
-   */
   if (
     shopList.children.length === 0
   ) {
@@ -2001,59 +2427,60 @@ function renderShop() {
       );
   }
 
-  /*
-   * Gắn nút bán.
-   */
   shopList
     .querySelectorAll(
       ".shop-sell-one"
     )
-    .forEach(button => {
-      button.addEventListener(
-        "click",
-        async event => {
-          event.preventDefault();
+    .forEach(
+      button => {
+        button.addEventListener(
+          "click",
+          async event => {
+            event.preventDefault();
 
-          const seedKey =
-            button.dataset.seed;
+            const seedKey =
+              button.dataset.seed;
 
-          await sellSeed(
-            seedKey,
-            1
-          );
-        }
-      );
-    });
+            await sellSeed(
+              seedKey,
+              1
+            );
+          }
+        );
+      }
+    );
 
   shopList
     .querySelectorAll(
       ".shop-sell-all"
     )
-    .forEach(button => {
-      button.addEventListener(
-        "click",
-        async event => {
-          event.preventDefault();
+    .forEach(
+      button => {
+        button.addEventListener(
+          "click",
+          async event => {
+            event.preventDefault();
 
-          const seedKey =
-            button.dataset.seed;
+            const seedKey =
+              button.dataset.seed;
 
-          const amount =
-            getInventoryAmount(
-              seedKey
+            const amount =
+              getInventoryAmount(
+                seedKey
+              );
+
+            if (amount <= 0) {
+              return;
+            }
+
+            await sellSeed(
+              seedKey,
+              amount
             );
-
-          if (amount <= 0) {
-            return;
           }
-
-          await sellSeed(
-            seedKey,
-            amount
-          );
-        }
-      );
-    });
+        );
+      }
+    );
 }
 
 
@@ -2122,7 +2549,11 @@ async function sellSeed(
         result.player;
     }
 
-    if (Array.isArray(result.inventory)) {
+    if (
+      Array.isArray(
+        result.inventory
+      )
+    ) {
       gameState.inventory =
         result.inventory;
     }
@@ -2153,6 +2584,7 @@ async function sellSeed(
         "success"
       );
     }
+
   } catch (error) {
     console.error(
       "sellSeed error:",
@@ -2164,6 +2596,173 @@ async function sellSeed(
         "Không thể bán hạt giống.",
       "error"
     );
+
+  } finally {
+    setLoading(false);
+  }
+}
+
+
+/* =========================================================
+   BUY SEED
+========================================================= */
+
+async function buySeed(
+  seedKey,
+  amount = 1
+) {
+  const seed =
+    SEEDS[seedKey];
+
+  if (!seed) {
+    showMessage(
+      "Hạt giống không hợp lệ.",
+      "error"
+    );
+
+    return;
+  }
+
+  const quantity =
+    Number(amount);
+
+  if (
+    !Number.isInteger(
+      quantity
+    ) ||
+    quantity <= 0 ||
+    quantity > 100
+  ) {
+    showMessage(
+      "Số lượng mua không hợp lệ.",
+      "error"
+    );
+
+    return;
+  }
+
+  const playerLevel =
+    Number(
+      gameState.player?.level
+    ) || 1;
+
+  if (
+    playerLevel < seed.level
+  ) {
+    showMessage(
+      `Cần đạt Lv.${seed.level} để mua ${seed.name}.`,
+      "error"
+    );
+
+    return;
+  }
+
+  const totalPrice =
+    seed.buyPrice *
+    quantity;
+
+  const coins =
+    Number(
+      gameState.player?.coins
+    ) || 0;
+
+  if (
+    coins < totalPrice
+  ) {
+    showMessage(
+      `Không đủ Coin. Cần ${formatNumber(
+        totalPrice
+      )} Coin.`,
+      "error"
+    );
+
+    return;
+  }
+
+  const confirmed =
+    window.confirm(
+      `Mua ${formatNumber(
+        quantity
+      )} ${seed.name}?\n\n` +
+      `Giá: ${formatNumber(
+        seed.buyPrice
+      )} Coin/hạt\n` +
+      `Tổng: ${formatNumber(
+        totalPrice
+      )} Coin`
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    setLoading(
+      true,
+      "Đang mua hạt giống..."
+    );
+
+    /*
+     * QUAN TRỌNG:
+     *
+     * Client KHÔNG gửi price.
+     *
+     * Backend tự lấy giá từ
+     * cấu hình SEEDS phía server.
+     *
+     * Sau đó backend gọi:
+     * buy_seed_atomic()
+     */
+    const result =
+      await apiRequest(
+        "/api/game/buy-seed",
+        {
+          seedKey,
+          amount: quantity
+        }
+      );
+
+    if (result.player) {
+      gameState.player =
+        result.player;
+    }
+
+    if (
+      Array.isArray(
+        result.inventory
+      )
+    ) {
+      gameState.inventory =
+        result.inventory;
+    }
+
+    renderAll();
+
+    /*
+     * Cập nhật lại panel hạt
+     * nếu panel vẫn đang mở.
+     */
+    renderSeedList();
+
+    showMessage(
+      `🌱 Đã mua ${formatNumber(
+        quantity
+      )} ${seed.name}!`,
+      "success"
+    );
+
+  } catch (error) {
+    console.error(
+      "buySeed error:",
+      error
+    );
+
+    showMessage(
+      error.message ||
+        "Không thể mua hạt giống.",
+      "error"
+    );
+
   } finally {
     setLoading(false);
   }
@@ -2190,7 +2789,8 @@ function getInventoryAmount(
       inventoryItem =>
         String(
           inventoryItem.seed_key
-        ) === String(seedKey)
+        ) ===
+        String(seedKey)
     );
 
   if (!item) {
@@ -2215,7 +2815,8 @@ function updateInventoryItem(
       gameState.inventory
     )
   ) {
-    gameState.inventory = [];
+    gameState.inventory =
+      [];
   }
 
   const item =
@@ -2223,7 +2824,8 @@ function updateInventoryItem(
       inventoryItem =>
         String(
           inventoryItem.seed_key
-        ) === String(seedKey)
+        ) ===
+        String(seedKey)
     );
 
   if (item) {
@@ -2234,7 +2836,8 @@ function updateInventoryItem(
   ) {
     gameState.inventory.push({
       seed_key: seedKey,
-      amount: Number(amount)
+      amount:
+        Number(amount)
     });
   }
 }
@@ -2368,11 +2971,16 @@ function openInventory() {
       row.innerHTML = `
         <span>
           ${seed.emoji}
-          ${escapeHtml(seed.name)}
+          ${escapeHtml(
+            seed.name
+          )}
         </span>
-        <strong>${formatNumber(
-          amount
-        )}</strong>
+
+        <strong>
+          ${formatNumber(
+            amount
+          )}
+        </strong>
       `;
 
       box.appendChild(
@@ -2473,13 +3081,15 @@ function renderTasks() {
     return;
   }
 
-  tasksList.innerHTML = "";
+  tasksList.innerHTML =
+    "";
 
   /*
-   * Hiện tại backend chưa có
-   * endpoint xác minh nhiệm vụ.
+   * Backend chưa có endpoint
+   * xác minh nhiệm vụ.
    *
-   * KHÔNG tự cộng thưởng ở client.
+   * KHÔNG tự cộng thưởng
+   * ở client.
    */
 
   const tasks = [
@@ -2490,6 +3100,7 @@ function renderTasks() {
         "Tham gia kênh Telegram theo yêu cầu của game.",
       reward: 500
     },
+
     {
       id: "invite_friend",
       title: "👥 Mời bạn bè",
@@ -2511,12 +3122,18 @@ function renderTasks() {
 
       item.innerHTML = `
         <div class="task-info">
-          <strong>${escapeHtml(
-            task.title
-          )}</strong>
-          <p>${escapeHtml(
-            task.description
-          )}</p>
+          <strong>
+            ${escapeHtml(
+              task.title
+            )}
+          </strong>
+
+          <p>
+            ${escapeHtml(
+              task.description
+            )}
+          </p>
+
           <small>
             🎁 ${formatNumber(
               task.reward
@@ -2582,10 +3199,6 @@ function setupMenuEvents() {
         event.preventDefault();
         event.stopPropagation();
 
-        /*
-         * Nếu chưa chọn plot,
-         * tìm ô trống đầu tiên.
-         */
         let targetPlot =
           selectedPlot;
 
@@ -2747,6 +3360,7 @@ function setupOutsidePanelClose(
 
 function renderAll() {
   renderPlayer();
+
   renderPlots();
 
   if (
@@ -3162,9 +3776,6 @@ async function startGame() {
   setupCloseEvents();
   setupVisibilityEvents();
 
-  /*
-   * Telegram phải tồn tại trước.
-   */
   const telegramReady =
     initTelegram();
 
@@ -3172,9 +3783,6 @@ async function startGame() {
     return;
   }
 
-  /*
-   * Xác thực với backend.
-   */
   const authenticated =
     await authenticateTelegram();
 
@@ -3182,15 +3790,12 @@ async function startGame() {
     return;
   }
 
-  /*
-   * Sau khi auth thành công,
-   * tải state mới nhất.
-   */
   await loadGameState(
     false
   );
 
-  gameStarted = true;
+  gameStarted =
+    true;
 
   renderAll();
 
