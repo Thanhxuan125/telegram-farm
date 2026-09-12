@@ -1,137 +1,139 @@
 "use strict";
 
-/*
-|--------------------------------------------------------------------------
-| NÔNG TRẠI XANH - FRONTEND
-|--------------------------------------------------------------------------
-| SECURITY:
-| - Frontend không chứa Supabase key
-| - Frontend không chứa Telegram Bot Token
-| - Frontend không tự quyết định Coin / EXP / giá / thời gian
-| - Server Render là nguồn dữ liệu game
-| - Telegram initData được gửi cho backend để xác minh
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   NÔNG TRẠI XANH
+   Frontend script - Telegram Mini App
 
-const BACKEND_URL =
-  "https://telegram-farm-backend.onrender.com";
+   Kiến trúc:
+   Telegram Mini App
+        ↓ initData
+   Render Backend
+        ↓
+   Supabase
+
+   QUAN TRỌNG:
+   - Không lưu coins / level / inventory vào localStorage.
+   - Không tin dữ liệu do client tự gửi.
+   - Backend phải kiểm tra Telegram initData.
+   - Backend quyết định giá, thời gian trồng, phần thưởng.
+========================================================= */
+
+
+/* =========================================================
+   CONFIG
+========================================================= */
+
+const BACKEND_URL = "https://telegram-farm-backend.onrender.com";
 
 const TOTAL_PLOTS = 20;
 const FREE_PLOTS = 3;
-const EXP_PER_LEVEL = 7000;
 
-/*
-|--------------------------------------------------------------------------
-| NETWORK
-|--------------------------------------------------------------------------
-*/
+const EXP_PER_LEVEL = 7000;
 
 const REQUEST_TIMEOUT = 45000;
 const MAX_RETRIES = 2;
 
-/*
-|--------------------------------------------------------------------------
-| SEEDS
-|--------------------------------------------------------------------------
-*/
+
+/* =========================================================
+   SEEDS
+========================================================= */
 
 const SEEDS = {
   wheat: {
     name: "Lúa mì",
-    icon: "🌾",
+    emoji: "🌾",
     level: 1,
     buyPrice: 10,
     sellPrice: 12,
-    growMinutes: 20
+    growSeconds: 20 * 60
   },
 
   corn: {
     name: "Bắp",
-    icon: "🌽",
+    emoji: "🌽",
     level: 3,
     buyPrice: 20,
     sellPrice: 25,
-    growMinutes: 60
+    growSeconds: 60 * 60
   },
 
   radish: {
     name: "Củ cải",
-    icon: "🥕",
+    emoji: "🥕",
     level: 7,
     buyPrice: 35,
     sellPrice: 40,
-    growMinutes: 90
+    growSeconds: 90 * 60
   },
 
   carrot: {
     name: "Cà rốt",
-    icon: "🥕",
+    emoji: "🥕",
     level: 10,
     buyPrice: 50,
     sellPrice: 75,
-    growMinutes: 150
+    growSeconds: 150 * 60
   },
 
   beet: {
     name: "Củ dền",
-    icon: "🫜",
+    emoji: "🫜",
     level: 13,
     buyPrice: 75,
     sellPrice: 88,
-    growMinutes: 280
+    growSeconds: 280 * 60
   },
 
   eggplant: {
     name: "Cà tím",
-    icon: "🍆",
+    emoji: "🍆",
     level: 15,
     buyPrice: 100,
     sellPrice: 125,
-    growMinutes: 450
+    growSeconds: 450 * 60
   },
 
   chili: {
     name: "Ớt",
-    icon: "🌶️",
+    emoji: "🌶️",
     level: 17,
     buyPrice: 180,
     sellPrice: 210,
-    growMinutes: 650
+    growSeconds: 650 * 60
   },
 
   greenOnion: {
     name: "Hành lá",
-    icon: "🌱",
+    emoji: "🌱",
     level: 20,
     buyPrice: 250,
     sellPrice: 350,
-    growMinutes: 870
+    growSeconds: 870 * 60
   },
 
   cabbage: {
     name: "Bắp cải",
-    icon: "🥬",
+    emoji: "🥬",
     level: 23,
     buyPrice: 500,
     sellPrice: 750,
-    growMinutes: 950
+    growSeconds: 950 * 60
   },
 
   pumpkin: {
     name: "Bí đỏ",
-    icon: "🎃",
+    emoji: "🎃",
     level: 25,
     buyPrice: 1000,
     sellPrice: 1250,
-    growMinutes: 1200
+    growSeconds: 1200 * 60
   }
 };
 
-/*
-|--------------------------------------------------------------------------
-| GAME STATE
-|--------------------------------------------------------------------------
-*/
+
+/* =========================================================
+   GAME STATE
+========================================================= */
 
 let gameState = {
   player: null,
@@ -139,400 +141,303 @@ let gameState = {
   inventory: []
 };
 
+
+/* =========================================================
+   GLOBAL STATE
+========================================================= */
+
 let telegram = null;
 let initData = "";
+
 let selectedPlot = null;
+
 let countdownTimer = null;
+
 let isLoading = false;
 let isAuthenticating = false;
 let gameStarted = false;
 
-/*
-|--------------------------------------------------------------------------
-| DOM
-|--------------------------------------------------------------------------
-*/
+let toastTimer = null;
 
-const levelNumber =
-  document.getElementById("levelNumber");
 
-const levelValue =
-  document.getElementById("levelValue");
+/* =========================================================
+   DOM REFERENCES
+========================================================= */
 
-const expFill =
-  document.getElementById("expFill");
+let levelNumber = null;
+let levelValue = null;
+let expFill = null;
+let expText = null;
+let coinValue = null;
+let fertilizerValue = null;
 
-const expText =
-  document.getElementById("expText");
+let seedPanel = null;
+let seedClose = null;
+let seedList = null;
 
-const coinValue =
-  document.getElementById("coinValue");
+let shopPanel = null;
+let shopClose = null;
+let shopTotalValue = null;
+let shopList = null;
 
-const fertilizerValue =
-  document.getElementById("fertilizerValue");
+let tasksPanel = null;
+let tasksClose = null;
+let tasksList = null;
 
-const seedPanel =
-  document.getElementById("seedPanel");
+let shopMenu = null;
+let seedMenu = null;
+let inventoryMenu = null;
+let tasksMenu = null;
+let settingsMenu = null;
 
-const seedList =
-  document.getElementById("seedList");
 
-const seedClose =
-  document.getElementById("seedClose");
+/* =========================================================
+   INIT DOM
+========================================================= */
 
-const shopPanel =
-  document.getElementById("shopPanel");
+function cacheDOM() {
+  levelNumber = document.getElementById("levelNumber");
+  levelValue = document.getElementById("levelValue");
 
-const shopList =
-  document.getElementById("shopList");
+  expFill = document.getElementById("expFill");
+  expText = document.getElementById("expText");
 
-const shopClose =
-  document.getElementById("shopClose");
+  coinValue = document.getElementById("coinValue");
+  fertilizerValue = document.getElementById("fertilizerValue");
 
-const shopTotalValue =
-  document.getElementById("shopTotalValue");
+  seedPanel = document.getElementById("seedPanel");
+  seedClose = document.getElementById("seedClose");
+  seedList = document.getElementById("seedList");
 
-const tasksPanel =
-  document.getElementById("tasksPanel");
+  shopPanel = document.getElementById("shopPanel");
+  shopClose = document.getElementById("shopClose");
+  shopTotalValue = document.getElementById("shopTotalValue");
+  shopList = document.getElementById("shopList");
 
-const tasksList =
-  document.getElementById("tasksList");
+  tasksPanel = document.getElementById("tasksPanel");
+  tasksClose = document.getElementById("tasksClose");
+  tasksList = document.getElementById("tasksList");
 
-const tasksClose =
-  document.getElementById("tasksClose");
+  shopMenu = document.getElementById("shopMenu");
+  seedMenu = document.getElementById("seedMenu");
+  inventoryMenu = document.getElementById("inventoryMenu");
+  tasksMenu = document.getElementById("tasksMenu");
+  settingsMenu = document.getElementById("settingsMenu");
+}
 
-const shopMenu =
-  document.getElementById("shopMenu");
 
-const seedMenu =
-  document.getElementById("seedMenu");
+/* =========================================================
+   TELEGRAM
+========================================================= */
 
-const inventoryMenu =
-  document.getElementById("inventoryMenu");
+function initTelegram() {
+  try {
+    if (!window.Telegram || !window.Telegram.WebApp) {
+      console.error("❌ Telegram WebApp SDK không tồn tại.");
 
-const tasksMenu =
-  document.getElementById("tasksMenu");
-
-const settingsMenu =
-  document.getElementById("settingsMenu");
-
-/*
-|--------------------------------------------------------------------------
-| TELEGRAM
-|--------------------------------------------------------------------------
-*/
-
-function initTelegram(showDiagnostics = false) {
-  if (
-    !window.Telegram ||
-    !window.Telegram.WebApp
-  ) {
-    console.error(
-      "Telegram WebApp SDK chưa được tải."
-    );
-
-    if (showDiagnostics) {
-      window.alert(
-        "Không tìm thấy Telegram WebApp SDK.\n\n" +
-        "Hãy mở Mini App trực tiếp từ Telegram."
+      showMessage(
+        "Không tìm thấy Telegram WebApp. Hãy mở game từ Telegram.",
+        "error"
       );
+
+      return false;
     }
 
-    return false;
-  }
+    telegram = window.Telegram.WebApp;
 
-  telegram =
-    window.Telegram.WebApp;
-
-  try {
     telegram.ready();
     telegram.expand();
-  } catch (error) {
-    console.warn(
-      "Telegram ready/expand:",
-      error
-    );
-  }
 
-  try {
-    telegram.setHeaderColor(
-      "#0788df"
-    );
-
-    telegram.setBackgroundColor(
-      "#0788df"
-    );
-  } catch (error) {
-    console.warn(
-      "Telegram color setup:",
-      error
-    );
-  }
-
-  /*
-  |--------------------------------------------------------------------------
-  | Lấy initData mới nhất từ Telegram
-  |--------------------------------------------------------------------------
-  */
-
-  initData =
-    String(
-      telegram.initData || ""
-    );
-
-  console.log(
-    "Telegram SDK:",
-    "CÓ"
-  );
-
-  console.log(
-    "Telegram initData:",
-    initData
-      ? "CÓ"
-      : "KHÔNG"
-  );
-
-  console.log(
-    "Telegram initData length:",
-    initData.length
-  );
-
-  if (!initData) {
-    console.error(
-      "Telegram initData đang trống."
-    );
-
-    if (showDiagnostics) {
-      const unsafeUser =
-        telegram.initDataUnsafe?.user;
-
-      window.alert(
-        "Telegram đã mở Mini App nhưng không có initData.\n\n" +
-        "User ID: " +
-        (unsafeUser?.id || "Không có") +
-        "\nPlatform: " +
-        (telegram.platform || "Không xác định") +
-        "\nVersion: " +
-        (telegram.version || "Không xác định")
-      );
+    try {
+      telegram.setHeaderColor("#0788df");
+    } catch (error) {
+      console.warn("Không setHeaderColor được:", error);
     }
+
+    try {
+      telegram.setBackgroundColor("#0788df");
+    } catch (error) {
+      console.warn("Không setBackgroundColor được:", error);
+    }
+
+    initData = telegram.initData || "";
+
+    console.log("=================================");
+    console.log("TELEGRAM MINI APP");
+    console.log("SDK:", !!telegram);
+    console.log("initData:", !!initData);
+    console.log("initData length:", initData.length);
+
+    if (telegram.initDataUnsafe && telegram.initDataUnsafe.user) {
+      console.log("Telegram user ID:", telegram.initDataUnsafe.user.id);
+      console.log("Telegram username:", telegram.initDataUnsafe.user.username);
+    }
+
+    console.log("Platform:", telegram.platform);
+    console.log("Version:", telegram.version);
+    console.log("=================================");
+
+    if (!initData) {
+      showMessage(
+        "Không nhận được Telegram initData. Hãy mở Mini App trực tiếp trong Telegram.",
+        "error"
+      );
+
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error("initTelegram error:", error);
+
+    showMessage(
+      "Không thể khởi tạo Telegram Mini App.",
+      "error"
+    );
 
     return false;
   }
-
-  return true;
 }
 
-/*
-|--------------------------------------------------------------------------
-| NETWORK HELPER
-|--------------------------------------------------------------------------
-*/
+
+/* =========================================================
+   NETWORK HELPERS
+========================================================= */
 
 function sleep(ms) {
-  return new Promise(
-    resolve =>
-      setTimeout(
-        resolve,
-        ms
-      )
-  );
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
+
 
 async function fetchWithTimeout(
   url,
   options = {},
   timeout = REQUEST_TIMEOUT
 ) {
-  const controller =
-    new AbortController();
+  const controller = new AbortController();
 
-  const timeoutId =
-    setTimeout(
-      () => {
-        controller.abort();
-      },
-      timeout
-    );
+  const timeoutId = setTimeout(() => {
+    controller.abort();
+  }, timeout);
 
   try {
-    return await fetch(
-      url,
-      {
-        ...options,
-        signal:
-          controller.signal
-      }
-    );
-  } catch (error) {
-    if (
-      error?.name ===
-      "AbortError"
-    ) {
-      throw new Error(
-        "Máy chủ phản hồi quá lâu. Render có thể đang khởi động lại, hãy thử lại."
-      );
-    }
-
-    throw error;
+    return await fetch(url, {
+      ...options,
+      signal: controller.signal
+    });
   } finally {
-    clearTimeout(
-      timeoutId
-    );
+    clearTimeout(timeoutId);
   }
 }
 
-/*
-|--------------------------------------------------------------------------
-| API
-|--------------------------------------------------------------------------
-*/
 
 async function apiRequest(
   endpoint,
   body = {},
   options = {}
 ) {
-  /*
-  | Lấy initData mới nhất trước request.
-  */
-
-  if (
-    telegram &&
-    telegram.initData
-  ) {
-    initData =
-      String(
-        telegram.initData
-      );
+  if (!BACKEND_URL) {
+    throw new Error("BACKEND_URL chưa được cấu hình.");
   }
 
   if (!initData) {
-    throw new Error(
-      "Không có Telegram initData. Hãy đóng Mini App và mở lại từ Telegram."
-    );
+    throw new Error("Thiếu Telegram initData.");
   }
 
-  const maxRetries =
-    Number.isInteger(
-      options.retries
-    )
-      ? options.retries
-      : MAX_RETRIES;
+  const method = options.method || "POST";
+
+  const requestBody = {
+    initData,
+    ...body
+  };
 
   let lastError = null;
 
-  for (
-    let attempt = 0;
-    attempt <= maxRetries;
-    attempt++
-  ) {
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     try {
-      const response =
-        await fetchWithTimeout(
-          `${BACKEND_URL}${endpoint}`,
-          {
-            method: "POST",
-
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
-
-            body: JSON.stringify({
-              initData,
-              ...body
-            })
-          }
-        );
+      const response = await fetchWithTimeout(
+        `${BACKEND_URL}${endpoint}`,
+        {
+          method,
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(requestBody)
+        }
+      );
 
       let data = null;
 
       try {
-        data =
-          await response.json();
-      } catch {
+        data = await response.json();
+      } catch (jsonError) {
         throw new Error(
-          `Máy chủ trả về dữ liệu không hợp lệ (${response.status}).`
+          `Backend trả về dữ liệu không hợp lệ (${response.status}).`
         );
       }
 
-      /*
-      | Render có thể cần thời gian khởi động.
-      */
-
-      if (
-        [502, 503, 504].includes(
-          response.status
-        ) &&
-        attempt < maxRetries
-      ) {
-        await sleep(
-          1500 * (attempt + 1)
-        );
-
-        continue;
-      }
-
-      if (
-        !response.ok ||
-        data?.ok === false
-      ) {
-        throw new Error(
+      if (!response.ok) {
+        const message =
           data?.error ||
-          `Request thất bại (${response.status}).`
-        );
+          data?.message ||
+          `Request thất bại (${response.status})`;
+
+        const error = new Error(message);
+        error.status = response.status;
+        error.data = data;
+
+        /*
+         * Retry những lỗi server tạm thời.
+         */
+        if (
+          attempt < MAX_RETRIES &&
+          [502, 503, 504].includes(response.status)
+        ) {
+          lastError = error;
+          await sleep(800 * (attempt + 1));
+          continue;
+        }
+
+        throw error;
       }
 
       return data;
     } catch (error) {
       lastError = error;
 
-      const message =
-        String(
-          error?.message || ""
-        ).toLowerCase();
+      if (error.name === "AbortError") {
+        if (attempt < MAX_RETRIES) {
+          await sleep(800 * (attempt + 1));
+          continue;
+        }
 
-      const shouldRetry =
-        message.includes(
-          "failed to fetch"
-        ) ||
-        message.includes(
-          "network"
-        ) ||
-        message.includes(
-          "fetch"
-        ) ||
-        message.includes(
-          "phản hồi quá lâu"
+        throw new Error(
+          "Backend phản hồi quá lâu. Vui lòng thử lại."
         );
-
-      if (
-        !shouldRetry ||
-        attempt >= maxRetries
-      ) {
-        break;
       }
 
-      await sleep(
-        1500 * (attempt + 1)
-      );
+      /*
+       * Lỗi mạng.
+       */
+      if (
+        !error.status &&
+        attempt < MAX_RETRIES
+      ) {
+        await sleep(800 * (attempt + 1));
+        continue;
+      }
+
+      throw error;
     }
   }
 
-  throw (
-    lastError ||
-    new Error(
-      "Không thể kết nối máy chủ."
-    )
-  );
+  throw lastError || new Error("Request thất bại.");
 }
 
-/*
-|--------------------------------------------------------------------------
-| AUTH
-|--------------------------------------------------------------------------
-*/
+
+/* =========================================================
+   AUTHENTICATION
+========================================================= */
 
 async function authenticateTelegram() {
   if (isAuthenticating) {
@@ -541,89 +446,44 @@ async function authenticateTelegram() {
 
   isAuthenticating = true;
 
-  showLoading(
-    "Đang kết nối máy chủ..."
-  );
-
   try {
-    if (
-      telegram?.initData
-    ) {
-      initData =
-        String(
-          telegram.initData
-        );
-    }
+    showLoading("Đang xác thực Telegram...");
 
-    if (!initData) {
+    const result = await apiRequest(
+      "/api/auth/telegram"
+    );
+
+    if (!result || !result.player) {
       throw new Error(
-        "Telegram không cung cấp initData. Hãy đóng Mini App và mở lại từ Telegram."
+        "Backend không trả về thông tin người chơi."
       );
     }
 
-    const data =
-      await apiRequest(
-        "/api/auth/telegram",
-        {},
-        {
-          retries: 2
-        }
-      );
+    gameState.player = result.player;
 
-    if (!data) {
-      throw new Error(
-        "Máy chủ không trả về dữ liệu người chơi."
-      );
-    }
+    gameState.plots = Array.isArray(result.plots)
+      ? result.plots
+      : [];
 
-    gameState.player =
-      data.player || null;
+    gameState.inventory = Array.isArray(result.inventory)
+      ? result.inventory
+      : [];
 
-    gameState.plots =
-      Array.isArray(
-        data.plots
-      )
-        ? data.plots
-        : [];
-
-    gameState.inventory =
-      Array.isArray(
-        data.inventory
-      )
-        ? data.inventory
-        : [];
-
-    console.log(
-      "AUTH PLAYER:",
-      gameState.player
-    );
-
-    console.log(
-      "AUTH PLOTS:",
-      gameState.plots
-    );
-
-    console.log(
-      "AUTH INVENTORY:",
-      gameState.inventory
-    );
+    console.log("✅ Telegram authentication thành công.");
+    console.log("Player:", gameState.player);
 
     renderAll();
-
-    console.log(
-      "Telegram authentication thành công."
-    );
 
     return true;
   } catch (error) {
     console.error(
-      "Telegram authentication error:",
+      "authenticateTelegram error:",
       error
     );
 
     showMessage(
-      error?.message ||
-        "Không thể kết nối máy chủ.",
+      error.message ||
+        "Không thể xác thực Telegram.",
       "error"
     );
 
@@ -634,187 +494,183 @@ async function authenticateTelegram() {
   }
 }
 
-/*
-|--------------------------------------------------------------------------
-| LOAD GAME STATE
-|--------------------------------------------------------------------------
-*/
 
-async function loadGameState() {
-  /*
-  | Nếu authentication đang chạy thì không
-  | gọi thêm state.
-  */
+/* =========================================================
+   LOAD GAME STATE
+========================================================= */
 
-  if (isAuthenticating) {
-    return false;
-  }
-
-  /*
-  | Nếu chưa có player thì authenticate.
-  */
-
-  if (!gameState.player) {
-    return authenticateTelegram();
-  }
-
+async function loadGameState(showError = true) {
   try {
-    if (
-      telegram?.initData
-    ) {
-      initData =
-        String(
-          telegram.initData
-        );
-    }
-
-    if (!initData) {
-      return false;
-    }
-
-    const data =
-      await apiRequest(
-        "/api/game/state",
-        {},
-        {
-          retries: 2
-        }
-      );
-
-    gameState.player =
-      data.player || null;
-
-    gameState.plots =
-      Array.isArray(
-        data.plots
-      )
-        ? data.plots
-        : [];
-
-    gameState.inventory =
-      Array.isArray(
-        data.inventory
-      )
-        ? data.inventory
-        : [];
-
-    console.log(
-      "GAME STATE PLOTS:",
-      gameState.plots
+    const result = await apiRequest(
+      "/api/game/state"
     );
+
+    if (!result) {
+      throw new Error(
+        "Backend không trả về game state."
+      );
+    }
+
+    if (result.player) {
+      gameState.player = result.player;
+    }
+
+    gameState.plots = Array.isArray(result.plots)
+      ? result.plots
+      : [];
+
+    gameState.inventory = Array.isArray(result.inventory)
+      ? result.inventory
+      : [];
 
     renderAll();
-
-    console.log(
-      "Game state đã được tải lại."
-    );
 
     return true;
   } catch (error) {
     console.error(
-      "Load game state error:",
+      "loadGameState error:",
       error
     );
 
-    showMessage(
-      error?.message ||
-        "Không thể tải dữ liệu game.",
-      "error"
-    );
+    if (showError) {
+      showMessage(
+        error.message ||
+          "Không thể tải dữ liệu nông trại.",
+        "error"
+      );
+    }
 
     return false;
   }
 }
 
-/*
-|--------------------------------------------------------------------------
-| RENDER PLAYER
-|--------------------------------------------------------------------------
-*/
+
+/* =========================================================
+   PLAYER RENDER
+========================================================= */
 
 function renderPlayer() {
-  const player =
-    gameState.player;
+  const player = gameState.player;
 
   if (!player) {
     return;
   }
 
-  const level =
-    Number(
-      player.level || 1
-    );
-
-  const exp =
-    Number(
-      player.exp || 0
-    );
-
-  const coins =
-    Number(
-      player.coins || 0
-    );
-
-  const fertilizer =
-    Number(
-      player.fertilizer || 0
-    );
+  const level = Number(player.level) || 1;
+  const exp = Number(player.exp) || 0;
+  const coins = Number(player.coins) || 0;
+  const fertilizer = Number(player.fertilizer) || 0;
 
   if (levelNumber) {
-    levelNumber.textContent =
-      level;
+    levelNumber.textContent = level;
   }
 
   if (levelValue) {
-    levelValue.textContent =
-      level;
+    levelValue.textContent = `Lv.${level}`;
   }
 
   if (coinValue) {
-    coinValue.textContent =
-      formatNumber(
-        coins
-      );
+    coinValue.textContent = formatNumber(coins);
   }
 
   if (fertilizerValue) {
-    fertilizerValue.textContent =
-      formatNumber(
-        fertilizer
-      );
+    fertilizerValue.textContent = formatNumber(
+      fertilizer
+    );
   }
 
-  const expPercent =
-    Math.max(
-      0,
-      Math.min(
-        100,
-        (exp /
-          EXP_PER_LEVEL) *
-          100
-      )
+  const expInLevel =
+    Math.max(0, exp % EXP_PER_LEVEL);
+
+  const percentage =
+    Math.min(
+      100,
+      (expInLevel / EXP_PER_LEVEL) * 100
     );
 
   if (expFill) {
-    expFill.style.width =
-      `${expPercent}%`;
+    expFill.style.width = `${percentage}%`;
   }
 
   if (expText) {
     expText.textContent =
-      `${formatNumber(
-        exp
-      )} / ${formatNumber(
-        EXP_PER_LEVEL
-      )} EXP`;
+      `${formatNumber(expInLevel)} / ${formatNumber(EXP_PER_LEVEL)}`;
   }
 }
 
-/*
-|--------------------------------------------------------------------------
-| RENDER PLOTS
-|--------------------------------------------------------------------------
-*/
+
+/* =========================================================
+   PLOT HELPERS
+========================================================= */
+
+function isUnlocked(plot) {
+  if (!plot) {
+    return false;
+  }
+
+  return (
+    plot.unlocked === true ||
+    plot.unlocked === 1 ||
+    plot.unlocked === "true"
+  );
+}
+
+
+function normalizePlotNumber(value) {
+  const number = Number(value);
+
+  if (!Number.isInteger(number)) {
+    return null;
+  }
+
+  if (
+    number < 1 ||
+    number > TOTAL_PLOTS
+  ) {
+    return null;
+  }
+
+  return number;
+}
+
+
+function getPlot(plotNumber) {
+  const number = normalizePlotNumber(plotNumber);
+
+  if (!number) {
+    return null;
+  }
+
+  return (
+    gameState.plots.find(
+      plot =>
+        Number(plot.plot_number) === number
+    ) || null
+  );
+}
+
+
+function getUnlockPrice(plotNumber) {
+  const number = normalizePlotNumber(plotNumber);
+
+  if (!number) {
+    return 0;
+  }
+
+  if (number <= FREE_PLOTS) {
+    return 0;
+  }
+
+  return (
+    500 *
+    Math.pow(2, number - 4)
+  );
+}
+
+
+/* =========================================================
+   RENDER PLOTS
+========================================================= */
 
 function renderPlots() {
   const plotElements =
@@ -822,183 +678,177 @@ function renderPlots() {
       ".plot[data-plot]"
     );
 
-  console.log(
-    "RENDER PLOTS:",
-    gameState.plots.length,
-    "ô từ server"
-  );
+  if (!plotElements.length) {
+    console.warn(
+      "⚠️ Không tìm thấy .plot[data-plot]"
+    );
 
-  plotElements.forEach(
-    element => {
-      const plotNumber =
-        Number(
-          element.dataset.plot
-        );
-
-      const plot =
-        gameState.plots.find(
-          item =>
-            Number(
-              item.plot_number
-            ) === plotNumber
-        );
-
-      if (!plot) {
-        /*
-        | Không xóa HTML gốc của ô.
-        */
-
-        return;
-      }
-
-      element.classList.toggle(
-        "unlocked",
-        Boolean(
-          plot.unlocked
-        )
-      );
-
-      element.classList.toggle(
-        "locked",
-        !plot.unlocked
-      );
-
-      element.classList.remove(
-        "ready"
-      );
-
-      element
-        .querySelectorAll(
-          ".crop-image,.crop-name,.grow-time,.plot-price,.fertilizer-button,.harvest-button"
-        )
-        .forEach(
-          item =>
-            item.remove()
-        );
-
-      if (
-        !plot.unlocked
-      ) {
-        renderLockedPlot(
-          element,
-          plotNumber
-        );
-
-        return;
-      }
-
-      /*
-      | Ô đã mở nhưng chưa trồng.
-      | Không thêm gì -> người chơi bấm
-      | vào sẽ mở bảng hạt giống.
-      */
-
-      if (
-        !plot.crop_type
-      ) {
-        return;
-      }
-
-      renderCrop(
-        element,
-        plot
-      );
-    }
-  );
-}
-
-/*
-|--------------------------------------------------------------------------
-| LOCKED PLOT
-|--------------------------------------------------------------------------
-*/
-
-function renderLockedPlot(
-  element,
-  plotNumber
-) {
-  let price = 0;
-
-  if (
-    plotNumber >
-    FREE_PLOTS
-  ) {
-    price =
-      500 *
-      Math.pow(
-        2,
-        plotNumber - 4
-      );
+    return;
   }
 
-  const priceElement =
-    document.createElement(
-      "span"
+  plotElements.forEach(plotElement => {
+    const plotNumber =
+      normalizePlotNumber(
+        plotElement.dataset.plot
+      );
+
+    if (!plotNumber) {
+      return;
+    }
+
+    const serverPlot =
+      getPlot(plotNumber);
+
+    /*
+     * Nếu backend chưa trả plot,
+     * mặc định không cho client tự mở.
+     */
+    const unlocked =
+      serverPlot
+        ? isUnlocked(serverPlot)
+        : false;
+
+    plotElement.classList.toggle(
+      "unlocked",
+      unlocked
     );
+
+    plotElement.classList.toggle(
+      "locked",
+      !unlocked
+    );
+
+    /*
+     * Xóa visual cũ.
+     */
+    plotElement
+      .querySelectorAll(
+        ".crop-image, .crop-name, .grow-time, .plot-price, .fertilizer-button, .harvest-button"
+      )
+      .forEach(element => {
+        element.remove();
+      });
+
+    if (!unlocked) {
+      renderLockedPlot(
+        plotElement,
+        plotNumber
+      );
+
+      return;
+    }
+
+    /*
+     * Đất đã mở.
+     */
+    const cropType =
+      serverPlot?.crop_type || null;
+
+    if (!cropType) {
+      return;
+    }
+
+    renderCrop(
+      plotElement,
+      serverPlot
+    );
+  });
+}
+
+
+/* =========================================================
+   RENDER LOCKED PLOT
+========================================================= */
+
+function renderLockedPlot(
+  plotElement,
+  plotNumber
+) {
+  let lockElement =
+    plotElement.querySelector(".lock");
+
+  if (!lockElement) {
+    lockElement =
+      document.createElement("div");
+
+    lockElement.className = "lock";
+
+    plotElement.appendChild(
+      lockElement
+    );
+  }
+
+  lockElement.textContent = "🔒";
+
+  const price =
+    getUnlockPrice(plotNumber);
+
+  const priceElement =
+    document.createElement("div");
 
   priceElement.className =
     "plot-price";
 
-  priceElement.textContent =
-    `${formatNumber(
-      price
-    )} 🪙`;
+  if (price === 0) {
+    priceElement.textContent =
+      "MỞ MIỄN PHÍ";
+  } else {
+    priceElement.textContent =
+      `💰 ${formatNumber(price)}`;
+  }
 
-  element.appendChild(
+  plotElement.appendChild(
     priceElement
   );
 }
 
-/*
-|--------------------------------------------------------------------------
-| CROP
-|--------------------------------------------------------------------------
-*/
+
+/* =========================================================
+   RENDER CROP
+========================================================= */
 
 function renderCrop(
-  element,
+  plotElement,
   plot
 ) {
+  const cropType =
+    String(plot.crop_type || "");
+
   const seed =
-    SEEDS[
-      plot.crop_type
-    ];
+    SEEDS[cropType];
 
   if (!seed) {
+    console.warn(
+      "Không tìm thấy seed:",
+      cropType
+    );
+
     return;
   }
 
   const cropImage =
-    document.createElement(
-      "div"
-    );
+    document.createElement("div");
 
   cropImage.className =
     "crop-image";
 
-  cropImage.style.display =
-    "flex";
-
-  cropImage.style.alignItems =
-    "center";
-
-  cropImage.style.justifyContent =
-    "center";
-
-  cropImage.style.fontSize =
-    "clamp(20px, 8vw, 42px)";
-
   cropImage.textContent =
-    seed.icon;
+    seed.emoji;
 
-  element.appendChild(
+  cropImage.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+  cropImage.style.pointerEvents =
+    "none";
+
+  plotElement.appendChild(
     cropImage
   );
 
   const cropName =
-    document.createElement(
-      "span"
-    );
+    document.createElement("div");
 
   cropName.className =
     "crop-name";
@@ -1006,36 +856,34 @@ function renderCrop(
   cropName.textContent =
     seed.name;
 
-  element.appendChild(
+  cropName.style.pointerEvents =
+    "none";
+
+  plotElement.appendChild(
     cropName
   );
 
   const growTime =
-    document.createElement(
-      "span"
-    );
+    document.createElement("div");
 
   growTime.className =
     "grow-time";
 
   growTime.dataset.harvestAt =
-    plot.harvest_at;
+    plot.harvest_at || "";
 
-  growTime.textContent =
-    getCountdownText(
-      plot.harvest_at
-    );
+  growTime.style.pointerEvents =
+    "none";
 
-  element.appendChild(
+  plotElement.appendChild(
     growTime
   );
 }
 
-/*
-|--------------------------------------------------------------------------
-| COUNTDOWN
-|--------------------------------------------------------------------------
-*/
+
+/* =========================================================
+   COUNTDOWN
+========================================================= */
 
 function startCountdown() {
   if (countdownTimer) {
@@ -1053,68 +901,57 @@ function startCountdown() {
     );
 }
 
-function updateCountdowns() {
-  const timers =
-    document.querySelectorAll(
-      ".grow-time"
-    );
 
-  timers.forEach(
-    timer => {
+function updateCountdowns() {
+  document
+    .querySelectorAll(
+      ".grow-time[data-harvest-at]"
+    )
+    .forEach(element => {
       const harvestAt =
-        timer.dataset.harvestAt;
+        element.dataset.harvestAt;
+
+      if (!harvestAt) {
+        element.textContent = "";
+        return;
+      }
 
       const remaining =
         getRemainingMs(
           harvestAt
         );
 
-      const plotElement =
-        timer.closest(
-          ".plot[data-plot]"
+      if (remaining <= 0) {
+        element.textContent =
+          "✅ Sẵn sàng";
+
+        element.classList.add(
+          "ready"
         );
-
-      if (
-        remaining <= 0
-      ) {
-        timer.textContent =
-          "✅ Chín";
-
-        if (plotElement) {
-          plotElement.classList.add(
-            "ready"
-          );
-        }
       } else {
-        timer.textContent =
-          formatDuration(
+        element.textContent =
+          `⏱ ${getCountdownText(
             remaining
-          );
+          )}`;
 
-        if (plotElement) {
-          plotElement.classList.remove(
-            "ready"
-          );
-        }
+        element.classList.remove(
+          "ready"
+        );
       }
-    }
-  );
+    });
 }
+
 
 function getRemainingMs(
   harvestAt
 ) {
-  if (!harvestAt) {
-    return 0;
-  }
-
   const timestamp =
     new Date(
       harvestAt
     ).getTime();
 
   if (
-    Number.isNaN(
+    !Number.isFinite(
       timestamp
     )
   ) {
@@ -1127,55 +964,32 @@ function getRemainingMs(
   );
 }
 
+
 function getCountdownText(
-  harvestAt
+  remainingMs
 ) {
-  const remaining =
-    getRemainingMs(
-      harvestAt
-    );
-
-  if (
-    remaining <= 0
-  ) {
-    return "✅ Chín";
-  }
-
-  return formatDuration(
-    remaining
-  );
-}
-
-function formatDuration(
-  milliseconds
-) {
-  let totalSeconds =
+  const totalSeconds =
     Math.max(
       0,
       Math.floor(
-        milliseconds / 1000
+        remainingMs / 1000
       )
     );
 
   const days =
     Math.floor(
-      totalSeconds /
-        86400
+      totalSeconds / 86400
     );
-
-  totalSeconds %= 86400;
 
   const hours =
     Math.floor(
-      totalSeconds /
+      (totalSeconds % 86400) /
         3600
     );
 
-  totalSeconds %= 3600;
-
   const minutes =
     Math.floor(
-      totalSeconds /
+      (totalSeconds % 3600) /
         60
     );
 
@@ -1183,44 +997,49 @@ function formatDuration(
     totalSeconds % 60;
 
   if (days > 0) {
-    return `${days}d ${hours}h`;
+    return `${days}d ${String(
+      hours
+    ).padStart(2, "0")}h`;
   }
 
   if (hours > 0) {
-    return `${hours}h ${minutes}m`;
+    return `${hours}h ${String(
+      minutes
+    ).padStart(2, "0")}m`;
   }
 
-  if (minutes > 0) {
-    return `${minutes}m ${seconds}s`;
-  }
-
-  return `${seconds}s`;
+  return `${String(
+    minutes
+  ).padStart(2, "0")}:${String(
+    seconds
+  ).padStart(2, "0")}`;
 }
 
-/*
-|--------------------------------------------------------------------------
-| PLOT EVENTS
-|--------------------------------------------------------------------------
-*/
+
+/* =========================================================
+   PLOT EVENTS
+========================================================= */
 
 function setupPlotEvents() {
-  const plots =
+  const plotElements =
     document.querySelectorAll(
       ".plot[data-plot]"
     );
 
   console.log(
-    "Đã tìm thấy",
-    plots.length,
-    "ô đất trong HTML."
+    `🌱 Tìm thấy ${plotElements.length} ô đất.`
   );
 
-  plots.forEach(
-    plotElement => {
-      /*
-      | Tránh gắn event nhiều lần.
-      */
+  if (!plotElements.length) {
+    console.warn(
+      "⚠️ Không có ô đất để gắn sự kiện."
+    );
 
+    return;
+  }
+
+  plotElements.forEach(
+    plotElement => {
       if (
         plotElement.dataset.clickReady ===
         "true"
@@ -1231,6 +1050,16 @@ function setupPlotEvents() {
       plotElement.dataset.clickReady =
         "true";
 
+      /*
+       * Đảm bảo click/touch không bị
+       * các phần tử con visual chặn.
+       */
+      plotElement.style.pointerEvents =
+        "auto";
+
+      plotElement.style.touchAction =
+        "manipulation";
+
       plotElement.addEventListener(
         "click",
         async event => {
@@ -1238,7 +1067,7 @@ function setupPlotEvents() {
           event.stopPropagation();
 
           const plotNumber =
-            Number(
+            normalizePlotNumber(
               plotElement.dataset.plot
             );
 
@@ -1247,131 +1076,87 @@ function setupPlotEvents() {
             plotNumber
           );
 
+          if (!plotNumber) {
+            return;
+          }
+
           await handlePlotClick(
             plotNumber
           );
+        },
+        {
+          passive: false
         }
       );
     }
   );
 }
 
-/*
-|--------------------------------------------------------------------------
-| PLOT CLICK
-|--------------------------------------------------------------------------
-| ĐÂY LÀ PHẦN ĐÃ SỬA CHÍNH
-|--------------------------------------------------------------------------
-*/
+
+/* =========================================================
+   HANDLE PLOT CLICK
+========================================================= */
 
 async function handlePlotClick(
   plotNumber
 ) {
-  if (
-    isLoading ||
-    isAuthenticating
-  ) {
+  if (isLoading) {
     console.log(
-      "Click bị bỏ qua vì game đang loading."
+      "⏳ Đang xử lý request."
     );
 
     return;
   }
 
-  console.log(
-    "🟢 CLICK PLOT:",
-    plotNumber
-  );
-
-  console.log(
-    "📦 GAME PLOTS:",
-    gameState.plots
-  );
-
-  /*
-  | Tìm plot hiện tại.
-  */
-
-  let plot =
-    gameState.plots.find(
-      item =>
-        Number(
-          item.plot_number
-        ) ===
-        Number(plotNumber)
-    );
-
-  /*
-  |--------------------------------------------------------------------------
-  | Nếu frontend chưa có plot
-  | -> tải lại state từ server
-  |--------------------------------------------------------------------------
-  */
-
-  if (!plot) {
+  if (isAuthenticating) {
     console.log(
-      "⚠️ Không tìm thấy plot trong frontend."
+      "⏳ Đang xác thực."
     );
 
-    console.log(
-      "🔄 Đang tải lại game state..."
-    );
-
-    const loaded =
-      await loadGameState();
-
-    if (!loaded) {
-      showMessage(
-        "Không tải được dữ liệu ô đất từ máy chủ.",
-        "error"
-      );
-
-      return;
-    }
-
-    /*
-    | Tìm lại sau khi server trả dữ liệu.
-    */
-
-    plot =
-      gameState.plots.find(
-        item =>
-          Number(
-            item.plot_number
-          ) ===
-          Number(plotNumber)
-      );
-
-    if (!plot) {
-      console.error(
-        "❌ Server vẫn không trả về plot:",
-        plotNumber,
-        gameState.plots
-      );
-
-      showMessage(
-        "Máy chủ chưa trả về dữ liệu ô đất này.",
-        "error"
-      );
-
-      return;
-    }
+    return;
   }
 
+  const plot =
+    getPlot(plotNumber);
+
   console.log(
-    "🌱 PLOT ĐƯỢC CHỌN:",
+    "📦 Plot state:",
     plot
   );
 
   /*
-  |--------------------------------------------------------------------------
-  | Ô bị khóa
-  |--------------------------------------------------------------------------
-  */
+   * Nếu state chưa có plot,
+   * tải lại từ server.
+   */
+  if (!plot) {
+    const loaded =
+      await loadGameState();
 
-  if (
-    !plot.unlocked
-  ) {
+    if (!loaded) {
+      return;
+    }
+
+    const retryPlot =
+      getPlot(plotNumber);
+
+    if (!retryPlot) {
+      showMessage(
+        "Không tìm thấy dữ liệu ô đất.",
+        "error"
+      );
+
+      return;
+    }
+
+    return handlePlotClick(
+      plotNumber
+    );
+  }
+
+  /*
+   * Ô khóa.
+   */
+  if (!isUnlocked(plot)) {
     await unlockPlot(
       plotNumber
     );
@@ -1380,20 +1165,11 @@ async function handlePlotClick(
   }
 
   /*
-  |--------------------------------------------------------------------------
-  | Ô đã mở + chưa trồng
-  |--------------------------------------------------------------------------
-  | => MỞ BẢNG HẠT GIỐNG
-  |--------------------------------------------------------------------------
-  */
-
-  if (
-    !plot.crop_type
-  ) {
-    console.log(
-      "🌱 MỞ BẢNG HẠT GIỐNG CHO Ô:",
-      plotNumber
-    );
+   * Ô trống.
+   */
+  if (!plot.crop_type) {
+    selectedPlot =
+      plotNumber;
 
     openSeedPanel(
       plotNumber
@@ -1403,16 +1179,9 @@ async function handlePlotClick(
   }
 
   /*
-  |--------------------------------------------------------------------------
-  | Cây đã chín
-  |--------------------------------------------------------------------------
-  */
-
-  if (
-    getRemainingMs(
-      plot.harvest_at
-    ) <= 0
-  ) {
+   * Có cây.
+   */
+  if (isCropReady(plot)) {
     await harvestPlot(
       plotNumber
     );
@@ -1421,49 +1190,97 @@ async function handlePlotClick(
   }
 
   /*
-  |--------------------------------------------------------------------------
-  | Cây đang lớn
-  |--------------------------------------------------------------------------
-  */
-
+   * Cây đang lớn.
+   */
   showPlotActions(
-    plot
+    plotNumber
   );
 }
 
-/*
-|--------------------------------------------------------------------------
-| UNLOCK PLOT
-|--------------------------------------------------------------------------
-*/
+
+/* =========================================================
+   CROP READY
+========================================================= */
+
+function isCropReady(plot) {
+  if (!plot || !plot.crop_type) {
+    return false;
+  }
+
+  if (!plot.harvest_at) {
+    return false;
+  }
+
+  return (
+    getRemainingMs(
+      plot.harvest_at
+    ) <= 0
+  );
+}
+
+
+/* =========================================================
+   UNLOCK PLOT
+========================================================= */
 
 async function unlockPlot(
   plotNumber
 ) {
   const price =
-    plotNumber <= FREE_PLOTS
-      ? 0
-      : 500 *
-        Math.pow(
-          2,
-          plotNumber - 4
-        );
-
-  const confirmed =
-    window.confirm(
-      `Mở ô đất ${plotNumber} với giá ${formatNumber(
-        price
-      )} Coin?`
+    getUnlockPrice(
+      plotNumber
     );
 
-  if (!confirmed) {
+  const player =
+    gameState.player;
+
+  if (!player) {
     return;
   }
 
-  setLoading(true);
+  const coins =
+    Number(player.coins) || 0;
+
+  if (price > 0) {
+    if (coins < price) {
+      showMessage(
+        `Bạn cần ${formatNumber(
+          price
+        )} xu để mở ô này.`,
+        "error"
+      );
+
+      return;
+    }
+
+    const confirmed =
+      window.confirm(
+        `Mở ô đất ${plotNumber} với giá ${formatNumber(
+          price
+        )} xu?`
+      );
+
+    if (!confirmed) {
+      return;
+    }
+  } else {
+    const confirmed =
+      window.confirm(
+        `Mở ô đất ${plotNumber}?`
+      );
+
+    if (!confirmed) {
+      return;
+    }
+  }
 
   try {
-    const data =
+    setLoading(
+      true,
+      "Đang mở ô đất..."
+    );
+
+    const result =
       await apiRequest(
         "/api/game/unlock-plot",
         {
@@ -1471,58 +1288,39 @@ async function unlockPlot(
         }
       );
 
-    if (
-      data.player
-    ) {
+    if (result.player) {
       gameState.player =
-        data.player;
+        result.player;
     }
 
-    const index =
-      gameState.plots.findIndex(
-        item =>
-          Number(
-            item.plot_number
-          ) === plotNumber
-      );
+    if (Array.isArray(result.plots)) {
+      gameState.plots =
+        result.plots;
+    } else {
+      const localPlot =
+        getPlot(plotNumber);
 
-    if (
-      index !== -1 &&
-      data.plot
-    ) {
-      gameState.plots[index] =
-        data.plot;
-    }
-
-    /*
-    | Nếu server trả plot nhưng frontend
-    | chưa có thì thêm vào.
-    */
-
-    if (
-      index === -1 &&
-      data.plot
-    ) {
-      gameState.plots.push(
-        data.plot
-      );
+      if (localPlot) {
+        localPlot.unlocked =
+          true;
+      }
     }
 
     renderAll();
 
     showMessage(
-      `Đã mở khóa ô đất ${plotNumber}!`,
+      `🎉 Đã mở ô đất ${plotNumber}!`,
       "success"
     );
   } catch (error) {
     console.error(
-      "Unlock error:",
+      "unlockPlot error:",
       error
     );
 
     showMessage(
-      error?.message ||
-        "Không thể mở khóa ô đất.",
+      error.message ||
+        "Không thể mở ô đất.",
       "error"
     );
   } finally {
@@ -1530,63 +1328,54 @@ async function unlockPlot(
   }
 }
 
-/*
-|--------------------------------------------------------------------------
-| SEED PANEL
-|--------------------------------------------------------------------------
-*/
+
+/* =========================================================
+   SEED PANEL
+========================================================= */
 
 function openSeedPanel(
   plotNumber
 ) {
-  console.log(
-    "🌱 OPEN SEED PANEL:",
-    plotNumber
-  );
+  const plot =
+    getPlot(plotNumber);
 
-  selectedPlot =
-    Number(plotNumber);
-
-  /*
-  | Kiểm tra panel.
-  */
-
-  if (!seedPanel) {
-    console.error(
-      "❌ Không tìm thấy #seedPanel trong index.html"
-    );
-
+  if (!plot) {
     showMessage(
-      "Không tìm thấy bảng hạt giống trong giao diện.",
+      "Không tìm thấy ô đất.",
       "error"
     );
 
     return;
   }
 
-  /*
-  | Render danh sách hạt giống.
-  */
+  if (!isUnlocked(plot)) {
+    showMessage(
+      "Ô đất này chưa được mở.",
+      "error"
+    );
+
+    return;
+  }
+
+  if (plot.crop_type) {
+    showMessage(
+      "Ô đất này đang có cây.",
+      "error"
+    );
+
+    return;
+  }
+
+  selectedPlot =
+    plotNumber;
 
   renderSeedList();
-
-  /*
-  | Hiện panel.
-  */
 
   showPanel(
     seedPanel
   );
-
-  console.log(
-    "✅ Seed panel đã được mở."
-  );
-
-  console.log(
-    "Seed panel class:",
-    seedPanel.className
-  );
 }
+
 
 function closeSeedPanel() {
   hidePanel(
@@ -1597,12 +1386,13 @@ function closeSeedPanel() {
     null;
 }
 
+
+/* =========================================================
+   RENDER SEED LIST
+========================================================= */
+
 function renderSeedList() {
   if (!seedList) {
-    console.error(
-      "❌ Không tìm thấy #seedList."
-    );
-
     return;
   }
 
@@ -1610,86 +1400,88 @@ function renderSeedList() {
 
   const playerLevel =
     Number(
-      gameState.player?.level ||
-        1
-    );
-
-  const inventory =
-    Array.isArray(
-      gameState.inventory
-    )
-      ? gameState.inventory
-      : [];
+      gameState.player?.level
+    ) || 1;
 
   Object.entries(
     SEEDS
   ).forEach(
-    ([key, seed]) => {
-      const inventoryItem =
-        inventory.find(
-          item =>
-            item.seed_key ===
-            key
+    ([seedKey, seed]) => {
+      const amount =
+        getInventoryAmount(
+          seedKey
         );
 
-      const amount =
-        Number(
-          inventoryItem?.amount ||
-            0
-        );
+      const unlocked =
+        playerLevel >=
+        seed.level;
+
+      const available =
+        amount > 0;
 
       const item =
         document.createElement(
-          "button"
+          "div"
         );
-
-      item.type =
-        "button";
 
       item.className =
         "seed-item";
 
-      const locked =
-        playerLevel <
-        seed.level;
+      if (!unlocked) {
+        item.classList.add(
+          "locked"
+        );
+      }
 
-      item.disabled =
-        locked ||
-        amount <= 0;
+      const button =
+        document.createElement(
+          "button"
+        );
 
-      item.innerHTML = `
-        <span class="seed-icon">
-          ${seed.icon}
-        </span>
+      button.type = "button";
 
-        <span class="seed-name">
-          ${escapeHtml(
+      button.className =
+        "seed-button";
+
+      button.disabled =
+        !unlocked ||
+        !available;
+
+      button.innerHTML = `
+        <span class="seed-icon">${seed.emoji}</span>
+        <span class="seed-info">
+          <strong>${escapeHtml(
             seed.name
-          )}
-        </span>
-
-        <span class="seed-price">
-          ${
-            locked
-              ? `🔒 Lv.${seed.level}`
-              : `Có: ${amount}`
-          }
+          )}</strong>
+          <small>Lv.${seed.level}</small>
+          <small>Có: ${formatNumber(
+            amount
+          )}</small>
         </span>
       `;
 
-      if (
-        !locked &&
-        amount > 0
-      ) {
-        item.addEventListener(
-          "click",
-          () => {
-            plantSeed(
-              key
-            );
+      button.addEventListener(
+        "click",
+        async event => {
+          event.preventDefault();
+          event.stopPropagation();
+
+          if (
+            !unlocked ||
+            !available
+          ) {
+            return;
           }
-        );
-      }
+
+          await plantSeed(
+            seedKey
+          );
+        }
+      );
+
+      item.appendChild(
+        button
+      );
 
       seedList.appendChild(
         item
@@ -1698,18 +1490,15 @@ function renderSeedList() {
   );
 }
 
-/*
-|--------------------------------------------------------------------------
-| PLANT
-|--------------------------------------------------------------------------
-*/
+
+/* =========================================================
+   PLANT SEED
+========================================================= */
 
 async function plantSeed(
   seedKey
 ) {
-  if (
-    selectedPlot === null
-  ) {
+  if (!selectedPlot) {
     showMessage(
       "Chưa chọn ô đất.",
       "error"
@@ -1722,72 +1511,98 @@ async function plantSeed(
     SEEDS[seedKey];
 
   if (!seed) {
+    showMessage(
+      "Hạt giống không hợp lệ.",
+      "error"
+    );
+
     return;
   }
 
-  const targetPlot =
-    Number(
+  const plot =
+    getPlot(
       selectedPlot
     );
 
-  setLoading(true);
+  if (!plot) {
+    showMessage(
+      "Không tìm thấy ô đất.",
+      "error"
+    );
+
+    return;
+  }
+
+  if (!isUnlocked(plot)) {
+    showMessage(
+      "Ô đất chưa mở.",
+      "error"
+    );
+
+    return;
+  }
+
+  if (plot.crop_type) {
+    showMessage(
+      "Ô đất đang có cây.",
+      "error"
+    );
+
+    return;
+  }
+
+  const amount =
+    getInventoryAmount(
+      seedKey
+    );
+
+  if (amount <= 0) {
+    showMessage(
+      "Bạn không có hạt giống này.",
+      "error"
+    );
+
+    return;
+  }
 
   try {
-    const data =
+    setLoading(
+      true,
+      "Đang gieo hạt..."
+    );
+
+    const result =
       await apiRequest(
         "/api/game/plant",
         {
           plotNumber:
-            targetPlot,
+            selectedPlot,
           seedKey
         }
       );
 
-    if (
-      data.plot
-    ) {
-      const index =
-        gameState.plots.findIndex(
-          item =>
-            Number(
-              item.plot_number
-            ) ===
-            targetPlot
-        );
-
-      if (
-        index !== -1
-      ) {
-        gameState.plots[index] =
-          data.plot;
-      } else {
-        gameState.plots.push(
-          data.plot
-        );
-      }
-    }
-
-    if (
-      Array.isArray(
-        data.inventory
-      )
-    ) {
-      gameState.inventory =
-        data.inventory;
-    }
-
-    if (
-      data.player
-    ) {
+    if (result.player) {
       gameState.player =
-        data.player;
+        result.player;
     }
 
-    if (
-      data.inventoryUpdated
-    ) {
-      updateInventoryItem(
-        data.inventoryUpdated
+    if (Array.isArray(result.plots)) {
+      gameState.plots =
+        result.plots;
+    }
+
+    if (Array.isArray(result.inventory)) {
+      gameState.inventory =
+        result.inventory;
+    }
+
+    /*
+     * Một số backend có thể trả
+     * plot riêng.
+     */
+    if (result.plot) {
+      replacePlot(
+        result.plot
       );
     }
 
@@ -1796,17 +1611,17 @@ async function plantSeed(
     renderAll();
 
     showMessage(
-      `Đã trồng ${seed.name}!`,
+      `🌱 Đã trồng ${seed.name}!`,
       "success"
     );
   } catch (error) {
     console.error(
-      "Plant error:",
+      "plantSeed error:",
       error
     );
 
     showMessage(
-      error?.message ||
+      error.message ||
         "Không thể trồng cây.",
       "error"
     );
@@ -1815,36 +1630,28 @@ async function plantSeed(
   }
 }
 
-/*
-|--------------------------------------------------------------------------
-| FERTILIZER
-|--------------------------------------------------------------------------
-*/
+
+/* =========================================================
+   FERTILIZER
+========================================================= */
 
 function showPlotActions(
-  plot
+  plotNumber
 ) {
-  const seed =
-    SEEDS[
-      plot.crop_type
-    ];
+  const plot =
+    getPlot(plotNumber);
 
-  if (!seed) {
+  if (!plot) {
     return;
   }
 
-  const remaining =
-    getRemainingMs(
-      plot.harvest_at
-    );
+  if (!plot.crop_type) {
+    return;
+  }
 
-  if (
-    remaining <= 0
-  ) {
+  if (isCropReady(plot)) {
     harvestPlot(
-      Number(
-        plot.plot_number
-      )
+      plotNumber
     );
 
     return;
@@ -1852,41 +1659,53 @@ function showPlotActions(
 
   const fertilizer =
     Number(
-      gameState.player?.fertilizer ||
-        0
+      gameState.player?.fertilizer
+    ) || 0;
+
+  if (fertilizer <= 0) {
+    showMessage(
+      "Bạn không còn phân bón.",
+      "error"
     );
 
-  const message =
-    `🌱 ${seed.name}\n\n` +
-    `⏳ Còn: ${formatDuration(
-      remaining
-    )}\n\n` +
-    `🧪 Phân bón: ${fertilizer}`;
-
-  const useFertilizer =
-    fertilizer > 0 &&
-    window.confirm(
-      `${message}\n\nBấm OK để dùng 1 phân bón.`
-    );
-
-  if (
-    useFertilizer
-  ) {
-    fertilizePlot(
-      Number(
-        plot.plot_number
-      )
-    );
+    return;
   }
+
+  const seed =
+    SEEDS[
+      plot.crop_type
+    ];
+
+  const cropName =
+    seed
+      ? seed.name
+      : "cây trồng";
+
+  const confirmed =
+    window.confirm(
+      `Dùng 1 phân bón cho ${cropName}?\n\nThời gian sẽ được giảm theo quy tắc của máy chủ.`
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  fertilizePlot(
+    plotNumber
+  );
 }
+
 
 async function fertilizePlot(
   plotNumber
 ) {
-  setLoading(true);
-
   try {
-    const data =
+    setLoading(
+      true,
+      "Đang bón phân..."
+    );
+
+    const result =
       await apiRequest(
         "/api/game/fertilize",
         {
@@ -1894,63 +1713,48 @@ async function fertilizePlot(
         }
       );
 
-    if (
-      data.player
-    ) {
+    if (result.player) {
       gameState.player =
-        data.player;
+        result.player;
     }
 
-    if (
-      data.plot
-    ) {
-      const index =
-        gameState.plots.findIndex(
-          item =>
-            Number(
-              item.plot_number
-            ) ===
-            plotNumber
-        );
+    if (Array.isArray(result.plots)) {
+      gameState.plots =
+        result.plots;
+    }
 
-      if (
-        index !== -1
-      ) {
-        gameState.plots[index] =
-          data.plot;
-      }
+    if (result.plot) {
+      replacePlot(
+        result.plot
+      );
     }
 
     renderAll();
 
     const reduction =
       Number(
-        data.reductionMinutes
-      );
+        result.reductionMinutes
+      ) || 0;
 
-    if (
-      Number.isFinite(
-        reduction
-      )
-    ) {
+    if (reduction > 0) {
       showMessage(
-        `🧪 Đã dùng phân bón, giảm ${reduction} phút!`,
+        `⚡ Đã dùng phân bón! Giảm ${reduction} phút.`,
         "success"
       );
     } else {
       showMessage(
-        "🧪 Đã dùng phân bón!",
+        "⚡ Đã dùng phân bón!",
         "success"
       );
     }
   } catch (error) {
     console.error(
-      "Fertilizer error:",
+      "fertilizePlot error:",
       error
     );
 
     showMessage(
-      error?.message ||
+      error.message ||
         "Không thể dùng phân bón.",
       "error"
     );
@@ -1959,38 +1763,26 @@ async function fertilizePlot(
   }
 }
 
-/*
-|--------------------------------------------------------------------------
-| HARVEST
-|--------------------------------------------------------------------------
-*/
+
+/* =========================================================
+   HARVEST
+========================================================= */
 
 async function harvestPlot(
   plotNumber
 ) {
   const plot =
-    gameState.plots.find(
-      item =>
-        Number(
-          item.plot_number
-        ) === plotNumber
-    );
+    getPlot(plotNumber);
 
   if (!plot) {
     return;
   }
 
-  if (
-    !plot.crop_type
-  ) {
+  if (!plot.crop_type) {
     return;
   }
 
-  if (
-    getRemainingMs(
-      plot.harvest_at
-    ) > 0
-  ) {
+  if (!isCropReady(plot)) {
     showMessage(
       "Cây chưa chín.",
       "error"
@@ -1999,10 +1791,18 @@ async function harvestPlot(
     return;
   }
 
-  setLoading(true);
+  const seed =
+    SEEDS[
+      plot.crop_type
+    ];
 
   try {
-    const data =
+    setLoading(
+      true,
+      "Đang thu hoạch..."
+    );
+
+    const result =
       await apiRequest(
         "/api/game/harvest",
         {
@@ -2010,77 +1810,58 @@ async function harvestPlot(
         }
       );
 
-    if (
-      data.player
-    ) {
+    if (result.player) {
       gameState.player =
-        data.player;
+        result.player;
     }
 
-    if (
-      data.plot
-    ) {
-      const index =
-        gameState.plots.findIndex(
-          item =>
-            Number(
-              item.plot_number
-            ) === plotNumber
-        );
-
-      if (
-        index !== -1
-      ) {
-        gameState.plots[index] =
-          data.plot;
-      }
+    if (Array.isArray(result.plots)) {
+      gameState.plots =
+        result.plots;
     }
 
-    if (
-      Array.isArray(
-        data.inventory
-      )
-    ) {
+    if (Array.isArray(result.inventory)) {
       gameState.inventory =
-        data.inventory;
+        result.inventory;
     }
 
-    if (
-      data.inventoryUpdated
-    ) {
-      updateInventoryItem(
-        data.inventoryUpdated
+    if (result.plot) {
+      replacePlot(
+        result.plot
       );
     }
 
     renderAll();
 
-    const exp =
+    const expGain =
       Number(
-        data.expGained || 0
-      );
+        result.expGain
+      ) || 0;
 
-    if (
-      exp > 0
-    ) {
+    const cropName =
+      seed
+        ? seed.name
+        : "cây trồng";
+
+    if (expGain > 0) {
       showMessage(
-        `🌾 Thu hoạch thành công! +${exp} EXP`,
+        `🌾 Thu hoạch ${cropName}! +${expGain} EXP`,
         "success"
       );
     } else {
       showMessage(
-        "🌾 Thu hoạch thành công!",
+        `🌾 Thu hoạch ${cropName}!`,
         "success"
       );
     }
   } catch (error) {
     console.error(
-      "Harvest error:",
+      "harvestPlot error:",
       error
     );
 
     showMessage(
-      error?.message ||
+      error.message ||
         "Không thể thu hoạch.",
       "error"
     );
@@ -2089,11 +1870,10 @@ async function harvestPlot(
   }
 }
 
-/*
-|--------------------------------------------------------------------------
-| SHOP
-|--------------------------------------------------------------------------
-*/
+
+/* =========================================================
+   SHOP
+========================================================= */
 
 function openShop() {
   renderShop();
@@ -2103,11 +1883,13 @@ function openShop() {
   );
 }
 
+
 function closeShop() {
   hidePanel(
     shopPanel
   );
 }
+
 
 function renderShop() {
   if (!shopList) {
@@ -2125,7 +1907,1340 @@ function renderShop() {
       ? gameState.inventory
       : [];
 
+  /*
+   * Chỉ hiển thị những loại hạt
+   * mà người chơi đang có.
+   */
   Object.entries(
     SEEDS
   ).forEach(
-   
+    ([seedKey, seed]) => {
+      const amount =
+        getInventoryAmount(
+          seedKey
+        );
+
+      if (amount <= 0) {
+        return;
+      }
+
+      const value =
+        amount *
+        seed.sellPrice;
+
+      totalValue += value;
+
+      const item =
+        document.createElement(
+          "div"
+        );
+
+      item.className =
+        "shop-item";
+
+      item.innerHTML = `
+        <div class="shop-item-info">
+          <span class="shop-icon">${seed.emoji}</span>
+          <div>
+            <strong>${escapeHtml(
+              seed.name
+            )}</strong>
+            <small>Số lượng: ${formatNumber(
+              amount
+            )}</small>
+            <small>Giá bán: ${formatNumber(
+              seed.sellPrice
+            )} xu</small>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="shop-sell-one"
+          data-seed="${escapeHtml(
+            seedKey
+          )}"
+        >
+          Bán 1
+        </button>
+
+        <button
+          type="button"
+          class="shop-sell-all"
+          data-seed="${escapeHtml(
+            seedKey
+          )}"
+        >
+          Bán hết
+        </button>
+      `;
+
+      shopList.appendChild(
+        item
+      );
+    }
+  );
+
+  /*
+   * Nếu không có inventory.
+   */
+  if (
+    shopList.children.length === 0
+  ) {
+    shopList.innerHTML = `
+      <div class="empty-message">
+        🌱 Kho hạt giống đang trống.
+      </div>
+    `;
+  }
+
+  if (shopTotalValue) {
+    shopTotalValue.textContent =
+      formatNumber(
+        totalValue
+      );
+  }
+
+  /*
+   * Gắn nút bán.
+   */
+  shopList
+    .querySelectorAll(
+      ".shop-sell-one"
+    )
+    .forEach(button => {
+      button.addEventListener(
+        "click",
+        async event => {
+          event.preventDefault();
+
+          const seedKey =
+            button.dataset.seed;
+
+          await sellSeed(
+            seedKey,
+            1
+          );
+        }
+      );
+    });
+
+  shopList
+    .querySelectorAll(
+      ".shop-sell-all"
+    )
+    .forEach(button => {
+      button.addEventListener(
+        "click",
+        async event => {
+          event.preventDefault();
+
+          const seedKey =
+            button.dataset.seed;
+
+          const amount =
+            getInventoryAmount(
+              seedKey
+            );
+
+          if (amount <= 0) {
+            return;
+          }
+
+          await sellSeed(
+            seedKey,
+            amount
+          );
+        }
+      );
+    });
+}
+
+
+/* =========================================================
+   SELL SEED
+========================================================= */
+
+async function sellSeed(
+  seedKey,
+  amount
+) {
+  const seed =
+    SEEDS[seedKey];
+
+  if (!seed) {
+    return;
+  }
+
+  const currentAmount =
+    getInventoryAmount(
+      seedKey
+    );
+
+  if (
+    amount <= 0 ||
+    currentAmount < amount
+  ) {
+    showMessage(
+      "Số lượng hạt giống không hợp lệ.",
+      "error"
+    );
+
+    return;
+  }
+
+  const confirmed =
+    window.confirm(
+      `Bán ${formatNumber(
+        amount
+      )} ${seed.name}?\n\nGiá: ${formatNumber(
+        seed.sellPrice
+      )} xu / hạt`
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    setLoading(
+      true,
+      "Đang bán..."
+    );
+
+    const result =
+      await apiRequest(
+        "/api/game/sell",
+        {
+          seedKey,
+          amount
+        }
+      );
+
+    if (result.player) {
+      gameState.player =
+        result.player;
+    }
+
+    if (Array.isArray(result.inventory)) {
+      gameState.inventory =
+        result.inventory;
+    }
+
+    renderAll();
+
+    renderShop();
+
+    const coinsEarned =
+      Number(
+        result.coinsEarned ??
+        result.totalCoins ??
+        result.amount
+      ) || 0;
+
+    if (coinsEarned > 0) {
+      showMessage(
+        `💰 Đã bán ${formatNumber(
+          amount
+        )} ${seed.name}, nhận ${formatNumber(
+          coinsEarned
+        )} xu.`,
+        "success"
+      );
+    } else {
+      showMessage(
+        `💰 Đã bán ${seed.name}.`,
+        "success"
+      );
+    }
+  } catch (error) {
+    console.error(
+      "sellSeed error:",
+      error
+    );
+
+    showMessage(
+      error.message ||
+        "Không thể bán hạt giống.",
+      "error"
+    );
+  } finally {
+    setLoading(false);
+  }
+}
+
+
+/* =========================================================
+   INVENTORY
+========================================================= */
+
+function getInventoryAmount(
+  seedKey
+) {
+  if (
+    !Array.isArray(
+      gameState.inventory
+    )
+  ) {
+    return 0;
+  }
+
+  const item =
+    gameState.inventory.find(
+      inventoryItem =>
+        String(
+          inventoryItem.seed_key
+        ) === String(seedKey)
+    );
+
+  if (!item) {
+    return 0;
+  }
+
+  return Math.max(
+    0,
+    Number(
+      item.amount
+    ) || 0
+  );
+}
+
+
+function updateInventoryItem(
+  seedKey,
+  amount
+) {
+  if (
+    !Array.isArray(
+      gameState.inventory
+    )
+  ) {
+    gameState.inventory = [];
+  }
+
+  const item =
+    gameState.inventory.find(
+      inventoryItem =>
+        String(
+          inventoryItem.seed_key
+        ) === String(seedKey)
+    );
+
+  if (item) {
+    item.amount =
+      Number(amount) || 0;
+  } else if (
+    Number(amount) > 0
+  ) {
+    gameState.inventory.push({
+      seed_key: seedKey,
+      amount: Number(amount)
+    });
+  }
+}
+
+
+/* =========================================================
+   INVENTORY PANEL
+========================================================= */
+
+function openInventory() {
+  const oldPanel =
+    document.getElementById(
+      "dynamicInventoryPanel"
+    );
+
+  if (oldPanel) {
+    oldPanel.remove();
+  }
+
+  const panel =
+    document.createElement(
+      "div"
+    );
+
+  panel.id =
+    "dynamicInventoryPanel";
+
+  panel.style.position =
+    "fixed";
+
+  panel.style.inset =
+    "0";
+
+  panel.style.zIndex =
+    "10000";
+
+  panel.style.background =
+    "rgba(0,0,0,.65)";
+
+  panel.style.display =
+    "flex";
+
+  panel.style.alignItems =
+    "center";
+
+  panel.style.justifyContent =
+    "center";
+
+  panel.style.padding =
+    "20px";
+
+  const box =
+    document.createElement(
+      "div"
+    );
+
+  box.style.width =
+    "min(92vw, 420px)";
+
+  box.style.maxHeight =
+    "80vh";
+
+  box.style.overflow =
+    "auto";
+
+  box.style.borderRadius =
+    "18px";
+
+  box.style.padding =
+    "18px";
+
+  box.style.background =
+    "#dff6ff";
+
+  box.style.color =
+    "#063b52";
+
+  box.style.boxShadow =
+    "0 12px 40px rgba(0,0,0,.35)";
+
+  const title =
+    document.createElement(
+      "h2"
+    );
+
+  title.textContent =
+    "🎒 Kho hạt giống";
+
+  title.style.marginTop =
+    "0";
+
+  box.appendChild(
+    title
+  );
+
+  Object.entries(
+    SEEDS
+  ).forEach(
+    ([seedKey, seed]) => {
+      const amount =
+        getInventoryAmount(
+          seedKey
+        );
+
+      const row =
+        document.createElement(
+          "div"
+        );
+
+      row.style.display =
+        "flex";
+
+      row.style.alignItems =
+        "center";
+
+      row.style.justifyContent =
+        "space-between";
+
+      row.style.padding =
+        "10px";
+
+      row.style.marginBottom =
+        "7px";
+
+      row.style.borderRadius =
+        "10px";
+
+      row.style.background =
+        "rgba(255,255,255,.55)";
+
+      row.innerHTML = `
+        <span>
+          ${seed.emoji}
+          ${escapeHtml(seed.name)}
+        </span>
+        <strong>${formatNumber(
+          amount
+        )}</strong>
+      `;
+
+      box.appendChild(
+        row
+      );
+    }
+  );
+
+  const closeButton =
+    document.createElement(
+      "button"
+    );
+
+  closeButton.type =
+    "button";
+
+  closeButton.textContent =
+    "Đóng";
+
+  closeButton.style.width =
+    "100%";
+
+  closeButton.style.marginTop =
+    "12px";
+
+  closeButton.style.padding =
+    "12px";
+
+  closeButton.style.border =
+    "0";
+
+  closeButton.style.borderRadius =
+    "12px";
+
+  closeButton.style.background =
+    "#0788df";
+
+  closeButton.style.color =
+    "#fff";
+
+  closeButton.style.fontWeight =
+    "700";
+
+  closeButton.addEventListener(
+    "click",
+    () => {
+      panel.remove();
+    }
+  );
+
+  box.appendChild(
+    closeButton
+  );
+
+  panel.appendChild(
+    box
+  );
+
+  panel.addEventListener(
+    "click",
+    event => {
+      if (
+        event.target === panel
+      ) {
+        panel.remove();
+      }
+    }
+  );
+
+  document.body.appendChild(
+    panel
+  );
+}
+
+
+/* =========================================================
+   TASKS
+========================================================= */
+
+function openTasks() {
+  renderTasks();
+
+  showPanel(
+    tasksPanel
+  );
+}
+
+
+function closeTasks() {
+  hidePanel(
+    tasksPanel
+  );
+}
+
+
+function renderTasks() {
+  if (!tasksList) {
+    return;
+  }
+
+  tasksList.innerHTML = "";
+
+  /*
+   * Hiện tại backend chưa có
+   * endpoint xác minh nhiệm vụ.
+   *
+   * KHÔNG tự cộng thưởng ở client.
+   */
+
+  const tasks = [
+    {
+      id: "join_channel",
+      title: "📢 Tham gia kênh",
+      description:
+        "Tham gia kênh Telegram theo yêu cầu của game.",
+      reward: 500
+    },
+    {
+      id: "invite_friend",
+      title: "👥 Mời bạn bè",
+      description:
+        "Mời bạn bè tham gia Nông Trại Xanh.",
+      reward: 1000
+    }
+  ];
+
+  tasks.forEach(
+    task => {
+      const item =
+        document.createElement(
+          "div"
+        );
+
+      item.className =
+        "task-item";
+
+      item.innerHTML = `
+        <div class="task-info">
+          <strong>${escapeHtml(
+            task.title
+          )}</strong>
+          <p>${escapeHtml(
+            task.description
+          )}</p>
+          <small>
+            🎁 ${formatNumber(
+              task.reward
+            )} xu
+          </small>
+        </div>
+
+        <button
+          type="button"
+          class="task-button"
+          data-task="${escapeHtml(
+            task.id
+          )}"
+        >
+          Kiểm tra
+        </button>
+      `;
+
+      const button =
+        item.querySelector(
+          ".task-button"
+        );
+
+      button.addEventListener(
+        "click",
+        () => {
+          showMessage(
+            "Tính năng xác minh nhiệm vụ đang chờ backend. Game sẽ không tự cộng thưởng ở phía client.",
+            "info"
+          );
+        }
+      );
+
+      tasksList.appendChild(
+        item
+      );
+    }
+  );
+}
+
+
+/* =========================================================
+   MENU EVENTS
+========================================================= */
+
+function setupMenuEvents() {
+  if (shopMenu) {
+    shopMenu.addEventListener(
+      "click",
+      event => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        openShop();
+      }
+    );
+  }
+
+  if (seedMenu) {
+    seedMenu.addEventListener(
+      "click",
+      event => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        /*
+         * Nếu chưa chọn plot,
+         * tìm ô trống đầu tiên.
+         */
+        let targetPlot =
+          selectedPlot;
+
+        if (!targetPlot) {
+          const emptyPlot =
+            gameState.plots.find(
+              plot =>
+                isUnlocked(plot) &&
+                !plot.crop_type
+            );
+
+          if (emptyPlot) {
+            targetPlot =
+              Number(
+                emptyPlot.plot_number
+              );
+          }
+        }
+
+        if (!targetPlot) {
+          showMessage(
+            "Hãy mở một ô đất trống trước.",
+            "info"
+          );
+
+          return;
+        }
+
+        openSeedPanel(
+          targetPlot
+        );
+      }
+    );
+  }
+
+  if (inventoryMenu) {
+    inventoryMenu.addEventListener(
+      "click",
+      event => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        openInventory();
+      }
+    );
+  }
+
+  if (tasksMenu) {
+    tasksMenu.addEventListener(
+      "click",
+      event => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        openTasks();
+      }
+    );
+  }
+
+  if (settingsMenu) {
+    settingsMenu.addEventListener(
+      "click",
+      event => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        showMessage(
+          "⚙️ Cài đặt sẽ được bổ sung sau.",
+          "info"
+        );
+      }
+    );
+  }
+}
+
+
+/* =========================================================
+   CLOSE EVENTS
+========================================================= */
+
+function setupCloseEvents() {
+  if (seedClose) {
+    seedClose.addEventListener(
+      "click",
+      event => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        closeSeedPanel();
+      }
+    );
+  }
+
+  if (shopClose) {
+    shopClose.addEventListener(
+      "click",
+      event => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        closeShop();
+      }
+    );
+  }
+
+  if (tasksClose) {
+    tasksClose.addEventListener(
+      "click",
+      event => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        closeTasks();
+      }
+    );
+  }
+
+  setupOutsidePanelClose(
+    seedPanel,
+    closeSeedPanel
+  );
+
+  setupOutsidePanelClose(
+    shopPanel,
+    closeShop
+  );
+
+  setupOutsidePanelClose(
+    tasksPanel,
+    closeTasks
+  );
+}
+
+
+function setupOutsidePanelClose(
+  panel,
+  closeFunction
+) {
+  if (!panel) {
+    return;
+  }
+
+  panel.addEventListener(
+    "click",
+    event => {
+      if (
+        event.target === panel
+      ) {
+        closeFunction();
+      }
+    }
+  );
+}
+
+
+/* =========================================================
+   RENDER ALL
+========================================================= */
+
+function renderAll() {
+  renderPlayer();
+  renderPlots();
+
+  if (
+    seedPanel &&
+    seedPanel.classList.contains(
+      "show"
+    )
+  ) {
+    renderSeedList();
+  }
+
+  if (
+    shopPanel &&
+    shopPanel.classList.contains(
+      "show"
+    )
+  ) {
+    renderShop();
+  }
+
+  if (
+    tasksPanel &&
+    tasksPanel.classList.contains(
+      "show"
+    )
+  ) {
+    renderTasks();
+  }
+
+  startCountdown();
+}
+
+
+/* =========================================================
+   PANEL HELPERS
+========================================================= */
+
+function showPanel(
+  panel
+) {
+  if (!panel) {
+    return;
+  }
+
+  panel.classList.add(
+    "show"
+  );
+
+  panel.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+}
+
+
+function hidePanel(
+  panel
+) {
+  if (!panel) {
+    return;
+  }
+
+  panel.classList.remove(
+    "show"
+  );
+
+  panel.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+function setLoading(
+  loading,
+  message = "Đang xử lý..."
+) {
+  isLoading =
+    Boolean(loading);
+
+  if (loading) {
+    showLoading(
+      message
+    );
+  } else {
+    hideLoading();
+  }
+}
+
+
+function showLoading(
+  message = "Đang xử lý..."
+) {
+  let loadingElement =
+    document.getElementById(
+      "gameLoading"
+    );
+
+  if (!loadingElement) {
+    loadingElement =
+      document.createElement(
+        "div"
+      );
+
+    loadingElement.id =
+      "gameLoading";
+
+    loadingElement.style.position =
+      "fixed";
+
+    loadingElement.style.left =
+      "50%";
+
+    loadingElement.style.bottom =
+      "95px";
+
+    loadingElement.style.transform =
+      "translateX(-50%)";
+
+    loadingElement.style.zIndex =
+      "20000";
+
+    loadingElement.style.padding =
+      "10px 16px";
+
+    loadingElement.style.borderRadius =
+      "14px";
+
+    loadingElement.style.background =
+      "rgba(0,0,0,.82)";
+
+    loadingElement.style.color =
+      "#fff";
+
+    loadingElement.style.fontSize =
+      "14px";
+
+    loadingElement.style.fontWeight =
+      "700";
+
+    loadingElement.style.pointerEvents =
+      "none";
+
+    document.body.appendChild(
+      loadingElement
+    );
+  }
+
+  loadingElement.textContent =
+    `⏳ ${message}`;
+
+  loadingElement.style.display =
+    "block";
+}
+
+
+function hideLoading() {
+  const loadingElement =
+    document.getElementById(
+      "gameLoading"
+    );
+
+  if (loadingElement) {
+    loadingElement.style.display =
+      "none";
+  }
+}
+
+
+/* =========================================================
+   TOAST / MESSAGE
+========================================================= */
+
+function showMessage(
+  message,
+  type = "info"
+) {
+  let toast =
+    document.getElementById(
+      "gameToast"
+    );
+
+  if (!toast) {
+    toast =
+      document.createElement(
+        "div"
+      );
+
+    toast.id =
+      "gameToast";
+
+    toast.style.position =
+      "fixed";
+
+    toast.style.left =
+      "50%";
+
+    toast.style.bottom =
+      "105px";
+
+    toast.style.transform =
+      "translateX(-50%)";
+
+    toast.style.zIndex =
+      "30000";
+
+    toast.style.maxWidth =
+      "88vw";
+
+    toast.style.padding =
+      "11px 16px";
+
+    toast.style.borderRadius =
+      "14px";
+
+    toast.style.color =
+      "#fff";
+
+    toast.style.fontSize =
+      "14px";
+
+    toast.style.fontWeight =
+      "700";
+
+    toast.style.textAlign =
+      "center";
+
+    toast.style.boxShadow =
+      "0 8px 25px rgba(0,0,0,.3)";
+
+    toast.style.pointerEvents =
+      "none";
+
+    document.body.appendChild(
+      toast
+    );
+  }
+
+  if (type === "error") {
+    toast.style.background =
+      "rgba(190,35,35,.94)";
+  } else if (
+    type === "success"
+  ) {
+    toast.style.background =
+      "rgba(18,145,76,.94)";
+  } else {
+    toast.style.background =
+      "rgba(0,70,100,.94)";
+  }
+
+  toast.textContent =
+    String(message);
+
+  toast.style.display =
+    "block";
+
+  if (toastTimer) {
+    clearTimeout(
+      toastTimer
+    );
+  }
+
+  toastTimer =
+    setTimeout(
+      () => {
+        toast.style.display =
+          "none";
+      },
+      3500
+    );
+}
+
+
+/* =========================================================
+   UTILITY
+========================================================= */
+
+function formatNumber(
+  value
+) {
+  const number =
+    Number(value);
+
+  if (
+    !Number.isFinite(number)
+  ) {
+    return "0";
+  }
+
+  return new Intl.NumberFormat(
+    "vi-VN"
+  ).format(number);
+}
+
+
+function escapeHtml(
+  value
+) {
+  return String(
+    value ?? ""
+  )
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+}
+
+
+function replacePlot(
+  newPlot
+) {
+  if (!newPlot) {
+    return;
+  }
+
+  const number =
+    Number(
+      newPlot.plot_number
+    );
+
+  if (!number) {
+    return;
+  }
+
+  const index =
+    gameState.plots.findIndex(
+      plot =>
+        Number(
+          plot.plot_number
+        ) === number
+    );
+
+  if (index >= 0) {
+    gameState.plots[index] =
+      newPlot;
+  } else {
+    gameState.plots.push(
+      newPlot
+    );
+  }
+}
+
+
+/* =========================================================
+   VISIBILITY
+========================================================= */
+
+function setupVisibilityEvents() {
+  document.addEventListener(
+    "visibilitychange",
+    async () => {
+      if (
+        document.visibilityState !==
+        "visible"
+      ) {
+        return;
+      }
+
+      if (
+        !gameStarted ||
+        isLoading ||
+        isAuthenticating
+      ) {
+        return;
+      }
+
+      console.log(
+        "👀 Mini App visible trở lại → tải state."
+      );
+
+      await loadGameState(
+        false
+      );
+    }
+  );
+}
+
+
+/* =========================================================
+   START GAME
+========================================================= */
+
+async function startGame() {
+  console.log(
+    "🌱 Nông Trại Xanh starting..."
+  );
+
+  cacheDOM();
+
+  setupPlotEvents();
+  setupMenuEvents();
+  setupCloseEvents();
+  setupVisibilityEvents();
+
+  /*
+   * Telegram phải tồn tại trước.
+   */
+  const telegramReady =
+    initTelegram();
+
+  if (!telegramReady) {
+    return;
+  }
+
+  /*
+   * Xác thực với backend.
+   */
+  const authenticated =
+    await authenticateTelegram();
+
+  if (!authenticated) {
+    return;
+  }
+
+  /*
+   * Sau khi auth thành công,
+   * tải state mới nhất.
+   */
+  await loadGameState(
+    false
+  );
+
+  gameStarted = true;
+
+  renderAll();
+
+  console.log(
+    "✅ Nông Trại Xanh đã sẵn sàng."
+  );
+}
+
+
+/* =========================================================
+   DOM READY
+========================================================= */
+
+if (
+  document.readyState ===
+  "loading"
+) {
+  document.addEventListener(
+    "DOMContentLoaded",
+    startGame,
+    {
+      once: true
+    }
+  );
+} else {
+  startGame();
+}
+
+
+/* =========================================================
+   DEBUG API
+   Không chứa secret.
+========================================================= */
+
+window.NongTraiXanh =
+  window.NongTraiXanh || {};
+
+window.NongTraiXanh.getState =
+  function () {
+    return gameState;
+  };
+
+window.NongTraiXanh.reload =
+  async function () {
+    return loadGameState();
+  };
+
+window.NongTraiXanh.openSeed =
+  function (plotNumber) {
+    openSeedPanel(
+      Number(plotNumber)
+    );
+  };
