@@ -23,7 +23,7 @@
    CONFIG
 ========================================================= */
 
-const BACKEND_URL = "https://telegram-farm-backend.onrender.com";
+const BACKEND_URL = "https://telegram-farm-backend-lpiz.onrender.com";
 
 const TOTAL_PLOTS = 20;
 const FREE_PLOTS = 3;
