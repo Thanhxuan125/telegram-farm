@@ -4,20 +4,36 @@
 |--------------------------------------------------------------------------
 | NÔNG TRẠI XANH - FRONTEND
 |--------------------------------------------------------------------------
-| Frontend KHÔNG chứa:
-| - Supabase key
-| - Telegram Bot Token
-| - logic quyết định Coin / EXP / giá / thời gian trồng
-|
-| Tất cả dữ liệu quan trọng được server Render quyết định.
+| SECURITY:
+| - Frontend không chứa Supabase key
+| - Frontend không chứa Telegram Bot Token
+| - Frontend không tự quyết định Coin / EXP / giá / thời gian
+| - Server Render là nguồn dữ liệu game
+| - Telegram initData được gửi cho backend để xác minh
 |--------------------------------------------------------------------------
 */
 
-const BACKEND_URL = "https://telegram-farm-backend.onrender.com";
+const BACKEND_URL =
+  "https://telegram-farm-backend.onrender.com";
 
 const TOTAL_PLOTS = 20;
 const FREE_PLOTS = 3;
 const EXP_PER_LEVEL = 7000;
+
+/*
+|--------------------------------------------------------------------------
+| NETWORK
+|--------------------------------------------------------------------------
+*/
+
+const REQUEST_TIMEOUT = 45000;
+const MAX_RETRIES = 2;
+
+/*
+|--------------------------------------------------------------------------
+| SEEDS
+|--------------------------------------------------------------------------
+*/
 
 const SEEDS = {
   wheat: {
@@ -128,6 +144,8 @@ let initData = "";
 let selectedPlot = null;
 let countdownTimer = null;
 let isLoading = false;
+let isAuthenticating = false;
+let gameStarted = false;
 
 /*
 |--------------------------------------------------------------------------
@@ -135,31 +153,68 @@ let isLoading = false;
 |--------------------------------------------------------------------------
 */
 
-const levelNumber = document.getElementById("levelNumber");
-const levelValue = document.getElementById("levelValue");
-const expFill = document.getElementById("expFill");
-const expText = document.getElementById("expText");
-const coinValue = document.getElementById("coinValue");
-const fertilizerValue = document.getElementById("fertilizerValue");
+const levelNumber =
+  document.getElementById("levelNumber");
 
-const seedPanel = document.getElementById("seedPanel");
-const seedList = document.getElementById("seedList");
-const seedClose = document.getElementById("seedClose");
+const levelValue =
+  document.getElementById("levelValue");
 
-const shopPanel = document.getElementById("shopPanel");
-const shopList = document.getElementById("shopList");
-const shopClose = document.getElementById("shopClose");
-const shopTotalValue = document.getElementById("shopTotalValue");
+const expFill =
+  document.getElementById("expFill");
 
-const tasksPanel = document.getElementById("tasksPanel");
-const tasksList = document.getElementById("tasksList");
-const tasksClose = document.getElementById("tasksClose");
+const expText =
+  document.getElementById("expText");
 
-const shopMenu = document.getElementById("shopMenu");
-const seedMenu = document.getElementById("seedMenu");
-const inventoryMenu = document.getElementById("inventoryMenu");
-const tasksMenu = document.getElementById("tasksMenu");
-const settingsMenu = document.getElementById("settingsMenu");
+const coinValue =
+  document.getElementById("coinValue");
+
+const fertilizerValue =
+  document.getElementById("fertilizerValue");
+
+const seedPanel =
+  document.getElementById("seedPanel");
+
+const seedList =
+  document.getElementById("seedList");
+
+const seedClose =
+  document.getElementById("seedClose");
+
+const shopPanel =
+  document.getElementById("shopPanel");
+
+const shopList =
+  document.getElementById("shopList");
+
+const shopClose =
+  document.getElementById("shopClose");
+
+const shopTotalValue =
+  document.getElementById("shopTotalValue");
+
+const tasksPanel =
+  document.getElementById("tasksPanel");
+
+const tasksList =
+  document.getElementById("tasksList");
+
+const tasksClose =
+  document.getElementById("tasksClose");
+
+const shopMenu =
+  document.getElementById("shopMenu");
+
+const seedMenu =
+  document.getElementById("seedMenu");
+
+const inventoryMenu =
+  document.getElementById("inventoryMenu");
+
+const tasksMenu =
+  document.getElementById("tasksMenu");
+
+const settingsMenu =
+  document.getElementById("settingsMenu");
 
 /*
 |--------------------------------------------------------------------------
@@ -167,53 +222,37 @@ const settingsMenu = document.getElementById("settingsMenu");
 |--------------------------------------------------------------------------
 */
 
-function initTelegram() {
-  console.log("🔎 Đang kiểm tra Telegram WebApp...");
-
-  /*
-  | Kiểm tra Telegram WebApp SDK
-  */
-
+function initTelegram(showDiagnostics = false) {
   if (
     !window.Telegram ||
     !window.Telegram.WebApp
   ) {
     console.error(
-      "❌ Telegram WebApp SDK chưa được tải."
+      "Telegram WebApp SDK chưa được tải."
     );
 
-    window.alert(
-      "❌ KHÔNG TÌM THẤY TELEGRAM WEBAPP\n\n" +
-      "Telegram SDK chưa được tải."
-    );
+    if (showDiagnostics) {
+      window.alert(
+        "Không tìm thấy Telegram WebApp SDK.\n\n" +
+        "Hãy mở Mini App trực tiếp từ Telegram."
+      );
+    }
 
     return false;
   }
 
-  /*
-  | Lấy WebApp object
-  */
-
   telegram =
     window.Telegram.WebApp;
-
-  /*
-  | Telegram WebApp khởi tạo
-  */
 
   try {
     telegram.ready();
     telegram.expand();
   } catch (error) {
     console.warn(
-      "Telegram ready/expand error:",
+      "Telegram ready/expand:",
       error
     );
   }
-
-  /*
-  | Màu giao diện Telegram
-  */
 
   try {
     telegram.setHeaderColor(
@@ -225,154 +264,123 @@ function initTelegram() {
     );
   } catch (error) {
     console.warn(
-      "Telegram UI setup:",
+      "Telegram color setup:",
       error
     );
   }
 
   /*
   |--------------------------------------------------------------------------
-  | LẤY INIT DATA
+  | QUAN TRỌNG
   |--------------------------------------------------------------------------
-  |
-  | initData là dữ liệu Telegram ký để
-  | backend xác minh người chơi.
-  |
-  | KHÔNG sử dụng initDataUnsafe để
-  | xác thực người chơi.
-  |
+  | Luôn lấy initData mới nhất từ Telegram.
   */
 
   initData =
-    telegram.initData || "";
-
-  /*
-  | Một số thông tin diagnostic.
-  | initData thật KHÔNG được hiển thị ra
-  | popup để tránh người dùng vô tình chia sẻ.
-  */
-
-  const initDataLength =
-    String(initData).length;
-
-  const unsafeUser =
-    telegram.initDataUnsafe?.user;
-
-  const userId =
-    unsafeUser?.id ||
-    "Không có";
-
-  const platform =
-    telegram.platform ||
-    "Không xác định";
-
-  const version =
-    telegram.version ||
-    "Không xác định";
-
-  /*
-  | Console diagnostic
-  */
+    String(
+      telegram.initData || ""
+    );
 
   console.log(
-    "Telegram WebApp:",
-    telegram
+    "Telegram SDK:",
+    "CÓ"
   );
 
   console.log(
     "Telegram initData:",
-    telegram.initData
-  );
-
-  console.log(
-    "Telegram initDataUnsafe:",
-    telegram.initDataUnsafe
-  );
-
-  console.log(
-    "Telegram platform:",
-    platform
-  );
-
-  console.log(
-    "Telegram version:",
-    version
+    initData
+      ? "CÓ"
+      : "KHÔNG"
   );
 
   console.log(
     "Telegram initData length:",
-    initDataLength
+    initData.length
   );
-
-  /*
-  |--------------------------------------------------------------------------
-  | INITDATA TRỐNG
-  |--------------------------------------------------------------------------
-  */
 
   if (!initData) {
     console.error(
-      "❌ Telegram không cung cấp initData."
+      "Telegram initData đang trống."
     );
 
-    window.alert(
-      "❌ TELEGRAM INITDATA = TRỐNG\n\n" +
-      "Telegram SDK: CÓ\n" +
-      "initData: KHÔNG CÓ\n" +
-      "User ID: " +
-      userId +
-      "\n" +
-      "Platform: " +
-      platform +
-      "\n" +
-      "Version: " +
-      version +
-      "\n\n" +
-      "=> Cần kiểm tra cách Mini App đang được Telegram mở."
-    );
+    if (showDiagnostics) {
+      const unsafeUser =
+        telegram.initDataUnsafe?.user;
 
-    /*
-    | Trả true để startGame tiếp tục,
-    | nhưng apiRequest sẽ chặn request
-    | vì initData vẫn đang rỗng.
-    */
+      window.alert(
+        "Telegram đã mở Mini App nhưng không có initData.\n\n" +
+        "User ID: " +
+        (unsafeUser?.id || "Không có") +
+        "\nPlatform: " +
+        (telegram.platform || "Không xác định") +
+        "\nVersion: " +
+        (telegram.version || "Không xác định")
+      );
+    }
 
-    return true;
+    return false;
   }
 
-  /*
-  |--------------------------------------------------------------------------
-  | INITDATA ĐÃ CÓ
-  |--------------------------------------------------------------------------
-  */
-
-  console.log(
-    "✅ Telegram initData đã nhận."
-  );
-
-  console.log(
-    "📏 Độ dài initData:",
-    initDataLength
-  );
-
-  window.alert(
-    "✅ TELEGRAM INITDATA ĐÃ NHẬN\n\n" +
-    "SDK: CÓ\n" +
-    "initData: CÓ\n" +
-    "Độ dài: " +
-    initDataLength +
-    "\n" +
-    "User ID: " +
-    userId +
-    "\n" +
-    "Platform: " +
-    platform +
-    "\n" +
-    "Version: " +
-    version
-  );
-
   return true;
+}
+
+/*
+|--------------------------------------------------------------------------
+| NETWORK HELPER
+|--------------------------------------------------------------------------
+*/
+
+function sleep(ms) {
+  return new Promise(
+    resolve =>
+      setTimeout(
+        resolve,
+        ms
+      )
+  );
+}
+
+async function fetchWithTimeout(
+  url,
+  options = {},
+  timeout = REQUEST_TIMEOUT
+) {
+  const controller =
+    new AbortController();
+
+  const timeoutId =
+    setTimeout(
+      () => {
+        controller.abort();
+      },
+      timeout
+    );
+
+  try {
+    return await fetch(
+      url,
+      {
+        ...options,
+        signal:
+          controller.signal
+      }
+    );
+  } catch (error) {
+    if (
+      error?.name ===
+      "AbortError"
+    ) {
+      throw new Error(
+        "Máy chủ phản hồi quá lâu. Render có thể đang khởi động lại, hãy thử lại."
+      );
+    }
+
+    throw error;
+  } finally {
+    clearTimeout(
+      timeoutId
+    );
+  }
 }
 
 /*
@@ -381,47 +389,152 @@ function initTelegram() {
 |--------------------------------------------------------------------------
 */
 
-async function apiRequest(endpoint, body = {}) {
+async function apiRequest(
+  endpoint,
+  body = {},
+  options = {}
+) {
+  /*
+  | Lấy initData mới nhất trước request.
+  */
+
+  if (
+    telegram &&
+    telegram.initData
+  ) {
+    initData =
+      String(
+        telegram.initData
+      );
+  }
+
   if (!initData) {
     throw new Error(
-      "Không có Telegram initData. Hãy mở game từ Telegram."
+      "Không có Telegram initData. Hãy đóng Mini App và mở lại từ Telegram."
     );
   }
 
-  const response = await fetch(
-    `${BACKEND_URL}${endpoint}`,
-    {
-      method: "POST",
+  const maxRetries =
+    Number.isInteger(
+      options.retries
+    )
+      ? options.retries
+      : MAX_RETRIES;
 
-      headers: {
-        "Content-Type": "application/json"
-      },
+  let lastError = null;
 
-      body: JSON.stringify({
-        initData,
-        ...body
-      })
+  for (
+    let attempt = 0;
+    attempt <= maxRetries;
+    attempt++
+  ) {
+    try {
+      const response =
+        await fetchWithTimeout(
+          `${BACKEND_URL}${endpoint}`,
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+              initData,
+              ...body
+            })
+          }
+        );
+
+      let data = null;
+
+      try {
+        data =
+          await response.json();
+      } catch {
+        throw new Error(
+          `Máy chủ trả về dữ liệu không hợp lệ (${response.status}).`
+        );
+      }
+
+      /*
+      | Server lỗi tạm thời:
+      | 502 / 503 / 504
+      | => thử lại vì Render Free có thể
+      | đang thức dậy.
+      */
+
+      if (
+        [502, 503, 504].includes(
+          response.status
+        ) &&
+        attempt < maxRetries
+      ) {
+        await sleep(
+          1500 * (attempt + 1)
+        );
+
+        continue;
+      }
+
+      if (
+        !response.ok ||
+        data?.ok === false
+      ) {
+        throw new Error(
+          data?.error ||
+          `Request thất bại (${response.status}).`
+        );
+      }
+
+      return data;
+    } catch (error) {
+      lastError = error;
+
+      /*
+      | Không retry lỗi do game/server trả về
+      | rõ ràng. Chỉ retry lỗi mạng / timeout.
+      */
+
+      const message =
+        String(
+          error?.message || ""
+        ).toLowerCase();
+
+      const shouldRetry =
+        message.includes(
+          "failed to fetch"
+        ) ||
+        message.includes(
+          "network"
+        ) ||
+        message.includes(
+          "fetch"
+        ) ||
+        message.includes(
+          "phản hồi quá lâu"
+        );
+
+      if (
+        !shouldRetry ||
+        attempt >= maxRetries
+      ) {
+        break;
+      }
+
+      await sleep(
+        1500 * (attempt + 1)
+      );
     }
+  }
+
+  throw (
+    lastError ||
+    new Error(
+      "Không thể kết nối máy chủ."
+    )
   );
-
-  let data;
-
-  try {
-    data = await response.json();
-  } catch {
-    throw new Error(
-      `Server trả về dữ liệu không hợp lệ (${response.status})`
-    );
-  }
-
-  if (!response.ok || data.ok === false) {
-    throw new Error(
-      data.error ||
-      `Request thất bại (${response.status})`
-    );
-  }
-
-  return data;
 }
 
 /*
@@ -431,37 +544,69 @@ async function apiRequest(endpoint, body = {}) {
 */
 
 async function authenticateTelegram() {
-  showLoading("Đang kết nối máy chủ...");
+  if (isAuthenticating) {
+    return false;
+  }
+
+  isAuthenticating = true;
+
+  showLoading(
+    "Đang kết nối máy chủ..."
+  );
 
   try {
+    /*
+    | Lấy initData mới nhất
+    */
+
+    if (
+      telegram?.initData
+    ) {
+      initData =
+        String(
+          telegram.initData
+        );
+    }
+
+    if (!initData) {
+      throw new Error(
+        "Telegram không cung cấp initData. Hãy đóng Mini App và mở lại từ Telegram."
+      );
+    }
+
     const data =
       await apiRequest(
-        "/api/auth/telegram"
+        "/api/auth/telegram",
+        {},
+        {
+          retries: 2
+        }
       );
 
+    if (!data) {
+      throw new Error(
+        "Máy chủ không trả về dữ liệu người chơi."
+      );
+    }
+
     gameState.player =
-      data.player;
+      data.player || null;
 
     gameState.plots =
-      data.plots || [];
-    window.alert(
-  "Số ô đất server trả về: " +
-  gameState.plots.length +
-  "\nÔ 1: " +
-  JSON.stringify(
-    gameState.plots.find(
-      item =>
-        Number(item.plot_number) === 1
-    )
-  )
-);
+      Array.isArray(
+        data.plots
+      )
+        ? data.plots
+        : [];
 
     gameState.inventory =
-      data.inventory || [];
+      Array.isArray(
+        data.inventory
+      )
+        ? data.inventory
+        : [];
 
     renderAll();
-
-    hideLoading();
 
     console.log(
       "Telegram authentication thành công."
@@ -469,20 +614,21 @@ async function authenticateTelegram() {
 
     return true;
   } catch (error) {
-    hideLoading();
-
     console.error(
       "Telegram authentication error:",
       error
     );
 
     showMessage(
-      error.message ||
-      "Không thể kết nối máy chủ.",
+      error?.message ||
+        "Không thể kết nối máy chủ.",
       "error"
     );
 
     return false;
+  } finally {
+    isAuthenticating = false;
+    hideLoading();
   }
 }
 
@@ -493,22 +639,71 @@ async function authenticateTelegram() {
 */
 
 async function loadGameState() {
+  /*
+  | Không gọi state khi auth đang chạy.
+  */
+
+  if (isAuthenticating) {
+    return false;
+  }
+
+  /*
+  | Nếu chưa có player thì authenticate trước.
+  */
+
+  if (!gameState.player) {
+    return authenticateTelegram();
+  }
+
   try {
+    /*
+    | Refresh initData.
+    */
+
+    if (
+      telegram?.initData
+    ) {
+      initData =
+        String(
+          telegram.initData
+        );
+    }
+
+    if (!initData) {
+      return false;
+    }
+
     const data =
       await apiRequest(
-        "/api/game/state"
+        "/api/game/state",
+        {},
+        {
+          retries: 2
+        }
       );
 
     gameState.player =
-      data.player;
+      data.player || null;
 
     gameState.plots =
-      data.plots || [];
+      Array.isArray(
+        data.plots
+      )
+        ? data.plots
+        : [];
 
     gameState.inventory =
-      data.inventory || [];
+      Array.isArray(
+        data.inventory
+      )
+        ? data.inventory
+        : [];
 
     renderAll();
+
+    console.log(
+      "Game state đã được tải lại."
+    );
 
     return true;
   } catch (error) {
@@ -517,9 +712,15 @@ async function loadGameState() {
       error
     );
 
+    /*
+    | Không hiện popup liên tục khi
+    | Telegram chỉ vừa chuyển từ nền
+    | trở lại.
+    */
+
     showMessage(
-      error.message ||
-      "Không thể tải dữ liệu game.",
+      error?.message ||
+        "Không thể tải dữ liệu game.",
       "error"
     );
 
@@ -573,12 +774,16 @@ function renderPlayer() {
 
   if (coinValue) {
     coinValue.textContent =
-      formatNumber(coins);
+      formatNumber(
+        coins
+      );
   }
 
   if (fertilizerValue) {
     fertilizerValue.textContent =
-      formatNumber(fertilizer);
+      formatNumber(
+        fertilizer
+      );
   }
 
   const expPercent =
@@ -586,7 +791,9 @@ function renderPlayer() {
       0,
       Math.min(
         100,
-        (exp / EXP_PER_LEVEL) * 100
+        (exp /
+          EXP_PER_LEVEL) *
+          100
       )
     );
 
@@ -597,7 +804,11 @@ function renderPlayer() {
 
   if (expText) {
     expText.textContent =
-      `${formatNumber(exp)} / ${formatNumber(EXP_PER_LEVEL)} EXP`;
+      `${formatNumber(
+        exp
+      )} / ${formatNumber(
+        EXP_PER_LEVEL
+      )} EXP`;
   }
 }
 
@@ -614,7 +825,7 @@ function renderPlots() {
     );
 
   plotElements.forEach(
-    (element) => {
+    element => {
       const plotNumber =
         Number(
           element.dataset.plot
@@ -623,8 +834,9 @@ function renderPlots() {
       const plot =
         gameState.plots.find(
           item =>
-            Number(item.plot_number) ===
-            plotNumber
+            Number(
+              item.plot_number
+            ) === plotNumber
         );
 
       if (!plot) {
@@ -633,7 +845,9 @@ function renderPlots() {
 
       element.classList.toggle(
         "unlocked",
-        Boolean(plot.unlocked)
+        Boolean(
+          plot.unlocked
+        )
       );
 
       element.classList.toggle(
@@ -641,9 +855,9 @@ function renderPlots() {
         !plot.unlocked
       );
 
-      /*
-      | Xóa trạng thái cây cũ
-      */
+      element.classList.remove(
+        "ready"
+      );
 
       element
         .querySelectorAll(
@@ -654,11 +868,9 @@ function renderPlots() {
             item.remove()
         );
 
-      /*
-      | LOCKED
-      */
-
-      if (!plot.unlocked) {
+      if (
+        !plot.unlocked
+      ) {
         renderLockedPlot(
           element,
           plotNumber
@@ -667,17 +879,11 @@ function renderPlots() {
         return;
       }
 
-      /*
-      | EMPTY
-      */
-
-      if (!plot.crop_type) {
+      if (
+        !plot.crop_type
+      ) {
         return;
       }
-
-      /*
-      | CROP
-      */
 
       renderCrop(
         element,
@@ -699,7 +905,10 @@ function renderLockedPlot(
 ) {
   let price = 0;
 
-  if (plotNumber > FREE_PLOTS) {
+  if (
+    plotNumber >
+    FREE_PLOTS
+  ) {
     price =
       500 *
       Math.pow(
@@ -717,7 +926,9 @@ function renderLockedPlot(
     "plot-price";
 
   priceElement.textContent =
-    `${formatNumber(price)} 🪙`;
+    `${formatNumber(
+      price
+    )} 🪙`;
 
   element.appendChild(
     priceElement
@@ -742,10 +953,6 @@ function renderCrop(
   if (!seed) {
     return;
   }
-
-  /*
-  | Icon cây
-  */
 
   const cropImage =
     document.createElement(
@@ -774,10 +981,6 @@ function renderCrop(
     cropImage
   );
 
-  /*
-  | Tên cây
-  */
-
   const cropName =
     document.createElement(
       "span"
@@ -792,10 +995,6 @@ function renderCrop(
   element.appendChild(
     cropName
   );
-
-  /*
-  | Countdown
-  */
 
   const growTime =
     document.createElement(
@@ -849,7 +1048,7 @@ function updateCountdowns() {
   let hasReadyCrop = false;
 
   timers.forEach(
-    (timer) => {
+    timer => {
       const harvestAt =
         timer.dataset.harvestAt;
 
@@ -858,7 +1057,9 @@ function updateCountdowns() {
           harvestAt
         );
 
-      if (remaining <= 0) {
+      if (
+        remaining <= 0
+      ) {
         timer.textContent =
           "✅ Chín";
 
@@ -871,11 +1072,6 @@ function updateCountdowns() {
       }
     }
   );
-
-  /*
-  | Khi cây chín, chỉ render lại giao diện.
-  | Không tự thu hoạch.
-  */
 
   if (hasReadyCrop) {
     document
@@ -899,10 +1095,21 @@ function getRemainingMs(
     return 0;
   }
 
-  return (
+  const timestamp =
     new Date(
       harvestAt
-    ).getTime() -
+    ).getTime();
+
+  if (
+    Number.isNaN(
+      timestamp
+    )
+  ) {
+    return 0;
+  }
+
+  return (
+    timestamp -
     Date.now()
   );
 }
@@ -915,7 +1122,9 @@ function getCountdownText(
       harvestAt
     );
 
-  if (remaining <= 0) {
+  if (
+    remaining <= 0
+  ) {
     return "✅ Chín";
   }
 
@@ -937,21 +1146,24 @@ function formatDuration(
 
   const days =
     Math.floor(
-      totalSeconds / 86400
+      totalSeconds /
+        86400
     );
 
   totalSeconds %= 86400;
 
   const hours =
     Math.floor(
-      totalSeconds / 3600
+      totalSeconds /
+        3600
     );
 
   totalSeconds %= 3600;
 
   const minutes =
     Math.floor(
-      totalSeconds / 60
+      totalSeconds /
+        60
     );
 
   const seconds =
@@ -974,7 +1186,7 @@ function formatDuration(
 
 /*
 |--------------------------------------------------------------------------
-| PLOT CLICK
+| PLOT EVENTS
 |--------------------------------------------------------------------------
 */
 
@@ -984,16 +1196,16 @@ function setupPlotEvents() {
       ".plot[data-plot]"
     )
     .forEach(
-      (plotElement) => {
+      plotElement => {
         plotElement.addEventListener(
           "click",
-          () => {
+          async () => {
             const plotNumber =
               Number(
                 plotElement.dataset.plot
               );
 
-            handlePlotClick(
+            await handlePlotClick(
               plotNumber
             );
           }
@@ -1002,29 +1214,47 @@ function setupPlotEvents() {
     );
 }
 
+/*
+|--------------------------------------------------------------------------
+| PLOT CLICK
+|--------------------------------------------------------------------------
+*/
+
 async function handlePlotClick(
   plotNumber
 ) {
-  if (isLoading) {
+  /*
+  | Trong lúc auth hoặc mutation đang
+  | chạy thì không cho click thêm.
+  */
+
+  if (
+    isLoading ||
+    isAuthenticating
+  ) {
     return;
   }
 
   const plot =
     gameState.plots.find(
       item =>
-        Number(item.plot_number) ===
-        plotNumber
+        Number(
+          item.plot_number
+        ) === plotNumber
     );
 
   if (!plot) {
+    showMessage(
+      "Chưa tải được dữ liệu ô đất. Hãy thử lại.",
+      "error"
+    );
+
     return;
   }
 
-  /*
-  | Locked
-  */
-
-  if (!plot.unlocked) {
+  if (
+    !plot.unlocked
+  ) {
     await unlockPlot(
       plotNumber
     );
@@ -1032,21 +1262,15 @@ async function handlePlotClick(
     return;
   }
 
-  /*
-  | Empty
-  */
-
-  if (!plot.crop_type) {
+  if (
+    !plot.crop_type
+  ) {
     openSeedPanel(
       plotNumber
     );
 
     return;
   }
-
-  /*
-  | Crop ready
-  */
 
   if (
     getRemainingMs(
@@ -1059,10 +1283,6 @@ async function handlePlotClick(
 
     return;
   }
-
-  /*
-  | Crop growing
-  */
 
   showPlotActions(
     plot
@@ -1089,7 +1309,9 @@ async function unlockPlot(
 
   const confirmed =
     window.confirm(
-      `Mở ô đất ${plotNumber} với giá ${formatNumber(price)} Coin?`
+      `Mở ô đất ${plotNumber} với giá ${formatNumber(
+        price
+      )} Coin?`
     );
 
   if (!confirmed) {
@@ -1107,7 +1329,9 @@ async function unlockPlot(
         }
       );
 
-    if (data.player) {
+    if (
+      data.player
+    ) {
       gameState.player =
         data.player;
     }
@@ -1115,8 +1339,9 @@ async function unlockPlot(
     const index =
       gameState.plots.findIndex(
         item =>
-          Number(item.plot_number) ===
-          plotNumber
+          Number(
+            item.plot_number
+          ) === plotNumber
       );
 
     if (
@@ -1140,7 +1365,8 @@ async function unlockPlot(
     );
 
     showMessage(
-      error.message,
+      error?.message ||
+        "Không thể mở khóa ô đất.",
       "error"
     );
   } finally {
@@ -1185,22 +1411,32 @@ function renderSeedList() {
 
   const playerLevel =
     Number(
-      gameState.player?.level || 1
+      gameState.player?.level ||
+        1
     );
+
+  const inventory =
+    Array.isArray(
+      gameState.inventory
+    )
+      ? gameState.inventory
+      : [];
 
   Object.entries(
     SEEDS
   ).forEach(
     ([key, seed]) => {
       const inventoryItem =
-        gameState.inventory.find(
+        inventory.find(
           item =>
-            item.seed_key === key
+            item.seed_key ===
+            key
         );
 
       const amount =
         Number(
-          inventoryItem?.amount || 0
+          inventoryItem?.amount ||
+            0
         );
 
       const item =
@@ -1228,13 +1464,17 @@ function renderSeedList() {
         </span>
 
         <span class="seed-name">
-          ${escapeHtml(seed.name)}
+          ${escapeHtml(
+            seed.name
+          )}
         </span>
 
         <span class="seed-price">
-          ${locked
-            ? `🔒 Lv.${seed.level}`
-            : `Có: ${amount}`}
+          ${
+            locked
+              ? `🔒 Lv.${seed.level}`
+              : `Có: ${amount}`
+          }
         </span>
       `;
 
@@ -1290,12 +1530,13 @@ async function plantSeed(
         {
           plotNumber:
             selectedPlot,
-
           seedKey
         }
       );
 
-    if (data.plot) {
+    if (
+      data.plot
+    ) {
       const index =
         gameState.plots.findIndex(
           item =>
@@ -1305,14 +1546,18 @@ async function plantSeed(
             selectedPlot
         );
 
-      if (index !== -1) {
+      if (
+        index !== -1
+      ) {
         gameState.plots[index] =
           data.plot;
       }
     }
 
     if (
-      data.inventory
+      Array.isArray(
+        data.inventory
+      )
     ) {
       gameState.inventory =
         data.inventory;
@@ -1348,7 +1593,8 @@ async function plantSeed(
     );
 
     showMessage(
-      error.message,
+      error?.message ||
+        "Không thể trồng cây.",
       "error"
     );
   } finally {
@@ -1358,7 +1604,7 @@ async function plantSeed(
 
 /*
 |--------------------------------------------------------------------------
-| FERTILIZER / CROP ACTION
+| FERTILIZER
 |--------------------------------------------------------------------------
 */
 
@@ -1379,9 +1625,13 @@ function showPlotActions(
       plot.harvest_at
     );
 
-  if (remaining <= 0) {
+  if (
+    remaining <= 0
+  ) {
     harvestPlot(
-      Number(plot.plot_number)
+      Number(
+        plot.plot_number
+      )
     );
 
     return;
@@ -1389,12 +1639,15 @@ function showPlotActions(
 
   const fertilizer =
     Number(
-      gameState.player?.fertilizer || 0
+      gameState.player?.fertilizer ||
+        0
     );
 
   const message =
     `🌱 ${seed.name}\n\n` +
-    `⏳ Còn: ${formatDuration(remaining)}\n\n` +
+    `⏳ Còn: ${formatDuration(
+      remaining
+    )}\n\n` +
     `🧪 Phân bón: ${fertilizer}`;
 
   const useFertilizer =
@@ -1403,9 +1656,13 @@ function showPlotActions(
       `${message}\n\nBấm OK để dùng 1 phân bón.`
     );
 
-  if (useFertilizer) {
+  if (
+    useFertilizer
+  ) {
     fertilizePlot(
-      Number(plot.plot_number)
+      Number(
+        plot.plot_number
+      )
     );
   }
 }
@@ -1424,12 +1681,16 @@ async function fertilizePlot(
         }
       );
 
-    if (data.player) {
+    if (
+      data.player
+    ) {
       gameState.player =
         data.player;
     }
 
-    if (data.plot) {
+    if (
+      data.plot
+    ) {
       const index =
         gameState.plots.findIndex(
           item =>
@@ -1439,7 +1700,9 @@ async function fertilizePlot(
             plotNumber
         );
 
-      if (index !== -1) {
+      if (
+        index !== -1
+      ) {
         gameState.plots[index] =
           data.plot;
       }
@@ -1448,11 +1711,13 @@ async function fertilizePlot(
     renderAll();
 
     const reduction =
-      data.reductionMinutes;
+      Number(
+        data.reductionMinutes
+      );
 
     if (
       Number.isFinite(
-        Number(reduction)
+        reduction
       )
     ) {
       showMessage(
@@ -1472,7 +1737,8 @@ async function fertilizePlot(
     );
 
     showMessage(
-      error.message,
+      error?.message ||
+        "Không thể dùng phân bón.",
       "error"
     );
   } finally {
@@ -1492,15 +1758,18 @@ async function harvestPlot(
   const plot =
     gameState.plots.find(
       item =>
-        Number(item.plot_number) ===
-        plotNumber
+        Number(
+          item.plot_number
+        ) === plotNumber
     );
 
   if (!plot) {
     return;
   }
 
-  if (!plot.crop_type) {
+  if (
+    !plot.crop_type
+  ) {
     return;
   }
 
@@ -1528,33 +1797,44 @@ async function harvestPlot(
         }
       );
 
-    if (data.player) {
+    if (
+      data.player
+    ) {
       gameState.player =
         data.player;
     }
 
-    if (data.plot) {
+    if (
+      data.plot
+    ) {
       const index =
         gameState.plots.findIndex(
           item =>
             Number(
               item.plot_number
-            ) ===
-            plotNumber
+            ) === plotNumber
         );
 
-      if (index !== -1) {
+      if (
+        index !== -1
+      ) {
         gameState.plots[index] =
           data.plot;
       }
     }
 
-    if (data.inventory) {
+    if (
+      Array.isArray(
+        data.inventory
+      )
+    ) {
       gameState.inventory =
         data.inventory;
     }
 
-    if (data.inventoryUpdated) {
+    if (
+      data.inventoryUpdated
+    ) {
       updateInventoryItem(
         data.inventoryUpdated
       );
@@ -1567,7 +1847,9 @@ async function harvestPlot(
         data.expGained || 0
       );
 
-    if (exp > 0) {
+    if (
+      exp > 0
+    ) {
       showMessage(
         `🌾 Thu hoạch thành công! +${exp} EXP`,
         "success"
@@ -1585,7 +1867,8 @@ async function harvestPlot(
     );
 
     showMessage(
-      error.message,
+      error?.message ||
+        "Không thể thu hoạch.",
       "error"
     );
   } finally {
@@ -1622,19 +1905,28 @@ function renderShop() {
 
   let totalValue = 0;
 
+  const inventory =
+    Array.isArray(
+      gameState.inventory
+    )
+      ? gameState.inventory
+      : [];
+
   Object.entries(
     SEEDS
   ).forEach(
     ([key, seed]) => {
       const inventoryItem =
-        gameState.inventory.find(
+        inventory.find(
           item =>
-            item.seed_key === key
+            item.seed_key ===
+            key
         );
 
       const amount =
         Number(
-          inventoryItem?.amount || 0
+          inventoryItem?.amount ||
+            0
         );
 
       const value =
@@ -1658,7 +1950,9 @@ function renderShop() {
 
         <div>
           <div class="shop-item-name">
-            ${escapeHtml(seed.name)}
+            ${escapeHtml(
+              seed.name
+            )}
           </div>
 
           <div class="shop-item-count">
@@ -1673,8 +1967,14 @@ function renderShop() {
         <button
           type="button"
           class="shop-sell-button"
-          data-sell-seed="${escapeAttribute(key)}"
-          ${amount <= 0 ? "disabled" : ""}
+          data-sell-seed="${escapeAttribute(
+            key
+          )}"
+          ${
+            amount <= 0
+              ? "disabled"
+              : ""
+          }
         >
           Bán 1
         </button>
@@ -1702,9 +2002,13 @@ function renderShop() {
     }
   );
 
-  if (shopTotalValue) {
+  if (
+    shopTotalValue
+  ) {
     shopTotalValue.textContent =
-      `Tổng giá trị kho: ${formatNumber(totalValue)} 🪙`;
+      `Tổng giá trị kho: ${formatNumber(
+        totalValue
+      )} 🪙`;
   }
 }
 
@@ -1724,8 +2028,15 @@ async function sellSeed(
     return;
   }
 
+  const inventory =
+    Array.isArray(
+      gameState.inventory
+    )
+      ? gameState.inventory
+      : [];
+
   const inventoryItem =
-    gameState.inventory.find(
+    inventory.find(
       item =>
         item.seed_key ===
         seedKey
@@ -1733,10 +2044,13 @@ async function sellSeed(
 
   const amount =
     Number(
-      inventoryItem?.amount || 0
+      inventoryItem?.amount ||
+        0
     );
 
-  if (amount <= 0) {
+  if (
+    amount <= 0
+  ) {
     showMessage(
       "Bạn không có nông sản này.",
       "error"
@@ -1757,17 +2071,25 @@ async function sellSeed(
         }
       );
 
-    if (data.player) {
+    if (
+      data.player
+    ) {
       gameState.player =
         data.player;
     }
 
-    if (data.inventory) {
+    if (
+      Array.isArray(
+        data.inventory
+      )
+    ) {
       gameState.inventory =
         data.inventory;
     }
 
-    if (data.inventoryUpdated) {
+    if (
+      data.inventoryUpdated
+    ) {
       updateInventoryItem(
         data.inventoryUpdated
       );
@@ -1780,12 +2102,14 @@ async function sellSeed(
     const coins =
       Number(
         data.coinsGained ||
-        data.totalCoinsGained ||
-        seed.sellPrice
+          data.totalCoinsGained ||
+          seed.sellPrice
       );
 
     showMessage(
-      `💰 Đã bán ${seed.name} +${formatNumber(coins)} Coin`,
+      `💰 Đã bán ${seed.name} +${formatNumber(
+        coins
+      )} Coin`,
       "success"
     );
   } catch (error) {
@@ -1795,7 +2119,8 @@ async function sellSeed(
     );
 
     showMessage(
-      error.message,
+      error?.message ||
+        "Không thể bán nông sản.",
       "error"
     );
   } finally {
@@ -1820,11 +2145,6 @@ function openInventory() {
 /*
 |--------------------------------------------------------------------------
 | TASKS
-|--------------------------------------------------------------------------
-|
-| Phần xác minh nhiệm vụ thật sự sẽ do backend xử lý.
-| Frontend KHÔNG tự cộng thưởng.
-|
 |--------------------------------------------------------------------------
 */
 
@@ -1878,15 +2198,21 @@ function renderTasks() {
 
         <div class="task-content">
           <div class="task-title">
-            ${escapeHtml(task.title)}
+            ${escapeHtml(
+              task.title
+            )}
           </div>
 
           <div class="task-desc">
-            ${escapeHtml(task.desc)}
+            ${escapeHtml(
+              task.desc
+            )}
           </div>
 
           <div class="task-reward">
-            🎁 ${escapeHtml(task.reward)}
+            🎁 ${escapeHtml(
+              task.reward
+            )}
           </div>
 
           <div class="task-status">
@@ -1897,7 +2223,9 @@ function renderTasks() {
         <button
           class="task-button"
           type="button"
-          data-task-id="${escapeAttribute(task.id)}"
+          data-task-id="${escapeAttribute(
+            task.id
+          )}"
         >
           Kiểm tra
         </button>
@@ -1928,26 +2256,15 @@ function renderTasks() {
   );
 }
 
-/*
-|--------------------------------------------------------------------------
-| TASK CHECK
-|--------------------------------------------------------------------------
-|
-| Hiện backend của bạn CHƯA có endpoint task.
-| Vì vậy không được tự cộng Coin ở frontend.
-|
-|--------------------------------------------------------------------------
-*/
-
 async function checkTask(
   taskId,
   item,
   button
 ) {
   /*
-  | Chưa bật endpoint server.
-  |
-  | Không tự thưởng tại client.
+  | Backend task verification chưa
+  | được triển khai nên frontend
+  | tuyệt đối không tự cộng Coin.
   */
 
   showMessage(
@@ -2014,11 +2331,6 @@ function setupMenuEvents() {
     seedMenu.addEventListener(
       "click",
       () => {
-        /*
-        | Nếu chưa chọn ô đất,
-        | hiển thị thông báo.
-        */
-
         if (
           selectedPlot === null
         ) {
@@ -2096,10 +2408,6 @@ function setupCloseEvents() {
     );
   }
 
-  /*
-  | Click nền để đóng
-  */
-
   [
     seedPanel,
     shopPanel,
@@ -2154,14 +2462,27 @@ function updateInventoryItem(
     return;
   }
 
+  if (
+    !Array.isArray(
+      gameState.inventory
+    )
+  ) {
+    gameState.inventory =
+      [];
+  }
+
   const index =
     gameState.inventory.findIndex(
       item =>
         Number(item.id) ===
-        Number(updatedItem.id)
+        Number(
+          updatedItem.id
+        )
     );
 
-  if (index === -1) {
+  if (
+    index === -1
+  ) {
     gameState.inventory.push(
       updatedItem
     );
@@ -2183,7 +2504,9 @@ function formatNumber(
   value
 ) {
   const number =
-    Number(value || 0);
+    Number(
+      value || 0
+    );
 
   return new Intl.NumberFormat(
     "vi-VN"
@@ -2236,6 +2559,12 @@ function setLoading(
   isLoading =
     Boolean(value);
 
+  /*
+  | QUAN TRỌNG:
+  | Không khóa toàn bộ body bằng
+  | pointer-events.
+  */
+
   if (telegram) {
     try {
       if (isLoading) {
@@ -2280,10 +2609,6 @@ function showMessage(
     message
   );
 
-  /*
-  | Telegram popup
-  */
-
   if (
     telegram &&
     typeof telegram.showAlert ===
@@ -2300,10 +2625,6 @@ function showMessage(
     }
   }
 
-  /*
-  | Browser fallback
-  */
-
   window.alert(
     String(message)
   );
@@ -2311,24 +2632,69 @@ function showMessage(
 
 /*
 |--------------------------------------------------------------------------
-| VISIBILITY / RELOAD
+| VISIBILITY
 |--------------------------------------------------------------------------
 */
+
+let reconnectTimer = null;
 
 document.addEventListener(
   "visibilitychange",
   () => {
     if (
-      document.visibilityState ===
+      document.visibilityState !==
       "visible"
     ) {
-      if (
-        telegram &&
-        initData
-      ) {
-        loadGameState();
-      }
+      return;
     }
+
+    /*
+    | Tránh gọi liên tục.
+    */
+
+    if (reconnectTimer) {
+      clearTimeout(
+        reconnectTimer
+      );
+    }
+
+    reconnectTimer =
+      setTimeout(
+        async () => {
+          /*
+          | Lấy Telegram WebApp/initData
+          | mới nhất.
+          */
+
+          const telegramReady =
+            initTelegram(false);
+
+          if (!telegramReady) {
+            return;
+          }
+
+          /*
+          | Nếu game chưa xác thực,
+          | authenticate lại.
+          */
+
+          if (
+            !gameState.player
+          ) {
+            await authenticateTelegram();
+
+            return;
+          }
+
+          /*
+          | Nếu game đã có player,
+          | chỉ tải state mới.
+          */
+
+          await loadGameState();
+        },
+        500
+      );
   }
 );
 
@@ -2339,36 +2705,50 @@ document.addEventListener(
 */
 
 async function startGame() {
+  if (gameStarted) {
+    return;
+  }
+
+  gameStarted =
+    true;
+
   console.log(
     "🌱 NÔNG TRẠI XANH đang khởi động..."
   );
 
   /*
-  | Khởi tạo Telegram WebApp
+  | Telegram
   */
 
-  initTelegram();
+  const telegramReady =
+    initTelegram(true);
+
+  if (!telegramReady) {
+    hideLoading();
+
+    return;
+  }
 
   /*
-  | Gắn sự kiện ô đất
+  | Plot events
   */
 
   setupPlotEvents();
 
   /*
-  | Gắn sự kiện menu
+  | Menu
   */
 
   setupMenuEvents();
 
   /*
-  | Gắn nút đóng panel
+  | Close buttons
   */
 
   setupCloseEvents();
 
   /*
-  | Đăng nhập Telegram + tải dữ liệu
+  | Auth + tải game
   */
 
   await authenticateTelegram();
@@ -2390,7 +2770,10 @@ if (
 ) {
   document.addEventListener(
     "DOMContentLoaded",
-    startGame
+    startGame,
+    {
+      once: true
+    }
   );
 } else {
   startGame();
