@@ -471,24 +471,24 @@ button {
 }
 
 
-
 /* =====================================
-   PANEL CHUNG
+   PANEL CHUNG - NÔNG TRẠI XANH
 ===================================== */
 
 .seed-panel {
   position: fixed;
-
   inset: 0;
 
   display: none;
-
   align-items: center;
   justify-content: center;
 
-  padding: 16px;
+  padding: 10px;
 
-  background: rgba(0, 0, 0, 0.58);
+  background: rgba(0, 42, 70, 0.68);
+
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
 
   z-index: 10000;
 }
@@ -497,139 +497,306 @@ button {
   display: flex;
 }
 
+
+/* =====================================
+   KHUNG CHÍNH
+===================================== */
+
 .seed-box,
 .shop-box {
   position: relative;
 
-  width: min(92%, 420px);
-  max-height: 82vh;
+  width: min(94vw, 410px);
+  max-height: 84vh;
 
   overflow-y: auto;
+  overflow-x: hidden;
 
-  padding: 20px 14px 14px;
+  padding: 15px 10px 12px;
 
-  border: 3px solid #0788df;
+  border: 2px solid #0788df;
   border-radius: 20px;
 
-  background: linear-gradient(
-    180deg,
-    #dff7ff,
-    #ffffff
-  );
+  background:
+    linear-gradient(
+      180deg,
+      rgba(232, 250, 255, 0.98),
+      rgba(204, 241, 255, 0.98)
+    );
 
   box-shadow:
-    0 12px 35px rgba(0, 0, 0, 0.4);
+    0 10px 30px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255,255,255,0.8);
 
   text-align: center;
+
+  scrollbar-width: thin;
+  scrollbar-color: #0788df transparent;
 }
+
+
+/* thanh cuộn */
+
+.seed-box::-webkit-scrollbar,
+.shop-box::-webkit-scrollbar {
+  width: 5px;
+}
+
+.seed-box::-webkit-scrollbar-thumb,
+.shop-box::-webkit-scrollbar-thumb {
+  background: #0788df;
+  border-radius: 10px;
+}
+
+
+/* =====================================
+   TIÊU ĐỀ
+===================================== */
 
 .seed-box h2,
 .shop-box h2 {
-  margin: 0 0 8px;
+  margin: 0 35px 4px;
 
-  color: #087dcc;
+  color: #075f91;
 
-  font-size: 22px;
+  font-size: 19px;
+  font-weight: 900;
+
+  text-shadow:
+    0 1px 0 white;
 }
 
-.shop-box p {
-  margin: 4px 0 8px;
+.shop-box > p {
+  margin: 2px 0 8px;
 
-  font-size: 13px;
+  color: #39708b;
+
+  font-size: 10px;
   font-weight: 700;
 }
 
 
-
-/* CLOSE */
+/* =====================================
+   NÚT ĐÓNG
+===================================== */
 
 .seed-close {
   position: absolute;
 
-  top: 8px;
-  right: 10px;
+  top: 7px;
+  right: 7px;
 
-  width: 34px;
-  height: 34px;
+  width: 31px;
+  height: 31px;
 
   padding: 0;
 
-  border: 2px solid #a90000;
+  border: 2px solid #9b1515;
   border-radius: 50%;
 
-  background: #e62929;
+  background:
+    linear-gradient(
+      180deg,
+      #ff5252,
+      #d71919
+    );
 
   color: white;
 
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 900;
 
-  line-height: 28px;
+  line-height: 25px;
 
   cursor: pointer;
+
+  box-shadow:
+    0 2px 4px rgba(0,0,0,.25);
 
   z-index: 10002;
 }
 
 .seed-close:active {
-  transform: scale(0.92);
+  transform: scale(.9);
 }
 
 
-
 /* =====================================
-   SEED LIST
+   DANH SÁCH HẠT GIỐNG
 ===================================== */
 
 .seed-list {
   display: grid;
 
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 
-  gap: 8px;
+  gap: 7px;
 
-  margin-top: 12px;
+  margin-top: 8px;
 }
+
+
+/* =====================================
+   THẺ HẠT GIỐNG
+===================================== */
 
 .seed-item {
   position: relative;
 
-  display: flex;
-  flex-direction: column;
+  display: grid;
+
+  grid-template-columns: 43px minmax(0, 1fr);
+
   align-items: center;
 
-  gap: 3px;
+  column-gap: 6px;
 
-  padding: 9px 5px;
+  min-height: 78px;
 
-  border: 2px solid #0788df;
-  border-radius: 13px;
+  padding: 7px;
 
-  background: #e8f8ff;
+  border: 2px solid #43aee0;
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #ffffff,
+      #dff6ff
+    );
+
+  box-shadow:
+    0 2px 5px rgba(0, 80, 120, .15);
+
+  text-align: left;
 
   cursor: pointer;
 }
 
 .seed-item:active {
-  transform: scale(0.97);
+  transform: scale(.97);
 }
 
+
+/* icon */
+
 .seed-icon {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  grid-row: span 4;
+
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #d9f7ff,
+      #aee5f8
+    );
+
+  border: 1px solid #66bee4;
+
   font-size: 25px;
 }
 
+
+/* tên */
+
 .seed-name {
-  font-size: 12px;
+  min-width: 0;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  color: #075f91;
+
+  font-size: 11px;
   font-weight: 900;
 }
 
-.seed-price {
-  font-size: 10px;
-  font-weight: 700;
 
-  color: #087dcc;
+/* cấp */
+
+.seed-level {
+  color: #777;
+
+  font-size: 8px;
+  font-weight: 800;
 }
 
+
+/* giá */
+
+.seed-price {
+  color: #087dcc;
+
+  font-size: 9px;
+  font-weight: 900;
+}
+
+
+/* số lượng */
+
+.seed-count {
+  color: #555;
+
+  font-size: 8px;
+  font-weight: 700;
+}
+
+
+/* =====================================
+   NÚT MUA / TRỒNG
+===================================== */
+
+.seed-actions {
+  display: flex;
+
+  gap: 3px;
+
+  margin-top: 3px;
+}
+
+.seed-actions button {
+  flex: 1;
+
+  min-width: 0;
+
+  padding: 5px 3px;
+
+  border: 1px solid #087dcc;
+  border-radius: 7px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #31b8ef,
+      #087dcc
+    );
+
+  color: white;
+
+  font-size: 7px;
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+.seed-actions button:active {
+  transform: translateY(1px);
+}
+
+.seed-actions button:disabled {
+  background: #aeb9be;
+  border-color: #929da1;
+  color: #e9eeee;
+}
 
 
 /* =====================================
@@ -637,291 +804,210 @@ button {
 ===================================== */
 
 .shop-total-value {
-  margin: 8px 0;
-
-  padding: 8px;
+  margin: 6px 0;
+  padding: 7px;
 
   border-radius: 10px;
 
-  background: #0788df;
+  background:
+    linear-gradient(
+      180deg,
+      #21a9e8,
+      #087dcc
+    );
 
   color: white;
 
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 900;
+
+  box-shadow:
+    0 2px 4px rgba(0,0,0,.2);
 }
 
 .shop-list {
-  display: grid;
+  display: flex;
 
-  grid-template-columns: 1fr;
+  flex-direction: column;
 
-  gap: 7px;
+  gap: 6px;
 
-  margin-top: 10px;
+  margin-top: 7px;
 }
 
 .shop-item {
   display: grid;
 
-  grid-template-columns: 42px 1fr auto;
+  grid-template-columns: 38px minmax(0,1fr) auto;
 
   align-items: center;
 
-  gap: 7px;
+  gap: 6px;
 
-  padding: 8px;
+  padding: 7px;
 
-  border: 2px solid #0788df;
+  border: 2px solid #43aee0;
   border-radius: 12px;
 
-  background: #effbff;
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff,
+      #e5f8ff
+    );
 
   text-align: left;
 }
 
 .shop-item-icon {
-  font-size: 26px;
+  font-size: 24px;
   text-align: center;
 }
 
 .shop-item-name {
-  font-size: 12px;
+  color: #075f91;
+
+  font-size: 11px;
   font-weight: 900;
 }
 
 .shop-item-count {
-  font-size: 10px;
-  color: #555;
+  margin-top: 2px;
+
+  color: #666;
+
+  font-size: 8px;
 }
 
 .shop-item-value {
-  font-size: 11px;
-  font-weight: 900;
+  margin-top: 2px;
+
   color: #087dcc;
+
+  font-size: 9px;
+  font-weight: 900;
 }
 
 .shop-sell-button {
-  border: 0;
-  border-radius: 8px;
-
   padding: 6px 8px;
 
-  background: #0788df;
+  border: 1px solid #087dcc;
+  border-radius: 8px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #31b8ef,
+      #087dcc
+    );
+
   color: white;
 
-  font-size: 10px;
+  font-size: 8px;
   font-weight: 900;
 
   cursor: pointer;
 }
 
 
-
 /* =====================================
-   MOBILE
-===================================== */
-
-@media (max-width: 500px) {
-
-  .top-hud {
-    width: 94%;
-    height: 54px;
-  }
-
-  .farm-area {
-    width: 70%;
-  }
-
-  .hero {
-    height: 85%;
-    max-width: 62%;
-  }
-
-  .bottom-menu {
-    width: 94%;
-    height: 63px;
-  }
-
-}
-
-
-
-/* =====================================
-   MÀN HÌNH THẤP
-===================================== */
-
-@media (max-height: 720px) {
-
-  .top-hud {
-    height: 50px;
-  }
-
-  .hero-area {
-    top: 30.5%;
-    height: 26%;
-  }
-
-  .farm-area {
-    top: 57%;
-    width: 68%;
-  }
-
-  .bottom-menu {
-    height: 58px;
-    bottom: 8px;
-  }
-
-  .menu-icon {
-    font-size: 18px;
-  }
-
-  .menu-text {
-    font-size: 7px;
-  }
-
-}
-
-
-
-/* =====================================
-   MÀN HÌNH RẤT HẸP
-===================================== */
-
-@media (max-width: 360px) {
-
-  .top-hud {
-    grid-template-columns: minmax(0, 1fr) 64px 64px;
-    gap: 3px;
-  }
-
-  .level-circle {
-    width: 34px;
-    height: 34px;
-
-    flex-basis: 34px;
-
-    font-size: 15px;
-  }
-
-  .resource-icon {
-    font-size: 14px;
-  }
-
-  .resource-number {
-    font-size: 9px;
-  }
-
-  .farm-area {
-    width: 67%;
-  }
-
-  .farm-grid {
-    gap: 4px;
-  }
-
-  .plot {
-    border-width: 2px;
-    border-radius: 11px;
-  }
-
-  .bottom-menu {
-    width: 96%;
-    gap: 3px;
-  }
-
-  .menu-button {
-    border-radius: 11px;
-  }
-
-  .menu-icon {
-    font-size: 16px;
-  }
-
-  .menu-text {
-    font-size: 6px;
-  }
-
-}
-/* ==============================
    NHIỆM VỤ
-============================== */
+===================================== */
 
 #tasksPanel .shop-box {
-  width: min(94%, 430px);
-  max-height: 84vh;
+  width: min(94vw, 410px);
+  max-height: 82vh;
+
+  padding-top: 14px;
 }
 
 #tasksPanel .shop-box h2 {
-  margin-bottom: 5px;
+  margin-bottom: 3px;
 }
 
 #tasksPanel .shop-box > p {
-  margin: 0 0 12px;
-  color: #087dcc;
-  font-size: 12px;
-  font-weight: 800;
+  margin: 0 0 9px;
+
+  color: #39708b;
+
+  font-size: 9px;
 }
 
 
-/* DANH SÁCH NHIỆM VỤ */
+/* danh sách */
 
 #tasksPanel .shop-list {
   display: flex;
+
   flex-direction: column;
-  gap: 8px;
+
+  gap: 7px;
 }
 
 
-/* THẺ NHIỆM VỤ */
+/* =====================================
+   CARD NHIỆM VỤ
+===================================== */
 
 .task-item {
   display: grid;
-  grid-template-columns: 42px minmax(0, 1fr) auto;
+
+  grid-template-columns: 40px minmax(0,1fr) auto;
+
   align-items: center;
-  gap: 8px;
 
-  min-height: 70px;
-  padding: 8px;
+  gap: 7px;
 
-  border: 2px solid #0788df;
+  min-height: 65px;
+
+  padding: 7px;
+
+  border: 2px solid #43aee0;
   border-radius: 14px;
 
-  background: linear-gradient(
-    180deg,
-    #f4fcff 0%,
-    #e4f8ff 100%
-  );
-
-  text-align: left;
+  background:
+    linear-gradient(
+      145deg,
+      #ffffff,
+      #e2f7ff
+    );
 
   box-shadow:
-    0 2px 5px rgba(0, 0, 0, .12);
+    0 2px 5px rgba(0,80,120,.14);
+
+  text-align: left;
 }
 
 
-/* ICON */
+/* icon nhiệm vụ */
 
 .task-icon {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  border-radius: 12px;
+  border-radius: 11px;
 
-  background: #0788df;
+  background:
+    linear-gradient(
+      180deg,
+      #2bb4ec,
+      #087dcc
+    );
 
-  font-size: 23px;
+  color: white;
+
+  font-size: 21px;
 
   box-shadow:
-    inset 0 2px 0 rgba(255,255,255,.25);
+    inset 0 1px 0 rgba(255,255,255,.3);
 }
 
 
-/* NỘI DUNG */
+/* nội dung */
 
 .task-content {
   min-width: 0;
@@ -932,66 +1018,66 @@ button {
 
   color: #075f91;
 
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 900;
 }
 
 .task-desc {
-  color: #555;
+  color: #5c6870;
 
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 700;
 
-  line-height: 1.35;
+  line-height: 1.3;
 }
 
 .task-reward {
-  margin-top: 3px;
+  margin-top: 2px;
 
   color: #087dcc;
 
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 900;
 }
 
-
-/* TRẠNG THÁI */
-
 .task-status {
-  margin-top: 3px;
+  margin-top: 2px;
 
   color: #777;
 
-  font-size: 8px;
+  font-size: 7px;
   font-weight: 800;
 }
 
 
-/* NÚT NHIỆM VỤ */
+/* =====================================
+   NÚT KIỂM TRA
+===================================== */
 
 .task-button {
-  min-width: 72px;
+  min-width: 64px;
 
-  padding: 7px 6px;
+  padding: 6px 5px;
 
-  border: 2px solid #087dcc;
-  border-radius: 9px;
+  border: 1px solid #087dcc;
+  border-radius: 8px;
 
-  background: linear-gradient(
-    180deg,
-    #25afea 0%,
-    #087dcc 100%
-  );
+  background:
+    linear-gradient(
+      180deg,
+      #31b8ef,
+      #087dcc
+    );
 
-  color: #fff;
+  color: white;
 
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 900;
 
   cursor: pointer;
 
   box-shadow:
-    0 2px 4px rgba(0,0,0,.2);
+    0 2px 4px rgba(0,0,0,.18);
 }
 
 .task-button:active {
@@ -999,109 +1085,193 @@ button {
 }
 
 .task-button:disabled {
-  border-color: #999;
-
-  background: #aaa;
-
-  color: #eee;
-
-  cursor: not-allowed;
+  background: #aeb9be;
+  border-color: #929da1;
+  color: #edf2f2;
 
   box-shadow: none;
 }
 
 
-/* NHIỆM VỤ ĐÃ HOÀN THÀNH */
+/* =====================================
+   NHIỆM VỤ HOÀN THÀNH
+===================================== */
 
 .task-item.completed {
-  opacity: .72;
+  opacity: .78;
+
+  border-color: #55a855;
+
+  background:
+    linear-gradient(
+      145deg,
+      #f5fff5,
+      #dcefdc
+    );
+}
+
+.task-item.completed .task-icon {
+  background:
+    linear-gradient(
+      180deg,
+      #6bc96b,
+      #3d963d
+    );
+}
+
+.task-item.completed .task-button {
+  border-color: #4a984a;
 
   background:
     linear-gradient(
       180deg,
-      #edf7ed 0%,
-      #dcefdc 100%
+      #6bc96b,
+      #439943
     );
-
-  border-color: #55a855;
-}
-
-.task-item.completed .task-icon {
-  background: #55a855;
-}
-
-.task-item.completed .task-button {
-  border-color: #55a855;
-  background: #55a855;
 }
 
 
-/* NHIỆM VỤ ĐANG CHỜ */
+/* =====================================
+   COOLDOWN
+===================================== */
 
 .task-item.cooldown {
-  opacity: .85;
+  opacity: .78;
 }
 
 
-/* DÒNG GHI CHÚ */
+/* =====================================
+   GHI CHÚ
+===================================== */
 
 .task-note {
-  margin-top: 10px;
-  padding: 8px;
+  margin-top: 8px;
 
-  border-radius: 10px;
+  padding: 7px;
+
+  border: 1px solid #e3ce68;
+  border-radius: 9px;
 
   background: #fff8d9;
 
-  border: 1px solid #ead47a;
-
   color: #765f00;
 
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 700;
 
-  line-height: 1.4;
+  line-height: 1.35;
 }
 
 
-/* MOBILE */
+/* =====================================
+   MOBILE NHỎ
+===================================== */
 
-@media (max-width: 360px) {
+@media (max-width: 380px) {
 
-  .task-item {
-    grid-template-columns: 36px minmax(0, 1fr) auto;
-
-    gap: 6px;
-
-    min-height: 64px;
-
+  .seed-panel {
     padding: 7px;
   }
 
-  .task-icon {
-    width: 36px;
-    height: 36px;
+  .seed-box,
+  .shop-box {
+    width: 96vw;
 
-    font-size: 20px;
+    max-height: 86vh;
+
+    padding: 13px 8px 10px;
+
+    border-radius: 17px;
+  }
+
+  .seed-box h2,
+  .shop-box h2 {
+    font-size: 17px;
+  }
+
+  .seed-list {
+    gap: 5px;
+  }
+
+  .seed-item {
+    grid-template-columns: 37px minmax(0,1fr);
+
+    min-height: 73px;
+
+    padding: 6px;
+  }
+
+  .seed-icon {
+    width: 35px;
+    height: 35px;
+
+    font-size: 22px;
+  }
+
+  .seed-name {
+    font-size: 10px;
+  }
+
+  .seed-actions button {
+    font-size: 6px;
+    padding: 4px 2px;
+  }
+
+  .task-item {
+    grid-template-columns: 35px minmax(0,1fr) auto;
+
+    min-height: 60px;
+
+    gap: 5px;
+
+    padding: 6px;
+  }
+
+  .task-icon {
+    width: 35px;
+    height: 35px;
+
+    font-size: 19px;
   }
 
   .task-title {
-    font-size: 11px;
+    font-size: 10px;
   }
 
   .task-desc {
-    font-size: 8px;
+    font-size: 7px;
   }
 
   .task-reward {
-    font-size: 8px;
+    font-size: 7px;
   }
 
   .task-button {
-    min-width: 62px;
+    min-width: 57px;
 
-    padding: 6px 4px;
+    padding: 5px 3px;
 
-    font-size: 8px;
+    font-size: 7px;
+  }
+}
+
+
+/* =====================================
+   MÀN HÌNH THẤP
+===================================== */
+
+@media (max-height: 720px) {
+
+  .seed-box,
+  .shop-box {
+    max-height: 88vh;
+  }
+
+  .seed-item {
+    min-height: 70px;
+  }
+
+  .task-item {
+    min-height: 58px;
   }
 }
