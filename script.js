@@ -444,6 +444,17 @@ async function authenticateTelegram() {
 
     gameState.plots =
       data.plots || [];
+    window.alert(
+  "Số ô đất server trả về: " +
+  gameState.plots.length +
+  "\nÔ 1: " +
+  JSON.stringify(
+    gameState.plots.find(
+      item =>
+        Number(item.plot_number) === 1
+    )
+  )
+);
 
     gameState.inventory =
       data.inventory || [];
