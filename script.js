@@ -271,9 +271,8 @@ function initTelegram(showDiagnostics = false) {
 
   /*
   |--------------------------------------------------------------------------
-  | QUAN TRỌNG
+  | Lấy initData mới nhất từ Telegram
   |--------------------------------------------------------------------------
-  | Luôn lấy initData mới nhất từ Telegram.
   */
 
   initData =
@@ -459,10 +458,7 @@ async function apiRequest(
       }
 
       /*
-      | Server lỗi tạm thời:
-      | 502 / 503 / 504
-      | => thử lại vì Render Free có thể
-      | đang thức dậy.
+      | Render có thể cần thời gian khởi động.
       */
 
       if (
@@ -491,11 +487,6 @@ async function apiRequest(
       return data;
     } catch (error) {
       lastError = error;
-
-      /*
-      | Không retry lỗi do game/server trả về
-      | rõ ràng. Chỉ retry lỗi mạng / timeout.
-      */
 
       const message =
         String(
@@ -555,10 +546,6 @@ async function authenticateTelegram() {
   );
 
   try {
-    /*
-    | Lấy initData mới nhất
-    */
-
     if (
       telegram?.initData
     ) {
@@ -606,6 +593,21 @@ async function authenticateTelegram() {
         ? data.inventory
         : [];
 
+    console.log(
+      "AUTH PLAYER:",
+      gameState.player
+    );
+
+    console.log(
+      "AUTH PLOTS:",
+      gameState.plots
+    );
+
+    console.log(
+      "AUTH INVENTORY:",
+      gameState.inventory
+    );
+
     renderAll();
 
     console.log(
@@ -640,7 +642,8 @@ async function authenticateTelegram() {
 
 async function loadGameState() {
   /*
-  | Không gọi state khi auth đang chạy.
+  | Nếu authentication đang chạy thì không
+  | gọi thêm state.
   */
 
   if (isAuthenticating) {
@@ -648,7 +651,7 @@ async function loadGameState() {
   }
 
   /*
-  | Nếu chưa có player thì authenticate trước.
+  | Nếu chưa có player thì authenticate.
   */
 
   if (!gameState.player) {
@@ -656,10 +659,6 @@ async function loadGameState() {
   }
 
   try {
-    /*
-    | Refresh initData.
-    */
-
     if (
       telegram?.initData
     ) {
@@ -699,6 +698,11 @@ async function loadGameState() {
         ? data.inventory
         : [];
 
+    console.log(
+      "GAME STATE PLOTS:",
+      gameState.plots
+    );
+
     renderAll();
 
     console.log(
@@ -711,12 +715,6 @@ async function loadGameState() {
       "Load game state error:",
       error
     );
-
-    /*
-    | Không hiện popup liên tục khi
-    | Telegram chỉ vừa chuyển từ nền
-    | trở lại.
-    */
 
     showMessage(
       error?.message ||
@@ -824,6 +822,12 @@ function renderPlots() {
       ".plot[data-plot]"
     );
 
+  console.log(
+    "RENDER PLOTS:",
+    gameState.plots.length,
+    "ô từ server"
+  );
+
   plotElements.forEach(
     element => {
       const plotNumber =
@@ -840,6 +844,10 @@ function renderPlots() {
         );
 
       if (!plot) {
+        /*
+        | Không xóa HTML gốc của ô.
+        */
+
         return;
       }
 
@@ -878,6 +886,12 @@ function renderPlots() {
 
         return;
       }
+
+      /*
+      | Ô đã mở nhưng chưa trồng.
+      | Không thêm gì -> người chơi bấm
+      | vào sẽ mở bảng hạt giống.
+      */
 
       if (
         !plot.crop_type
@@ -1045,8 +1059,6 @@ function updateCountdowns() {
       ".grow-time"
     );
 
-  let hasReadyCrop = false;
-
   timers.forEach(
     timer => {
       const harvestAt =
@@ -1057,35 +1069,36 @@ function updateCountdowns() {
           harvestAt
         );
 
+      const plotElement =
+        timer.closest(
+          ".plot[data-plot]"
+        );
+
       if (
         remaining <= 0
       ) {
         timer.textContent =
           "✅ Chín";
 
-        hasReadyCrop = true;
+        if (plotElement) {
+          plotElement.classList.add(
+            "ready"
+          );
+        }
       } else {
         timer.textContent =
           formatDuration(
             remaining
           );
-      }
-    }
-  );
 
-  if (hasReadyCrop) {
-    document
-      .querySelectorAll(
-        ".plot[data-plot]"
-      )
-      .forEach(
-        plotElement => {
-          plotElement.classList.add(
+        if (plotElement) {
+          plotElement.classList.remove(
             "ready"
           );
         }
-      );
-  }
+      }
+    }
+  );
 }
 
 function getRemainingMs(
@@ -1191,66 +1204,170 @@ function formatDuration(
 */
 
 function setupPlotEvents() {
-  document
-    .querySelectorAll(
+  const plots =
+    document.querySelectorAll(
       ".plot[data-plot]"
-    )
-    .forEach(
-      plotElement => {
-        plotElement.addEventListener(
-          "click",
-          async () => {
-            const plotNumber =
-              Number(
-                plotElement.dataset.plot
-              );
-
-            await handlePlotClick(
-              plotNumber
-            );
-          }
-        );
-      }
     );
+
+  console.log(
+    "Đã tìm thấy",
+    plots.length,
+    "ô đất trong HTML."
+  );
+
+  plots.forEach(
+    plotElement => {
+      /*
+      | Tránh gắn event nhiều lần.
+      */
+
+      if (
+        plotElement.dataset.clickReady ===
+        "true"
+      ) {
+        return;
+      }
+
+      plotElement.dataset.clickReady =
+        "true";
+
+      plotElement.addEventListener(
+        "click",
+        async event => {
+          event.preventDefault();
+          event.stopPropagation();
+
+          const plotNumber =
+            Number(
+              plotElement.dataset.plot
+            );
+
+          console.log(
+            "🟢 CLICK Ô ĐẤT:",
+            plotNumber
+          );
+
+          await handlePlotClick(
+            plotNumber
+          );
+        }
+      );
+    }
+  );
 }
 
 /*
 |--------------------------------------------------------------------------
 | PLOT CLICK
 |--------------------------------------------------------------------------
+| ĐÂY LÀ PHẦN ĐÃ SỬA CHÍNH
+|--------------------------------------------------------------------------
 */
 
 async function handlePlotClick(
   plotNumber
 ) {
-  /*
-  | Trong lúc auth hoặc mutation đang
-  | chạy thì không cho click thêm.
-  */
-
   if (
     isLoading ||
     isAuthenticating
   ) {
+    console.log(
+      "Click bị bỏ qua vì game đang loading."
+    );
+
     return;
   }
 
-  const plot =
+  console.log(
+    "🟢 CLICK PLOT:",
+    plotNumber
+  );
+
+  console.log(
+    "📦 GAME PLOTS:",
+    gameState.plots
+  );
+
+  /*
+  | Tìm plot hiện tại.
+  */
+
+  let plot =
     gameState.plots.find(
       item =>
         Number(
           item.plot_number
-        ) === plotNumber
+        ) ===
+        Number(plotNumber)
     );
+
+  /*
+  |--------------------------------------------------------------------------
+  | Nếu frontend chưa có plot
+  | -> tải lại state từ server
+  |--------------------------------------------------------------------------
+  */
 
   if (!plot) {
-    showMessage(
-      "Chưa tải được dữ liệu ô đất. Hãy thử lại.",
-      "error"
+    console.log(
+      "⚠️ Không tìm thấy plot trong frontend."
     );
 
-    return;
+    console.log(
+      "🔄 Đang tải lại game state..."
+    );
+
+    const loaded =
+      await loadGameState();
+
+    if (!loaded) {
+      showMessage(
+        "Không tải được dữ liệu ô đất từ máy chủ.",
+        "error"
+      );
+
+      return;
+    }
+
+    /*
+    | Tìm lại sau khi server trả dữ liệu.
+    */
+
+    plot =
+      gameState.plots.find(
+        item =>
+          Number(
+            item.plot_number
+          ) ===
+          Number(plotNumber)
+      );
+
+    if (!plot) {
+      console.error(
+        "❌ Server vẫn không trả về plot:",
+        plotNumber,
+        gameState.plots
+      );
+
+      showMessage(
+        "Máy chủ chưa trả về dữ liệu ô đất này.",
+        "error"
+      );
+
+      return;
+    }
   }
+
+  console.log(
+    "🌱 PLOT ĐƯỢC CHỌN:",
+    plot
+  );
+
+  /*
+  |--------------------------------------------------------------------------
+  | Ô bị khóa
+  |--------------------------------------------------------------------------
+  */
 
   if (
     !plot.unlocked
@@ -1262,15 +1379,34 @@ async function handlePlotClick(
     return;
   }
 
+  /*
+  |--------------------------------------------------------------------------
+  | Ô đã mở + chưa trồng
+  |--------------------------------------------------------------------------
+  | => MỞ BẢNG HẠT GIỐNG
+  |--------------------------------------------------------------------------
+  */
+
   if (
     !plot.crop_type
   ) {
+    console.log(
+      "🌱 MỞ BẢNG HẠT GIỐNG CHO Ô:",
+      plotNumber
+    );
+
     openSeedPanel(
       plotNumber
     );
 
     return;
   }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Cây đã chín
+  |--------------------------------------------------------------------------
+  */
 
   if (
     getRemainingMs(
@@ -1283,6 +1419,12 @@ async function handlePlotClick(
 
     return;
   }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Cây đang lớn
+  |--------------------------------------------------------------------------
+  */
 
   showPlotActions(
     plot
@@ -1352,6 +1494,20 @@ async function unlockPlot(
         data.plot;
     }
 
+    /*
+    | Nếu server trả plot nhưng frontend
+    | chưa có thì thêm vào.
+    */
+
+    if (
+      index === -1 &&
+      data.plot
+    ) {
+      gameState.plots.push(
+        data.plot
+      );
+    }
+
     renderAll();
 
     showMessage(
@@ -1383,13 +1539,52 @@ async function unlockPlot(
 function openSeedPanel(
   plotNumber
 ) {
+  console.log(
+    "🌱 OPEN SEED PANEL:",
+    plotNumber
+  );
+
   selectedPlot =
-    plotNumber;
+    Number(plotNumber);
+
+  /*
+  | Kiểm tra panel.
+  */
+
+  if (!seedPanel) {
+    console.error(
+      "❌ Không tìm thấy #seedPanel trong index.html"
+    );
+
+    showMessage(
+      "Không tìm thấy bảng hạt giống trong giao diện.",
+      "error"
+    );
+
+    return;
+  }
+
+  /*
+  | Render danh sách hạt giống.
+  */
 
   renderSeedList();
 
+  /*
+  | Hiện panel.
+  */
+
   showPanel(
     seedPanel
+  );
+
+  console.log(
+    "✅ Seed panel đã được mở."
+  );
+
+  console.log(
+    "Seed panel class:",
+    seedPanel.className
   );
 }
 
@@ -1404,6 +1599,10 @@ function closeSeedPanel() {
 
 function renderSeedList() {
   if (!seedList) {
+    console.error(
+      "❌ Không tìm thấy #seedList."
+    );
+
     return;
   }
 
@@ -1511,6 +1710,11 @@ async function plantSeed(
   if (
     selectedPlot === null
   ) {
+    showMessage(
+      "Chưa chọn ô đất.",
+      "error"
+    );
+
     return;
   }
 
@@ -1521,6 +1725,11 @@ async function plantSeed(
     return;
   }
 
+  const targetPlot =
+    Number(
+      selectedPlot
+    );
+
   setLoading(true);
 
   try {
@@ -1529,7 +1738,7 @@ async function plantSeed(
         "/api/game/plant",
         {
           plotNumber:
-            selectedPlot,
+            targetPlot,
           seedKey
         }
       );
@@ -1543,7 +1752,7 @@ async function plantSeed(
             Number(
               item.plot_number
             ) ===
-            selectedPlot
+            targetPlot
         );
 
       if (
@@ -1551,6 +1760,10 @@ async function plantSeed(
       ) {
         gameState.plots[index] =
           data.plot;
+      } else {
+        gameState.plots.push(
+          data.plot
+        );
       }
     }
 
@@ -1915,866 +2128,4 @@ function renderShop() {
   Object.entries(
     SEEDS
   ).forEach(
-    ([key, seed]) => {
-      const inventoryItem =
-        inventory.find(
-          item =>
-            item.seed_key ===
-            key
-        );
-
-      const amount =
-        Number(
-          inventoryItem?.amount ||
-            0
-        );
-
-      const value =
-        amount *
-        seed.sellPrice;
-
-      totalValue += value;
-
-      const item =
-        document.createElement(
-          "div"
-        );
-
-      item.className =
-        "shop-item";
-
-      item.innerHTML = `
-        <div class="shop-item-icon">
-          ${seed.icon}
-        </div>
-
-        <div>
-          <div class="shop-item-name">
-            ${escapeHtml(
-              seed.name
-            )}
-          </div>
-
-          <div class="shop-item-count">
-            Có: ${amount}
-          </div>
-
-          <div class="shop-item-value">
-            Giá bán: ${seed.sellPrice} 🪙
-          </div>
-        </div>
-
-        <button
-          type="button"
-          class="shop-sell-button"
-          data-sell-seed="${escapeAttribute(
-            key
-          )}"
-          ${
-            amount <= 0
-              ? "disabled"
-              : ""
-          }
-        >
-          Bán 1
-        </button>
-      `;
-
-      const button =
-        item.querySelector(
-          "[data-sell-seed]"
-        );
-
-      if (button) {
-        button.addEventListener(
-          "click",
-          () => {
-            sellSeed(
-              key
-            );
-          }
-        );
-      }
-
-      shopList.appendChild(
-        item
-      );
-    }
-  );
-
-  if (
-    shopTotalValue
-  ) {
-    shopTotalValue.textContent =
-      `Tổng giá trị kho: ${formatNumber(
-        totalValue
-      )} 🪙`;
-  }
-}
-
-/*
-|--------------------------------------------------------------------------
-| SELL
-|--------------------------------------------------------------------------
-*/
-
-async function sellSeed(
-  seedKey
-) {
-  const seed =
-    SEEDS[seedKey];
-
-  if (!seed) {
-    return;
-  }
-
-  const inventory =
-    Array.isArray(
-      gameState.inventory
-    )
-      ? gameState.inventory
-      : [];
-
-  const inventoryItem =
-    inventory.find(
-      item =>
-        item.seed_key ===
-        seedKey
-    );
-
-  const amount =
-    Number(
-      inventoryItem?.amount ||
-        0
-    );
-
-  if (
-    amount <= 0
-  ) {
-    showMessage(
-      "Bạn không có nông sản này.",
-      "error"
-    );
-
-    return;
-  }
-
-  setLoading(true);
-
-  try {
-    const data =
-      await apiRequest(
-        "/api/game/sell",
-        {
-          seedKey,
-          amount: 1
-        }
-      );
-
-    if (
-      data.player
-    ) {
-      gameState.player =
-        data.player;
-    }
-
-    if (
-      Array.isArray(
-        data.inventory
-      )
-    ) {
-      gameState.inventory =
-        data.inventory;
-    }
-
-    if (
-      data.inventoryUpdated
-    ) {
-      updateInventoryItem(
-        data.inventoryUpdated
-      );
-    }
-
-    renderAll();
-
-    renderShop();
-
-    const coins =
-      Number(
-        data.coinsGained ||
-          data.totalCoinsGained ||
-          seed.sellPrice
-      );
-
-    showMessage(
-      `💰 Đã bán ${seed.name} +${formatNumber(
-        coins
-      )} Coin`,
-      "success"
-    );
-  } catch (error) {
-    console.error(
-      "Sell error:",
-      error
-    );
-
-    showMessage(
-      error?.message ||
-        "Không thể bán nông sản.",
-      "error"
-    );
-  } finally {
-    setLoading(false);
-  }
-}
-
-/*
-|--------------------------------------------------------------------------
-| INVENTORY
-|--------------------------------------------------------------------------
-*/
-
-function openInventory() {
-  renderShop();
-
-  showPanel(
-    shopPanel
-  );
-}
-
-/*
-|--------------------------------------------------------------------------
-| TASKS
-|--------------------------------------------------------------------------
-*/
-
-function openTasks() {
-  renderTasks();
-
-  showPanel(
-    tasksPanel
-  );
-}
-
-function renderTasks() {
-  if (!tasksList) {
-    return;
-  }
-
-  tasksList.innerHTML = "";
-
-  const tasks = [
-    {
-      id: "join_channel",
-      icon: "📢",
-      title: "Tham gia kênh Telegram",
-      desc: "Tham gia kênh để nhận thưởng một lần.",
-      reward: "500 🪙"
-    },
-
-    {
-      id: "invite_friend",
-      icon: "👥",
-      title: "Mời bạn bè",
-      desc: "Mời bạn bè tham gia Nông Trại Xanh.",
-      reward: "1000 🪙"
-    }
-  ];
-
-  tasks.forEach(
-    task => {
-      const item =
-        document.createElement(
-          "div"
-        );
-
-      item.className =
-        "task-item";
-
-      item.innerHTML = `
-        <div class="task-icon">
-          ${task.icon}
-        </div>
-
-        <div class="task-content">
-          <div class="task-title">
-            ${escapeHtml(
-              task.title
-            )}
-          </div>
-
-          <div class="task-desc">
-            ${escapeHtml(
-              task.desc
-            )}
-          </div>
-
-          <div class="task-reward">
-            🎁 ${escapeHtml(
-              task.reward
-            )}
-          </div>
-
-          <div class="task-status">
-            Chưa xác minh
-          </div>
-        </div>
-
-        <button
-          class="task-button"
-          type="button"
-          data-task-id="${escapeAttribute(
-            task.id
-          )}"
-        >
-          Kiểm tra
-        </button>
-      `;
-
-      const button =
-        item.querySelector(
-          ".task-button"
-        );
-
-      if (button) {
-        button.addEventListener(
-          "click",
-          () => {
-            checkTask(
-              task.id,
-              item,
-              button
-            );
-          }
-        );
-      }
-
-      tasksList.appendChild(
-        item
-      );
-    }
-  );
-}
-
-async function checkTask(
-  taskId,
-  item,
-  button
-) {
-  /*
-  | Backend task verification chưa
-  | được triển khai nên frontend
-  | tuyệt đối không tự cộng Coin.
-  */
-
-  showMessage(
-    "Hệ thống xác minh nhiệm vụ sẽ được nối với backend ở bước tiếp theo.",
-    "info"
-  );
-}
-
-/*
-|--------------------------------------------------------------------------
-| PANELS
-|--------------------------------------------------------------------------
-*/
-
-function showPanel(
-  panel
-) {
-  if (!panel) {
-    return;
-  }
-
-  panel.classList.add(
-    "show"
-  );
-
-  panel.setAttribute(
-    "aria-hidden",
-    "false"
-  );
-}
-
-function hidePanel(
-  panel
-) {
-  if (!panel) {
-    return;
-  }
-
-  panel.classList.remove(
-    "show"
-  );
-
-  panel.setAttribute(
-    "aria-hidden",
-    "true"
-  );
-}
-
-/*
-|--------------------------------------------------------------------------
-| MENU
-|--------------------------------------------------------------------------
-*/
-
-function setupMenuEvents() {
-  if (shopMenu) {
-    shopMenu.addEventListener(
-      "click",
-      openShop
-    );
-  }
-
-  if (seedMenu) {
-    seedMenu.addEventListener(
-      "click",
-      () => {
-        if (
-          selectedPlot === null
-        ) {
-          showMessage(
-            "Hãy chọn một ô đất đã mở khóa trước.",
-            "info"
-          );
-
-          return;
-        }
-
-        openSeedPanel(
-          selectedPlot
-        );
-      }
-    );
-  }
-
-  if (inventoryMenu) {
-    inventoryMenu.addEventListener(
-      "click",
-      openInventory
-    );
-  }
-
-  if (tasksMenu) {
-    tasksMenu.addEventListener(
-      "click",
-      openTasks
-    );
-  }
-
-  if (settingsMenu) {
-    settingsMenu.addEventListener(
-      "click",
-      () => {
-        showMessage(
-          "Cài đặt sẽ được thêm sau.",
-          "info"
-        );
-      }
-    );
-  }
-}
-
-/*
-|--------------------------------------------------------------------------
-| CLOSE BUTTONS
-|--------------------------------------------------------------------------
-*/
-
-function setupCloseEvents() {
-  if (seedClose) {
-    seedClose.addEventListener(
-      "click",
-      closeSeedPanel
-    );
-  }
-
-  if (shopClose) {
-    shopClose.addEventListener(
-      "click",
-      closeShop
-    );
-  }
-
-  if (tasksClose) {
-    tasksClose.addEventListener(
-      "click",
-      () => {
-        hidePanel(
-          tasksPanel
-        );
-      }
-    );
-  }
-
-  [
-    seedPanel,
-    shopPanel,
-    tasksPanel
-  ].forEach(
-    panel => {
-      if (!panel) {
-        return;
-      }
-
-      panel.addEventListener(
-        "click",
-        event => {
-          if (
-            event.target ===
-            panel
-          ) {
-            hidePanel(
-              panel
-            );
-          }
-        }
-      );
-    }
-  );
-}
-
-/*
-|--------------------------------------------------------------------------
-| RENDER ALL
-|--------------------------------------------------------------------------
-*/
-
-function renderAll() {
-  renderPlayer();
-  renderPlots();
-  renderSeedList();
-  renderShop();
-  startCountdown();
-}
-
-/*
-|--------------------------------------------------------------------------
-| INVENTORY UPDATE
-|--------------------------------------------------------------------------
-*/
-
-function updateInventoryItem(
-  updatedItem
-) {
-  if (!updatedItem) {
-    return;
-  }
-
-  if (
-    !Array.isArray(
-      gameState.inventory
-    )
-  ) {
-    gameState.inventory =
-      [];
-  }
-
-  const index =
-    gameState.inventory.findIndex(
-      item =>
-        Number(item.id) ===
-        Number(
-          updatedItem.id
-        )
-    );
-
-  if (
-    index === -1
-  ) {
-    gameState.inventory.push(
-      updatedItem
-    );
-
-    return;
-  }
-
-  gameState.inventory[index] =
-    updatedItem;
-}
-
-/*
-|--------------------------------------------------------------------------
-| UTILITIES
-|--------------------------------------------------------------------------
-*/
-
-function formatNumber(
-  value
-) {
-  const number =
-    Number(
-      value || 0
-    );
-
-  return new Intl.NumberFormat(
-    "vi-VN"
-  ).format(number);
-}
-
-function escapeHtml(
-  value
-) {
-  return String(value)
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-    .replace(
-      /</g,
-      "&lt;"
-    )
-    .replace(
-      />/g,
-      "&gt;"
-    )
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-    .replace(
-      /'/g,
-      "&#039;"
-    );
-}
-
-function escapeAttribute(
-  value
-) {
-  return escapeHtml(
-    value
-  );
-}
-
-/*
-|--------------------------------------------------------------------------
-| LOADING
-|--------------------------------------------------------------------------
-*/
-
-function setLoading(
-  value
-) {
-  isLoading =
-    Boolean(value);
-
-  /*
-  | QUAN TRỌNG:
-  | Không khóa toàn bộ body bằng
-  | pointer-events.
-  */
-
-  if (telegram) {
-    try {
-      if (isLoading) {
-        telegram.MainButton
-          ?.showProgress();
-      } else {
-        telegram.MainButton
-          ?.hideProgress();
-      }
-    } catch {
-      // ignore
-    }
-  }
-}
-
-function showLoading(
-  message
-) {
-  setLoading(true);
-
-  console.log(
-    message
-  );
-}
-
-function hideLoading() {
-  setLoading(false);
-}
-
-/*
-|--------------------------------------------------------------------------
-| MESSAGE
-|--------------------------------------------------------------------------
-*/
-
-function showMessage(
-  message,
-  type = "info"
-) {
-  console.log(
-    `[${type}]`,
-    message
-  );
-
-  if (
-    telegram &&
-    typeof telegram.showAlert ===
-      "function"
-  ) {
-    try {
-      telegram.showAlert(
-        String(message)
-      );
-
-      return;
-    } catch {
-      // fallback
-    }
-  }
-
-  window.alert(
-    String(message)
-  );
-}
-
-/*
-|--------------------------------------------------------------------------
-| VISIBILITY
-|--------------------------------------------------------------------------
-*/
-
-let reconnectTimer = null;
-
-document.addEventListener(
-  "visibilitychange",
-  () => {
-    if (
-      document.visibilityState !==
-      "visible"
-    ) {
-      return;
-    }
-
-    /*
-    | Tránh gọi liên tục.
-    */
-
-    if (reconnectTimer) {
-      clearTimeout(
-        reconnectTimer
-      );
-    }
-
-    reconnectTimer =
-      setTimeout(
-        async () => {
-          /*
-          | Lấy Telegram WebApp/initData
-          | mới nhất.
-          */
-
-          const telegramReady =
-            initTelegram(false);
-
-          if (!telegramReady) {
-            return;
-          }
-
-          /*
-          | Nếu game chưa xác thực,
-          | authenticate lại.
-          */
-
-          if (
-            !gameState.player
-          ) {
-            await authenticateTelegram();
-
-            return;
-          }
-
-          /*
-          | Nếu game đã có player,
-          | chỉ tải state mới.
-          */
-
-          await loadGameState();
-        },
-        500
-      );
-  }
-);
-
-/*
-|--------------------------------------------------------------------------
-| START GAME
-|--------------------------------------------------------------------------
-*/
-
-async function startGame() {
-  if (gameStarted) {
-    return;
-  }
-
-  gameStarted =
-    true;
-
-  console.log(
-    "🌱 NÔNG TRẠI XANH đang khởi động..."
-  );
-
-  /*
-  | Telegram
-  */
-
-  const telegramReady =
-    initTelegram(true);
-
-  if (!telegramReady) {
-    hideLoading();
-
-    return;
-  }
-
-  /*
-  | Plot events
-  */
-
-  setupPlotEvents();
-
-  /*
-  | Menu
-  */
-
-  setupMenuEvents();
-
-  /*
-  | Close buttons
-  */
-
-  setupCloseEvents();
-
-  /*
-  | Auth + tải game
-  */
-
-  await authenticateTelegram();
-
-  console.log(
-    "🌱 NÔNG TRẠI XANH đã khởi động."
-  );
-}
-
-/*
-|--------------------------------------------------------------------------
-| DOM READY
-|--------------------------------------------------------------------------
-*/
-
-if (
-  document.readyState ===
-  "loading"
-) {
-  document.addEventListener(
-    "DOMContentLoaded",
-    startGame,
-    {
-      once: true
-    }
-  );
-} else {
-  startGame();
-}
+   
